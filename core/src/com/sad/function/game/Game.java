@@ -1,27 +1,21 @@
 package com.sad.function.game;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sad.function.components.PositionComponent;
-import com.sad.function.components.TextureComponent;
 import com.sad.function.global.Global;
-import com.sad.function.system.RenderSystem;
+import com.sad.function.screen.BaseScreen;
+import com.sad.function.screen.TestScreen;
 
 public class Game extends ApplicationAdapter {
-	private SpriteBatch batch = new SpriteBatch();
+	private SpriteBatch batch;
+	private BaseScreen currentScreen;
 
 	@Override
 	public void create () {
-        Entity entity = new Entity();
-        entity.add(new TextureComponent());
-        entity.add(new PositionComponent());
-
-        Global.engine().addSystem(new RenderSystem(batch));
-        Global.engine().addEntity(entity);
+        batch = new SpriteBatch();
+		currentScreen = new TestScreen(batch);
 	}
 
 	@Override
@@ -30,7 +24,7 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 
-            Global.engine().update(Gdx.graphics.getDeltaTime());
+            currentScreen.engine().update(Gdx.graphics.getDeltaTime());
 
 		batch.end();
 	}
@@ -39,5 +33,11 @@ public class Game extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		Global.textures().dispose();
+	}
+
+	public void pushScreen(BaseScreen newScreen) {
+		currentScreen.exit();
+		this.currentScreen = newScreen;
+		currentScreen.enter();
 	}
 }

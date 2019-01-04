@@ -1,0 +1,12 @@
+{
+  "GAME": {
+    "actions": [
+      "PLAYER_UP",
+      "PLAYER_DOWN",
+      "PLAYER_LEFT",
+      "PLAYER_RIGHT"
+    ],
+    "states": [],
+    "ranges": []
+  }
+}

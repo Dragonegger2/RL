@@ -18,6 +18,11 @@ buildscript {
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
+    apply plugin: "java"
+
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     version = '1.0'
     ext {
@@ -36,12 +41,14 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
+
+    dependencies {
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+
+    }
 }
 
 project(":desktop") {
-    apply plugin: "java"
-
-
     dependencies {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
@@ -52,14 +59,12 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-        
+
     }
 }
 
+
 project(":core") {
-    apply plugin: "java"
-
-
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -69,7 +74,6 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.1.0"
-        
     }
 }
 
