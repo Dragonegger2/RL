@@ -1,7 +1,7 @@
 package com.sad.function.global;
 
 import com.sad.function.input.BindingsLinker;
-import com.sad.function.input.InputContext;
+import com.sad.function.input.definitions.InputContext;
 import com.sad.function.input.definitions.InputConstants;
 
 import java.util.HashMap;

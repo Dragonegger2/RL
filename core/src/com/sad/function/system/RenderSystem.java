@@ -30,7 +30,7 @@ public class RenderSystem extends SortedIteratingSystem {
 
         //Need to do loading of resources.
         if(batch.isDrawing()) {
-            batch.draw(Global.textures().get(texture.internalPath), position.x, position.y);
+            batch.draw(Global.textures.get(texture.internalPath), position.x, position.y);
         }
     }
 

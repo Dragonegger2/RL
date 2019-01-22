@@ -1,14 +1,12 @@
 package com.sad.function.game.desktop;
 
-import com.sad.function.input.BindingsLinker;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.sad.function.game.Game;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
-//		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-//		new LwjglApplication(new Game(), config);
-
-		BindingsLinker linker = new BindingsLinker();
-		linker.readBindings();
-
+		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		new LwjglApplication(new Game(), config);
 	}
 }

@@ -1,12 +1,10 @@
 {
-  "GAME": {
+  "TEST" : {
     "actions": [
-      "PLAYER_UP",
-      "PLAYER_DOWN",
-      "PLAYER_LEFT",
-      "PLAYER_RIGHT"
-    ],
-    "states": [],
-    "ranges": []
+      {
+        "name" : "PLAYER_UP",
+        "keys" : [ 19 ]
+      }
+    ]
   }
 }

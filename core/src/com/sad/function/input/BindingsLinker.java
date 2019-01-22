@@ -3,6 +3,7 @@ package com.sad.function.input;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sad.function.input.definitions.InputConstants;
+import com.sad.function.input.definitions.InputContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +15,17 @@ import java.util.HashMap;
 public class BindingsLinker {
 
     public static HashMap<InputConstants.Contexts, InputContext> readBindings() {
-        TypeReference<HashMap<InputConstants.Contexts, InputContext>> typeRef = new TypeReference<HashMap<InputConstants.Contexts, InputContext>>() {};
+        TypeReference<HashMap<InputConstants.Contexts, InputContext>> CONTEXT_TO_ACTION =  new TypeReference<HashMap<InputConstants.Contexts, InputContext>>() {};
+        HashMap<InputConstants.Contexts, InputContext> contextToAction = null;
+
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            return mapper.readValue(new File("./input/InputMap.json"), typeRef);
-
+            contextToAction = mapper.readValue(new File("./input/InputMap.json"), CONTEXT_TO_ACTION);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("ERROR CREATING CONTEXTS.");
-        return new HashMap<>();
+
+        return contextToAction;
     }
 }

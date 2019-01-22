@@ -1,9 +1,8 @@
-package com.sad.function.input;
+package com.sad.function.input.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import com.sad.function.input.definitions.InputConstants;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputContext {
     @JsonProperty("actions")
-    List<InputConstants.Action> actions;
+    List<Action> actions;
 
     @JsonProperty("states")
     List<InputConstants.State> states;
