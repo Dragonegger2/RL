@@ -17,7 +17,6 @@ public abstract class BaseScreen {
     public abstract void exit();
 
     public Engine engine() { return engine; }
-
     public InputContext InputContextActions() {
         return Global.gameContexts.get(contextName);
     }

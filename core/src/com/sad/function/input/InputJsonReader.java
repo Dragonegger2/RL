@@ -12,7 +12,7 @@ import java.util.HashMap;
 /**
  * Creates a binding for contexts from input files.
  */
-public class BindingsLinker {
+public class InputJsonReader {
 
     public static HashMap<InputConstants.Contexts, InputContext> readBindings() {
         TypeReference<HashMap<InputConstants.Contexts, InputContext>> CONTEXT_TO_ACTION =  new TypeReference<HashMap<InputConstants.Contexts, InputContext>>() {};

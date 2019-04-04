@@ -6,9 +6,16 @@ import com.badlogic.gdx.graphics.Texture;
 import java.util.HashMap;
 
 public class Textures {
-    //Internal file location, object.
-    private HashMap<String, Texture> textures = new HashMap<String, Texture>();
+    /**
+     * Internal file location, object.
+     */
+    private HashMap<String, Texture> textures = new HashMap<>();
 
+    /**
+     * Fetch a texture.
+     * @param internalName
+     * @return
+     */
     public Texture get(String internalName) {
         if(textures.get(internalName) == null) {
             //Try loading resource.
