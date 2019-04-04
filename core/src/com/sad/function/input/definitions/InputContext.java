@@ -10,11 +10,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputContext {
     @JsonProperty("actions")
-    List<Action> actions;
+    public List<Action> actions;
 
     @JsonProperty("states")
-    List<InputConstants.State> states;
+    public List<InputConstants.State> states;
 
     @JsonProperty("ranges")
-    List<InputConstants.Range> ranges;
+    public List<InputConstants.Range> ranges;
 }
