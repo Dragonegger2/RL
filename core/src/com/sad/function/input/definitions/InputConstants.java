@@ -9,18 +9,15 @@ public class InputConstants {
         GAME
     }
 
-    //Single time event. Does not happen until the button is pressed again.
     public enum Action {
+        FIRE,
+    }
+
+    public enum State {
         PLAYER_UP,
         PLAYER_DOWN,
         PLAYER_LEFT,
         PLAYER_RIGHT
     }
 
-    //Repeated event. Like shooting a gun.
-    public enum State {
-        SHOOT_GUN
-    }
-
-    public enum Range {}
 }

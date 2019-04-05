@@ -11,10 +11,4 @@ import java.util.List;
 public class InputContext {
     @JsonProperty("actions")
     public List<Action> actions;
-
-    @JsonProperty("states")
-    public List<InputConstants.State> states;
-
-    @JsonProperty("ranges")
-    public List<InputConstants.Range> ranges;
 }

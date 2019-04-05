@@ -1,40 +1,32 @@
 package com.sad.function.input.definitions;
 
-import com.badlogic.gdx.Gdx;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Action {
     @JsonProperty("name")
-    private String name;
+    private InputConstants.Action name;
     @JsonProperty("keys")
-    private int[] keys;
+    private Set<RawInputConstants.RawInputButton> keys;
 
     public Action() {}
 
-    public Action(String name, int[] keys) {
+    public Action(InputConstants.Action name, Set<RawInputConstants.RawInputButton> keys) {
         this.name = name;
         this.keys = keys;
     }
 
-    public String getName() {
+    public InputConstants.Action getName() {
         return name;
     }
 
-    public int[] getKeys() {
+    public Set<RawInputConstants.RawInputButton> getKeys() {
         return keys;
     }
 
-    /**
-     * Matches all keys bound to this action for the given context.
-     * @return any of the keys that are pressed.
-     */
-    public int[] isKeyPressed() {
-        return Arrays.stream(keys).filter(key -> Gdx.input.isKeyPressed(key)).toArray();
-    }
-
-    public int[] isKeyJustPressed() {
-        return Arrays.stream(keys).filter(key -> Gdx.input.isKeyJustPressed(key)).toArray();
+    public boolean containsKey(RawInputConstants.RawInputButton searchKey) {
+        return keys.contains(searchKey);
     }
 }

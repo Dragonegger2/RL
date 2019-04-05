@@ -3,6 +3,7 @@ package com.sad.function.event;
 public class Event {
     private EventType type;
 
+    public Event() {}
     Event(EventType type) {
         this.type = type;
     }

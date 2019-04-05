@@ -1,10 +1,11 @@
-{
-  "TEST" : {
+[
+  {
+    "name" : "TEST",
     "actions": [
       {
-        "name" : "PLAYER_UP",
-        "keys" : [ 19 ]
+        "name" : "FIRE",
+        "keys" : [ "SPACE" ]
       }
     ]
   }
-}
+]
