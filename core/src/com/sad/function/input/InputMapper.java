@@ -26,7 +26,7 @@ public class InputMapper extends Subject {
             currentMappedInput.states.addAll(mapButtonToState(button));
         }
 
-
+        mapAndEatButton(button);
     }
 
     public void clear() {
@@ -81,6 +81,10 @@ public class InputMapper extends Subject {
         getObservers().forEach(watcher -> watcher.onNotify(null, input));
     }
 
+    public void mapAndEatButton(RawInputButton button) {
+        mapButtonToAction(button).forEach(currentMappedInput::eatAction);
+        mapButtonToState(button).forEach(currentMappedInput::eatState);
+    }
 
     public class MappedInput extends Event {
         public Set<Action> actions;
@@ -99,6 +103,7 @@ public class InputMapper extends Subject {
             }
 
         }
+
         void eatAction(Action action) {
             actions.remove(action);
         }
