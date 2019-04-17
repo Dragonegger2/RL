@@ -5,31 +5,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.global.Global;
-import com.sad.function.input.KeyboardInputProcessor;
+import com.sad.function.input.InputStateManager;
 import com.sad.function.screen.BaseScreen;
 import com.sad.function.screen.TestScreen;
 
 public class Game extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private BaseScreen currentScreen;
-	private KeyboardInputProcessor keyboardInputProcessor = new KeyboardInputProcessor();
+	private InputStateManager inputStateManager = new InputStateManager();
 
 	@Override
 	public void create () {
         batch = new SpriteBatch();
 		currentScreen = new TestScreen(batch);
-
-		Gdx.input.setInputProcessor(keyboardInputProcessor);
 	}
 
 	@Override
 	public void render () {
+		//Captures input, matches it to active contexts, and then dispatches it to whomever cares.
+		inputStateManager.handleInput();
+
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		//Push Keyboard state up.
-		Global.keyboardStates.push(keyboardInputProcessor.getCurrentKeyboardStatus());
-		//
 
 		batch.begin();
 		currentScreen.engine().update(Gdx.graphics.getDeltaTime());

@@ -1,8 +1,8 @@
 package com.sad.function.input.definitions;
 
 public class Keyboard {
-    private static boolean[] up = new boolean[255];
-    private static boolean[] down = new boolean[255];
+    private static boolean[] up = new boolean[256];
+    private static boolean[] down = new boolean[256];
 
     public boolean isKeyDown(int key) { return down[key]; }
     public boolean isKeyUp(int key) { return up[key]; }

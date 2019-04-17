@@ -8,11 +8,11 @@ public class State {
     @JsonProperty("name")
     private InputConstants.State name;
     @JsonProperty("keys")
-    private Set<RawInputConstants.RawInputButton> keys;
+    private Set<Integer> keys;
 
     public State() {}
 
-    public State(InputConstants.State name, Set<RawInputConstants.RawInputButton> keys) {
+    public State(InputConstants.State name, Set<Integer> keys) {
         this.name = name;
         this.keys = keys;
     }
@@ -21,11 +21,11 @@ public class State {
         return name;
     }
 
-    public Set<RawInputConstants.RawInputButton> getKeys() {
+    public Set<Integer> getKeys() {
         return keys;
     }
 
-    public boolean containsKey(RawInputConstants.RawInputButton searchKey) {
+    public boolean containsKey(int searchKey) {
         return keys.contains(searchKey);
     }
 

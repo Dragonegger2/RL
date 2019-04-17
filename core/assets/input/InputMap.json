@@ -4,7 +4,13 @@
     "actions": [
       {
         "name" : "FIRE",
-        "keys" : [ "SPACE" ]
+        "keys" : [ 62 ]
+      }
+    ],
+    "states" : [
+      {
+        "name" : "PLAYER_LEFT",
+        "keys" : [ 21 ]
       }
     ]
   }

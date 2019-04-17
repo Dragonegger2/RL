@@ -1,6 +1,7 @@
-package com.sad.function.input;
+package com.sad.function.input.handlers;
 
 import com.badlogic.gdx.InputProcessor;
+import com.sad.function.common.SizedStack;
 import com.sad.function.input.definitions.Keyboard;
 
 /**
@@ -13,8 +14,11 @@ import com.sad.function.input.definitions.Keyboard;
 public class KeyboardInputProcessor implements InputProcessor {
     private static Keyboard currentKeyboardStatus = new Keyboard();
 
+    private static SizedStack<Keyboard> keyboardStates = new SizedStack<>(2);
+
     @Override
     public boolean keyDown(int key) {
+        System.out.println("Key was pressed down.");
         currentKeyboardStatus.setKeyDown(key);
 
         return false;
@@ -22,6 +26,7 @@ public class KeyboardInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyUp(int key) {
+        System.out.println("Key was released");
         currentKeyboardStatus.setKeyUp(key);
 
         return false;

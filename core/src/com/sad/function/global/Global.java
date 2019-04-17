@@ -1,11 +1,8 @@
 package com.sad.function.global;
 
-import com.sad.function.common.SizedStack;
 import com.sad.function.input.InputJsonReader;
 import com.sad.function.input.definitions.Context;
-import com.sad.function.input.definitions.Keyboard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Global {
@@ -22,7 +19,6 @@ public class Global {
     /**
      * Currently active game contexts.
      */
-public static List<Context> activeContexts = new ArrayList<>();
-
-    public static SizedStack<Keyboard> keyboardStates = new SizedStack<>(10);
+    public static Context activeContextsChain;
 }
+

@@ -10,7 +10,7 @@ public class InputConstants {
     }
 
     public enum Action {
-        FIRE,
+        FIRE
     }
 
     public enum State {

@@ -1,15 +1,21 @@
 package com.sad.function.input.definitions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sad.function.input.InputChain;
+import com.sad.function.input.MappedInput;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Represents an input context. It's a collection of actions, states, and ranges that this context cares about.
+ *
+ * If is part of a Chain of Responsibility object.
  */
-public class Context {
+public class Context implements InputChain {
+    //Store a reference to the next link in the input chain.
+    private InputChain nextLink;
+
     public Context() {}
     @JsonProperty("name")
     public InputConstants.Contexts contextName;
@@ -21,11 +27,11 @@ public class Context {
     public List<State> states = new ArrayList<>();
 
     /**
-     * Finds any actions that
+     * Finds any actions that match it from Raw Input.
      * @param button
      * @return
      */
-    public List<Action> mapButtonToAction(RawInputConstants.RawInputButton button) {
+    public List<Action> mapButtonToAction(int button) {
         List<Action> firedActions = new ArrayList<>();
         for (Action action : actions) {
             if (action.containsKey(button)) {
@@ -35,7 +41,7 @@ public class Context {
         return firedActions;
     }
 
-    public List<State> mapButtonToState(RawInputConstants.RawInputButton button) {
+    public List<State> mapButtonToState(int button) {
         List<State> firedState = new ArrayList<>();
         for (State state : states) {
             if(state.containsKey(button)) {
@@ -43,5 +49,18 @@ public class Context {
             }
         }
         return firedState;
+    }
+
+    @Override
+    public void process(MappedInput input) {
+        //Should handle the mappedinput, chomping any that it needs to before dispatching it to the next.
+        if(nextLink != null) {
+            nextLink.process(input);
+        }
+    }
+
+    @Override
+    public void setNext(InputChain nextInChain) {
+        nextLink = nextInChain;
     }
 }

@@ -13,8 +13,8 @@ public class Textures {
 
     /**
      * Fetch a texture.
-     * @param internalName
-     * @return
+     * @param internalName for the texture.
+     * @return a texture that is stored in a Hashmap.
      */
     public Texture get(String internalName) {
         if(textures.get(internalName) == null) {

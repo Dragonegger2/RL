@@ -19,4 +19,7 @@ public class SizedStack<T> extends Stack<T> {
         return super.push(object);
     }
 
+    public T getHead() {
+        return super.get(super.size() - 1);
+    }
 }

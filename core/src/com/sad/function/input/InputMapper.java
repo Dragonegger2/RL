@@ -46,10 +46,10 @@ public class InputMapper extends Subject {
     private List<Action> mapButtonToAction(RawInputButton button) {
         //List of actions triggered by this button press.
         List<Action> triggeredActions = new ArrayList<>();
-        for (int i = 0; i < Global.activeContexts.size(); i++) {
-            Context targetContext = Global.activeContexts.get(i);
-            triggeredActions.addAll(targetContext.mapButtonToAction(button));
-        }
+//        for (int i = 0; i < Global.activeContextsChain.size(); i++) {
+//            Context targetContext = Global.activeContextsChain.get(i);
+//            triggeredActions.addAll(targetContext.mapButtonToAction(button));
+//        }
 
         return triggeredActions;
     }
@@ -63,10 +63,10 @@ public class InputMapper extends Subject {
     private List<State> mapButtonToState(RawInputButton button) {
         //List of actions triggered by this button press.
         List<State> triggeredStates = new ArrayList<>();
-        for (int i = 0; i < Global.activeContexts.size(); i++) {
-            Context targetContext = Global.activeContexts.get(i);
-            triggeredStates.addAll(targetContext.mapButtonToState(button));
-        }
+//        for (int i = 0; i < Global.activeContextsChain.size(); i++) {
+//            Context targetContext = Global.activeContextsChain.get(i);
+//            triggeredStates.addAll(targetContext.mapButtonToState(button));
+//        }
 
         return triggeredStates;
     }
@@ -103,7 +103,6 @@ public class InputMapper extends Subject {
             }
 
         }
-
         void eatAction(Action action) {
             actions.remove(action);
         }
