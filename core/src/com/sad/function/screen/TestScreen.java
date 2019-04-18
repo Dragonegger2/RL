@@ -20,15 +20,7 @@ public class TestScreen extends BaseScreen {
 
     @Override
     public void initialize() {
-        Global.activeContextsChain = Global.definedGameContexts.get(0);
 
-        Entity entity = new Entity();
-
-        entity.add(new Texture())
-            .add(new Position());
-
-        engine().addSystem(new RenderSystem(batch));
-        engine().addEntity(entity);
     }
 
     @Override

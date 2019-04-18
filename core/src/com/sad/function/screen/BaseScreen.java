@@ -1,10 +1,8 @@
 package com.sad.function.screen;
 
-import com.badlogic.ashley.core.Engine;
 import com.sad.function.input.definitions.InputConstants;
 
 public abstract class BaseScreen {
-    private static Engine engine = new Engine();
     private static InputConstants.Contexts contextName;
 
     BaseScreen() {
@@ -13,6 +11,4 @@ public abstract class BaseScreen {
     abstract void initialize();
     public abstract void enter();
     public abstract void exit();
-
-    public Engine engine() { return engine; }
 }

@@ -8,6 +8,8 @@ import com.sad.function.input.definitions.Action;
 import com.sad.function.input.definitions.Context;
 import com.sad.function.input.definitions.Keyboard;
 import com.sad.function.input.definitions.State;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,14 +17,16 @@ import java.util.List;
 
 /**
  * Manages all states related to input.
+ *
+ * The observers of this object is anybody who wants input.
  */
-public class InputStateManager extends Subject {
+public class InputStateManager extends Subject<MappedInput> {
     private SizedStack<Keyboard> keyboardStates = new SizedStack<>(2);
 
     private List<Integer> states = new ArrayList<>();
     private List<Integer> actions = new ArrayList<>();
 
-    //The observers of this object is anybody who wants input.
+    private static final Logger logger = LogManager.getLogger(InputStateManager.class.getName());
 
     /**
      * Handle any input processors that are related to this application.
@@ -34,13 +38,13 @@ public class InputStateManager extends Subject {
         createStateList();
 
         MappedInput mappedInput = mapRawInputToActions();
+        getObservers().forEach(inputEventObserver -> inputEventObserver.onNotify(null, mappedInput));
     }
 
     private void handleKeyboard() {
         Keyboard currentState = new Keyboard();
         for (int i = 0; i < 256; i++) {
-            boolean keyPressed = Gdx.input.isKeyPressed(i);
-            if (keyPressed) {
+            if (Gdx.input.isKeyPressed(i)) {
                 currentState.setKeyDown(i);
             } else {
                 currentState.setKeyUp(i);
@@ -64,7 +68,7 @@ public class InputStateManager extends Subject {
 
                 Action ac = target.mapButtonToAction(next);
                 if (ac != null) {
-                    System.out.println(ac);
+                    logger.info(ac);
                     mappedInput.addAction(ac);
                     actionIterator.remove();
                 }
@@ -77,7 +81,7 @@ public class InputStateManager extends Subject {
 
                 State st = target.mapButtonToState(next);
                 if (st != null) {
-                    System.out.println(st);
+                    logger.info(st);
                     mappedInput.addState(st);
                     stateIterator.remove();
                 }

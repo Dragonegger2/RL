@@ -1,0 +1,17 @@
+[
+  {
+    "name" : "TEST",
+    "actions": [
+      {
+        "name" : "FIRE",
+        "keys" : [ 62 ]
+      }
+    ],
+    "states" : [
+      {
+        "name" : "PLAYER_LEFT",
+        "keys" : [ 21 ]
+      }
+    ]
+  }
+]

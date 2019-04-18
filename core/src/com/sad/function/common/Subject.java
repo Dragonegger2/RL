@@ -2,21 +2,21 @@ package com.sad.function.common;
 
 import java.util.ArrayList;
 
-public abstract class Subject {
-    private ArrayList<Observer> observers = new ArrayList<>();
+public abstract class Subject<T> {
+    private ArrayList<Observer<T>> observers = new ArrayList<>();
     private int numberOfObservers;
 
-    public void addObserver(Observer observer) {
+    public void addObserver(Observer<T> observer) {
         observers.add(observer);
         numberOfObservers++;
     }
 
-    public void removeObserver(Observer observer) {
+    public void removeObserver(Observer<T> observer) {
         observers.remove(observer);
         numberOfObservers--;
     }
 
-    public ArrayList<Observer> getObservers() {
+    public ArrayList<Observer<T>> getObservers() {
         return observers;
     }
 }

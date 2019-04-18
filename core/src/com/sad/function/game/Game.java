@@ -1,23 +1,47 @@
 package com.sad.function.game;
 
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sad.function.components.Position;
+import com.sad.function.components.Texture;
 import com.sad.function.global.Global;
 import com.sad.function.input.InputStateManager;
 import com.sad.function.screen.BaseScreen;
 import com.sad.function.screen.TestScreen;
+import com.sad.function.system.InputDispatchSystem;
+import com.sad.function.system.RenderSystem;
 
 public class Game extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private BaseScreen currentScreen;
 	private InputStateManager inputStateManager = new InputStateManager();
+	private InputDispatchSystem inputDispatchSystem = new InputDispatchSystem();
 
+	private Engine engine;
 	@Override
 	public void create () {
+		engine = new Engine();
         batch = new SpriteBatch();
+
 		currentScreen = new TestScreen(batch);
+
+		inputStateManager.addObserver(inputDispatchSystem);
+
+		Global.activeContextsChain = Global.definedGameContexts.get(0);
+
+		Entity entity = new Entity();
+
+		entity.add(new Texture())
+				.add(new Position());
+
+		//Order Matters.
+		engine.addSystem(inputDispatchSystem);
+		engine.addSystem(new RenderSystem(batch));
+		engine.addEntity(entity);
 	}
 
 	@Override
@@ -29,7 +53,9 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.begin();
-		currentScreen.engine().update(Gdx.graphics.getDeltaTime());
+
+		engine.update(Gdx.graphics.getDeltaTime());
+
 		batch.end();
 	}
 	
