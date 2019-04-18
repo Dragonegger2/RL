@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.components.Position;
 import com.sad.function.components.Texture;
 import com.sad.function.global.Global;
-import com.sad.function.global.Mappers;
 
 import java.util.Comparator;
 
 public class RenderSystem extends SortedIteratingSystem {
+    private final ComponentMapper<Position> position = ComponentMapper.getFor(Position.class);
+    private final ComponentMapper<Texture> texture = ComponentMapper.getFor(Texture.class);
 
     private Batch batch;
 
@@ -24,8 +25,8 @@ public class RenderSystem extends SortedIteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        Position position = Mappers.position.get(entity);
-        Texture texture = Mappers.texture.get(entity);
+        Position position = this.position.get(entity);
+        Texture texture = this.texture.get(entity);
 
         //Need to do loading of resources.
         if(batch.isDrawing()) {
