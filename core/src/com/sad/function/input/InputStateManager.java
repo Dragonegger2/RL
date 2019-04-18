@@ -10,6 +10,7 @@ import com.sad.function.input.definitions.Keyboard;
 import com.sad.function.input.definitions.State;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,15 +28,12 @@ public class InputStateManager extends Subject {
      * Handle any input processors that are related to this application.
      */
     public void handleInput() {
-        //Grab raw inputs.
         handleKeyboard();
 
-        //Map them to states.
-        handleStates();
+        createActionList();
+        createStateList();
 
-        //Map them to actions.
-        handleActions();
-
+        MappedInput mappedInput = mapRawInputToActions();
     }
 
     private void handleKeyboard() {
@@ -52,11 +50,50 @@ public class InputStateManager extends Subject {
         keyboardStates.push(currentState);
     }
 
+    private MappedInput mapRawInputToActions() {
+        MappedInput mappedInput = new MappedInput();
+
+        //Loop through all active contexts.
+        Context target = Global.activeContextsChain;
+        while (target != null) {
+            Iterator<Integer> actionIterator = actions.iterator();
+
+            //Bind all actions.
+            while (actionIterator.hasNext()) {
+                Integer next = actionIterator.next();
+
+                Action ac = target.mapButtonToAction(next);
+                if (ac != null) {
+                    System.out.println(ac);
+                    mappedInput.addAction(ac);
+                    actionIterator.remove();
+                }
+            }
+
+            //Bind all states.
+            Iterator<Integer> stateIterator = states.iterator();
+            while (stateIterator.hasNext()) {
+                Integer next = stateIterator.next();
+
+                State st = target.mapButtonToState(next);
+                if (st != null) {
+                    System.out.println(st);
+                    mappedInput.addState(st);
+                    stateIterator.remove();
+                }
+            }
+            //Increments to next context.
+            target = (Context) target.getNext();
+        }
+
+        return mappedInput;
+    }
+
     /**
      * Creates a list of keys that are currently down.
      */
-    private void handleStates() {
-        states.clear();        //Prevent them from queueing up when we don't need them to.
+    private void createStateList() {
+        states.clear();
 
         for (int i = 0; i < 255; i++) {
             if (Gdx.input.isKeyPressed(i)) {
@@ -70,23 +107,15 @@ public class InputStateManager extends Subject {
      * <p>
      * Current should be up and the previous state should be down.
      */
-    private void handleActions() {
+    private void createActionList() {
         actions.clear();        //Prevent them from queueing up when we don't need them to.
 
-        //Check for a previous state.
-        for (int i = 0; i < 255; i++) {
-            if (Gdx.input.isKeyJustPressed(i)) {
-                System.out.println("Action triggered.");
-                actions.add(i);
+        if (keyboardStates.size() > 1) {
+            for (int i = 0; i < 255; i++) {
+                if (Gdx.input.isKeyJustPressed(i)) {
+                    actions.add(i);
+                }
             }
         }
-    }
-
-    public List<Integer> getStates() {
-        return states;
-    }
-
-    public List<Integer> getActions() {
-        return actions;
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Context implements InputChain {
     //Store a reference to the next link in the input chain.
-    private InputChain nextLink;
+    private InputChain nextLink = null;
 
     public Context() {}
     @JsonProperty("name")
@@ -31,24 +31,23 @@ public class Context implements InputChain {
      * @param button
      * @return
      */
-    public List<Action> mapButtonToAction(int button) {
-        List<Action> firedActions = new ArrayList<>();
+    public Action mapButtonToAction(int button) {
+//        List<Action> firedActions = new ArrayList<>();
         for (Action action : actions) {
             if (action.containsKey(button)) {
-                firedActions.add(action);
+                return action;
             }
         }
-        return firedActions;
+        return null;
     }
 
-    public List<State> mapButtonToState(int button) {
-        List<State> firedState = new ArrayList<>();
+    public State mapButtonToState(int button) {
         for (State state : states) {
             if(state.containsKey(button)) {
-                firedState.add(state);
+                return state;
             }
         }
-        return firedState;
+        return null;
     }
 
     @Override
@@ -62,5 +61,10 @@ public class Context implements InputChain {
     @Override
     public void setNext(InputChain nextInChain) {
         nextLink = nextInChain;
+    }
+
+    @Override
+    public InputChain getNext() {
+        return nextLink;
     }
 }

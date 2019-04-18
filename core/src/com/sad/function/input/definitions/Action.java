@@ -28,4 +28,9 @@ public class Action {
     public boolean containsKey(int searchKey) {
         return keys.contains(searchKey);
     }
+
+    @Override
+    public String toString() {
+        return String.format("ACTION Name: %s Keys %s", name, keys);
+    }
 }

@@ -29,4 +29,8 @@ public class State {
         return keys.contains(searchKey);
     }
 
+    @Override
+    public String toString() {
+        return String.format("STATE Name: %s Keys %s", name, keys);
+    }
 }

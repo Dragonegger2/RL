@@ -18,7 +18,6 @@ public class KeyboardInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int key) {
-        System.out.println("Key was pressed down.");
         currentKeyboardStatus.setKeyDown(key);
 
         return false;
@@ -26,7 +25,6 @@ public class KeyboardInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyUp(int key) {
-        System.out.println("Key was released");
         currentKeyboardStatus.setKeyUp(key);
 
         return false;

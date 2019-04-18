@@ -22,4 +22,8 @@ public class SizedStack<T> extends Stack<T> {
     public T getHead() {
         return super.get(super.size() - 1);
     }
+
+    public T get(int index) {
+        return super.get(index);
+    }
 }

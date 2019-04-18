@@ -74,6 +74,10 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile "com.underwaterapps.overlap2druntime:overlap2d-runtime-libgdx:0.1.0"
+
+        //Logging
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
     }
 }
 
