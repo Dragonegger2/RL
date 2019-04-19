@@ -1,13 +1,11 @@
 package com.sad.function.input;
 
 import com.badlogic.gdx.Gdx;
-import com.sad.function.common.SizedStack;
 import com.sad.function.common.Subject;
 import com.sad.function.global.Global;
-import com.sad.function.input.definitions.Action;
-import com.sad.function.input.definitions.Context;
-import com.sad.function.input.definitions.Keyboard;
-import com.sad.function.input.definitions.State;
+import com.sad.function.input.definitions.*;
+import com.sad.function.input.keyboard.Keyboard;
+import com.sad.function.input.keyboard.KeyboardState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +19,7 @@ import java.util.List;
  * The observers of this object is anybody who wants input.
  */
 public class InputStateManager extends Subject<MappedInput> {
-    private SizedStack<Keyboard> keyboardStates = new SizedStack<>(2);
+    private KeyboardState keyboardStates = new KeyboardState(2);
 
     private List<Integer> states = new ArrayList<>();
     private List<Integer> actions = new ArrayList<>();
@@ -38,9 +36,12 @@ public class InputStateManager extends Subject<MappedInput> {
         createStateList();
 
         MappedInput mappedInput = mapRawInputToActions();
-        getObservers().forEach(inputEventObserver -> inputEventObserver.onNotify(null, mappedInput));
+        getObservers().forEach(inputEventObserver -> inputEventObserver.onNotify(mappedInput));
     }
 
+    /**
+     * Polls the entire keyboard and pushes a new keyboard state onto the keyboard state stack.
+     */
     private void handleKeyboard() {
         Keyboard currentState = new Keyboard();
         for (int i = 0; i < 256; i++) {
@@ -51,7 +52,7 @@ public class InputStateManager extends Subject<MappedInput> {
             }
         }
 
-        keyboardStates.push(currentState);
+        keyboardStates.pushKeyboardState(currentState);
     }
 
     private MappedInput mapRawInputToActions() {
@@ -62,6 +63,7 @@ public class InputStateManager extends Subject<MappedInput> {
         while (target != null) {
             Iterator<Integer> actionIterator = actions.iterator();
 
+            //TODO: Change this to provide full list with variable to assert on.
             //Bind all actions.
             while (actionIterator.hasNext()) {
                 Integer next = actionIterator.next();
@@ -74,7 +76,7 @@ public class InputStateManager extends Subject<MappedInput> {
                 }
             }
 
-            //Bind all states.
+            //TODO: Change this to provide full list. Bind all states.
             Iterator<Integer> stateIterator = states.iterator();
             while (stateIterator.hasNext()) {
                 Integer next = stateIterator.next();
@@ -92,9 +94,12 @@ public class InputStateManager extends Subject<MappedInput> {
 
         return mappedInput;
     }
+    //TODO: Currently there is not binding for "raw input" to "buttons" right is that my problem?
 
     /**
      * Creates a list of keys that are currently down.
+     *
+     * TODO: Needs to supply a full list of all entities
      */
     private void createStateList() {
         states.clear();
@@ -114,11 +119,9 @@ public class InputStateManager extends Subject<MappedInput> {
     private void createActionList() {
         actions.clear();        //Prevent them from queueing up when we don't need them to.
 
-        if (keyboardStates.size() > 1) {
-            for (int i = 0; i < 255; i++) {
-                if (Gdx.input.isKeyJustPressed(i)) {
-                    actions.add(i);
-                }
+        for (int i = 0; i < 255; i++) {
+            if (Gdx.input.isKeyJustPressed(i)) {
+                actions.add(i);
             }
         }
     }

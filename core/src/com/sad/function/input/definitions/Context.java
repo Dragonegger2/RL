@@ -11,6 +11,8 @@ import java.util.List;
  * Represents an input context. It's a collection of actions, states, and ranges that this context cares about.
  *
  * If is part of a Chain of Responsibility object.
+ *
+ * TODO: Need to clean up what a context is.
  */
 public class Context implements InputChain {
     //Store a reference to the next link in the input chain.
@@ -21,10 +23,10 @@ public class Context implements InputChain {
     public InputConstants.Contexts contextName;
 
     @JsonProperty("actions")
-    public List<Action> actions = new ArrayList<>();
+    private List<Action> actions = new ArrayList<>();
 
     @JsonProperty("states")
-    public List<State> states = new ArrayList<>();
+    private List<State> states = new ArrayList<>();
 
     /**
      * Finds any actions that match it from Raw InputHandler.
@@ -32,7 +34,6 @@ public class Context implements InputChain {
      * @return
      */
     public Action mapButtonToAction(int button) {
-//        List<Action> firedActions = new ArrayList<>();
         for (Action action : actions) {
             if (action.containsKey(button)) {
                 return action;
@@ -67,4 +68,7 @@ public class Context implements InputChain {
     public InputChain getNext() {
         return nextLink;
     }
+
+    public List<Action> getContextActions() { return actions; }
+    public List<State> getContextState() { return states; }
 }

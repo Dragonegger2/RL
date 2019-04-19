@@ -1,12 +1,9 @@
 package com.sad.function.common;
 
-import com.badlogic.ashley.core.Entity;
-
-public interface Observer<T> {
+public interface Observer<E> {
     /**
      * Notify this observer of a subject that they are registered to listen for. They will do their own message parsing.
-     * @param entity
-     * @param event
+     * @param event data to be handled.
      */
-    void onNotify(Entity entity, T event);
+    void onNotify(E event);
 }

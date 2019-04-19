@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.sad.function.common.Observer;
 import com.sad.function.components.InputHandler;
+import com.sad.function.components.PlayerInputHandler;
 import com.sad.function.input.MappedInput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,17 +18,20 @@ public class InputDispatchSystem extends IteratingSystem implements Observer<Map
     private final ComponentMapper<InputHandler> input = ComponentMapper.getFor(InputHandler.class);
 
     public InputDispatchSystem() {
-        super(Family.one(InputHandler.class).get());
+        super(Family.one(PlayerInputHandler.class).get());
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         //Where we actually process all entities that want/need input.
 //        input.
+        logger.info("InputDispatchSystem is handling entities.");
+        InputHandler inputHandler = entity.getComponent(PlayerInputHandler.class);
+        inputHandler.handleInput(entity, mappedInput);
     }
 
     @Override
-    public void onNotify(Entity entity, MappedInput event) {
+    public void onNotify(MappedInput event) {
         this.mappedInput = event;
     }
 }

@@ -2,7 +2,7 @@ package com.sad.function.input.handlers;
 
 import com.badlogic.gdx.InputProcessor;
 import com.sad.function.common.SizedStack;
-import com.sad.function.input.definitions.Keyboard;
+import com.sad.function.input.keyboard.Keyboard;
 
 /**
  * This input processor handles all keyboard presses as simple as two events: up or down.

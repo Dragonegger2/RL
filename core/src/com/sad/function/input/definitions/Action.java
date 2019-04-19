@@ -10,11 +10,14 @@ public class Action {
     @JsonProperty("keys")
     private Set<Integer> keys;
 
+    private FireState fireState = FireState.NONE;
+
     public Action() {}
 
-    public Action(InputConstants.Action name, Set<Integer> keys) {
+    public Action(InputConstants.Action name, Set<Integer> keys, FireState fireState) {
         this.name = name;
         this.keys = keys;
+        this.fireState = fireState;
     }
 
     public InputConstants.Action getName() {
@@ -33,4 +36,16 @@ public class Action {
     public String toString() {
         return String.format("ACTION Name: %s Keys %s", name, keys);
     }
+
+    /**
+     * Returns the current state of this action based on it's firing state.
+     * NONE - Not firing for any state.
+     * PRESSED - was just pressed.
+     * RELEASED - was just released.
+     *
+     * @return the current action state.
+     */
+    public FireState getButtonState() { return fireState; }
+
+    public enum FireState {NONE, PRESSED, RELEASED}
 }
