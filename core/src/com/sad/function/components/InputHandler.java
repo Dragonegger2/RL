@@ -11,12 +11,8 @@ import com.sad.function.input.definitions.InputConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class InputHandler extends Subject implements Component{
     private static final Logger logger = LogManager.getLogger(InputHandler.class);
-    private List<InputConstants.Action> actionName = new ArrayList<>();
 
     private Command moveLeft = new MoveLeft();
     private Command moveRight = new NullCommand();
@@ -31,16 +27,19 @@ public class InputHandler extends Subject implements Component{
             moveLeft.execute(entity);
             mappedInput.eatState(InputConstants.State.PLAYER_LEFT);
         }
+
         if(mappedInput.isPressed(InputConstants.State.PLAYER_DOWN)) {
             moveDown.execute(entity);
             mappedInput.eatState(InputConstants.State.PLAYER_DOWN);
         }
+
         if(mappedInput.isPressed(InputConstants.State.PLAYER_RIGHT)) {
-            moveDown.execute(entity);
+            moveRight.execute(entity);
             mappedInput.eatState(InputConstants.State.PLAYER_RIGHT);
         }
+
         if(mappedInput.isPressed(InputConstants.State.PLAYER_UP)) {
-            moveDown.execute(entity);
+            moveUp.execute(entity);
             mappedInput.eatState(InputConstants.State.PLAYER_UP);
         }
     }
