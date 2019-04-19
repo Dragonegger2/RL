@@ -27,7 +27,7 @@ public class Context implements InputChain {
     public List<State> states = new ArrayList<>();
 
     /**
-     * Finds any actions that match it from Raw Input.
+     * Finds any actions that match it from Raw InputHandler.
      * @param button
      * @return
      */

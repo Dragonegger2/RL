@@ -1,5 +1,6 @@
 package com.sad.function.global;
 
+import com.badlogic.ashley.core.Entity;
 import com.sad.function.input.InputJsonReader;
 import com.sad.function.input.definitions.Context;
 
@@ -20,5 +21,7 @@ public class Global {
      * Currently active game contexts.
      */
     public static Context activeContextsChain;
+
+    public Entity globalEntity = new Entity();
 }
 

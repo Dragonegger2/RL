@@ -6,6 +6,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sad.function.components.InputHandler;
 import com.sad.function.components.Position;
 import com.sad.function.components.Texture;
 import com.sad.function.global.Global;
@@ -16,12 +17,14 @@ import com.sad.function.system.InputDispatchSystem;
 import com.sad.function.system.RenderSystem;
 
 public class Game extends ApplicationAdapter {
+	private Engine engine;
+
 	private SpriteBatch batch;
 	private BaseScreen currentScreen;
+
 	private InputStateManager inputStateManager = new InputStateManager();
 	private InputDispatchSystem inputDispatchSystem = new InputDispatchSystem();
 
-	private Engine engine;
 	@Override
 	public void create () {
 		engine = new Engine();
@@ -36,7 +39,8 @@ public class Game extends ApplicationAdapter {
 		Entity entity = new Entity();
 
 		entity.add(new Texture())
-				.add(new Position());
+				.add(new Position())
+				.add(new InputHandler());
 
 		//Order Matters.
 		engine.addSystem(inputDispatchSystem);
