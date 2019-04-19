@@ -8,25 +8,12 @@ import java.util.List;
 public class InputManager implements InputProcessor {
     private List<KeyState> keyStates = new ArrayList<>();
 
-    class InputState {
-        boolean pressed = false;
-        boolean down = false;
-        boolean released = false;
-    }
-
-    public class KeyState extends InputState {
-        int key;
-
-        KeyState(int key) {
-            this.key = key;
-        }
-    }
-
     public InputManager() {
-        for(int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             keyStates.add(new KeyState(i));
         }
     }
+
     @Override
     public boolean keyDown(int keycode) {
         keyStates.get(keycode).pressed = true;
@@ -90,10 +77,31 @@ public class InputManager implements InputProcessor {
      * focusing on the current frame.
      */
     public void update() {
-        for(int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             KeyState k = keyStates.get(i);
             k.pressed = false;
             k.released = false;
+        }
+    }
+
+    /**
+     * @return the current keyboard state.
+     */
+    public List<KeyState> getKeyboardState() {
+        return keyStates;
+    }
+
+    class InputState {
+        boolean pressed = false;
+        boolean down = false;
+        boolean released = false;
+    }
+
+    public class KeyState extends InputState {
+        public int key;
+
+        KeyState(int key) {
+            this.key = key;
         }
     }
 }

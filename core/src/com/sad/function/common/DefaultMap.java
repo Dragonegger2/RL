@@ -9,10 +9,10 @@ import java.util.HashMap;
  * @param <K>
  * @param <V>
  */
-public class CommandMap<K, V> extends HashMap<K, V> {
+public class DefaultMap<K, V> extends HashMap<K, V> {
     private V defaultValue;
 
-    public CommandMap(V defaultValue) {
+    public DefaultMap(V defaultValue) {
         this.defaultValue = defaultValue;
     }
 

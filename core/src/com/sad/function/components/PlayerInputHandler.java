@@ -9,7 +9,7 @@ import com.sad.function.input.definitions.InputConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerInputHandler extends InputHandler {
+public class PlayerInputHandler {
     private static final Logger logger = LogManager.getLogger(PlayerInputHandler.class);
 
     private Command moveLeft = new MoveLeft();
@@ -18,7 +18,6 @@ public class PlayerInputHandler extends InputHandler {
     private Command moveDown = new NullCommand();
 
 
-    @Override
     public void handleInput(Entity entity, MappedInput mappedInput) {
         //Don't forget to chomp data out of the mapped input.
 

@@ -15,7 +15,7 @@ public class KeyboardState {
     }
 
     /**
-     * Check if the key is currently down.
+     * Check if the keyStates is currently down.
      * @param key
      * @return
      */
@@ -24,7 +24,7 @@ public class KeyboardState {
     }
 
     /**
-     * Check if the key is currently up.
+     * Check if the keyStates is currently up.
      * @param key
      * @return
      */
@@ -33,18 +33,18 @@ public class KeyboardState {
     }
 
     /**
-     * Last tick the key was up and t his tick it's now down.
+     * Last tick the keyStates was up and t his tick it's now down.
      * @param key to check the state of.
-     * @return if the key was just pressed.
+     * @return if the keyStates was just pressed.
      */
     public boolean isKeyJustPressed(int key) {
         return keyboardStack.getHead().isKeyDown(key) && keyboardStack.get(1).isKeyUp(key);
     }
 
     /**
-     * Last tick the key was down and this tick it's now up.
+     * Last tick the keyStates was down and this tick it's now up.
      * @param key to check the state of.
-     * @return if the key was just released.
+     * @return if the keyStates was just released.
      */
     public boolean isKeyJustReleased(int key) {
         return keyboardStack.getHead().isKeyUp(key) && keyboardStack.get(1).isKeyDown(key);

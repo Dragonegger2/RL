@@ -13,6 +13,7 @@ import com.sad.function.input.definitions.State;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class InputHandler implements Component {
-      public abstract void handleInput(Entity entity, MappedInput mappedInput);
+import java.util.UUID;
+
+public class InputHandler implements Component {
 }

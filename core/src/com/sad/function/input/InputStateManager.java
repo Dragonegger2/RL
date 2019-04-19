@@ -112,7 +112,7 @@ public class InputStateManager extends Subject<MappedInput> {
     }
 
     /**
-     * Uses the current and a previous state to determine if a key was just pressed and then released.
+     * Uses the current and a previous state to determine if a keyStates was just pressed and then released.
      * <p>
      * Current should be up and the previous state should be down.
      */
