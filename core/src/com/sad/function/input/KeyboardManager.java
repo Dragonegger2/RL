@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle things.
+ * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle these events.
  */
 public class KeyboardManager extends Subject<List<InputEvent>> implements InputProcessor {
     private List<KeyState> keyStates = new ArrayList<>();
@@ -47,7 +47,7 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
      * Push all down events into the key event queue and then onto the observers registered to this object.
      * @param delta
      */
-    public void update(float delta) {
+    public void dispatch(float delta) {
         for(KeyState keyState : keyStates) {
             if(keyState.down) {
                 keyInputEvents.add(new KeyInputEvent().setValue(0).setId(keyState.key));
@@ -87,20 +87,8 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
         return false;
     }
 
-    public boolean isKeyPressed(int key) {
-        return keyStates.get(key).pressed;
-    }
-
-    public boolean isKeyDown(int key) {
-        return keyStates.get(key).down;
-    }
-
-    public boolean isKeyReleased(int key) {
-        return keyStates.get(key).released;
-    }
-
     /**
-     * Our reset method. A good place to actually store/update a list of KeyStates for later reference. We're only
+     * Our reset method. A good place to actually store/dispatch a list of KeyStates for later reference. We're only
      * focusing on the current frame.
      */
     public void update() {
@@ -111,13 +99,6 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
         }
 
         keyInputEvents.clear();
-    }
-
-    /**
-     * @return the current keyboard state.
-     */
-    public List<KeyState> getKeyboardState() {
-        return keyStates;
     }
 
     class InputState {

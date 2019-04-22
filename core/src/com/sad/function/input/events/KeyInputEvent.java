@@ -1,13 +1,10 @@
 package com.sad.function.input.events;
 
-import com.sad.function.input.InputType;
 
 public class KeyInputEvent extends InputEvent {
     private float value;
-    private int id;
 
     public KeyInputEvent() {
-        super(InputType.KEYBOARD);
         name = "KEYBOARD_INPUT_EVENT";
     }
 
@@ -20,6 +17,7 @@ public class KeyInputEvent extends InputEvent {
         this.id = id;
         return this;
     }
+
     /*
      1 PRESSED
      0 RELEASED
@@ -29,21 +27,6 @@ public class KeyInputEvent extends InputEvent {
 
     public int getId() {
         return id;
-    }
-
-    @Override
-    public boolean released() {
-        return value == 0;
-    }
-
-    @Override
-    public boolean pressed() {
-        return value == 1;
-    }
-
-    @Override
-    public boolean down() {
-        return value == -1;
     }
 
     @Override

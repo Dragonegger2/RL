@@ -28,10 +28,10 @@ public class InputHandler implements Component {
      * Handles a mid-level input event.
      * @param actionName name of the action, such as "FIRE"
      * @param entity that components will act upon.
-     * @param delta in time since last time rendered. Some commands require this.
+     * @param deltaTime in time since last time rendered. Some commands require this.
      * @return true if handled, false if not.
      */
-    public boolean handleAction(String actionName, InputActionType actionType, Entity entity, float delta) {
+    public boolean handleAction(String actionName, Entity entity, float deltaTime) {
         if(actionNames.contains(actionName)){
             //Find index of actionName:
             Iterator<String> actionNameIterator = actionNames.iterator();
@@ -46,9 +46,7 @@ public class InputHandler implements Component {
             }
 
             //Matching action type.
-            if(actionTypeList.get(index).equals(actionType)) {
-                commandList.get(index).execute(entity, delta);
-            }
+            commandList.get(index).execute(entity, deltaTime);
 
             return true;
         }
@@ -62,6 +60,7 @@ public class InputHandler implements Component {
      */
     public void associateAction(String name, InputActionType inputActionType, GameCommand action) {
         if(actionNames.add(name)) {
+            logger.info("Binding a new action with an input handler Name:{} InputActionType: {} GameCommand: {}", name, inputActionType, action);
             actionTypeList.add(inputActionType);
             commandList.add(action);
         } else {
