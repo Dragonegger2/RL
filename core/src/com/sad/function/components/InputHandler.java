@@ -35,21 +35,13 @@ public class InputHandler implements Component {
     public boolean handleAction(String actionName, Entity entity, InputEvent event, float deltaTime) {
         if(actionNames.contains(actionName)){
             //Find index of actionName:
-            Iterator<String> actionNameIterator = actionNames.iterator();
-
-            int index = 0;
-            while (actionNameIterator.hasNext()) {
-                String name = actionNameIterator.next();
-                if(name.equals(actionName) && matchesValue(actionTypeList.get(index), event) ) {
-                    break;
-                }
-                index++;
-            }
+            int index = getIndex(actionName);
 
             //Matching action type.
-            commandList.get(index).execute(entity, deltaTime);
-
-            return true;
+            if(matchesValue(actionTypeList.get(index), event)) {
+                commandList.get(index).execute(entity, deltaTime);
+                return true;
+            }
         }
 
         return false;
@@ -70,10 +62,30 @@ public class InputHandler implements Component {
         }
     }
 
-    private boolean matchesValue(InputActionType inputActionType, InputEvent event) {
-        if(inputActionType == InputActionType.REPEAT_WHILE_DOWN && event.getValue() == 0) {
-           return true;
+    private int getIndex(String target) {
+        int index = 0;
+        Iterator<String> actionNameIterator = actionNames.iterator();
+        while (actionNameIterator.hasNext()) {
+            String name = actionNameIterator.next();
+            if(name.equals(target)){
+                return index;
+            }
+            index++;
         }
-        return false;
+        return -1;
+    }
+
+    private boolean matchesValue(InputActionType inputActionType, InputEvent event) {
+        if(inputActionType == InputActionType.ON_RELEASE_ONLY && event.getValue() == 0) {
+            return true;
+        }
+        if(inputActionType == InputActionType.ON_PRESS_ONLY && event.getValue() == 1) {
+            return true;
+        }
+        if(inputActionType == InputActionType.REPEAT_WHILE_DOWN && event.getValue() == -1) {
+            return true;
+        }
+
+        return inputActionType == InputActionType.ON_PRESS_AND_RELEASE && (event.getValue() == 0 || event.getValue() == 1);
     }
 }

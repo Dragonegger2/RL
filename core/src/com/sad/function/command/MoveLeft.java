@@ -1,23 +1,21 @@
 package com.sad.function.command;
 
 import com.badlogic.ashley.core.Entity;
-import com.sad.function.components.Velocity;
+import com.sad.function.components.Position;
 
 public class MoveLeft implements GameCommand {
+    private float xVelocity;
+
+    public MoveLeft(float xVelocity) {
+        this.xVelocity = xVelocity;
+    }
 
     @Override
     public void execute(Entity entity, float delta) {
-        Velocity velocity = entity.getComponent(Velocity.class);
+        Position position = entity.getComponent(Position.class);
 
-        if(velocity != null) {
-            float velocityX = 1.0f;
-            velocity.xVelocity -= velocityX * delta;
-
-            //TODO: Add a clamp function.
-            float MAX_VELOCITY = -10f;
-            if(velocity.xVelocity < MAX_VELOCITY) {
-                velocity.xVelocity = MAX_VELOCITY;
-            }
+        if(position != null) {
+            position.x -= xVelocity * delta;
         }
     }
 }
