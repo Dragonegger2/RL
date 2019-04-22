@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.sad.function.command.GameCommand;
 import com.sad.function.input.InputActionType;
+import com.sad.function.input.events.InputEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 public class InputHandler implements Component {
-    Logger logger = LogManager.getLogger(InputHandler.class);
+    private static Logger logger = LogManager.getLogger(InputHandler.class);
 
     private LinkedHashSet<String> actionNames;
     private ArrayList<GameCommand> commandList;
@@ -31,7 +32,7 @@ public class InputHandler implements Component {
      * @param deltaTime in time since last time rendered. Some commands require this.
      * @return true if handled, false if not.
      */
-    public boolean handleAction(String actionName, Entity entity, float deltaTime) {
+    public boolean handleAction(String actionName, Entity entity, InputEvent event, float deltaTime) {
         if(actionNames.contains(actionName)){
             //Find index of actionName:
             Iterator<String> actionNameIterator = actionNames.iterator();
@@ -39,7 +40,7 @@ public class InputHandler implements Component {
             int index = 0;
             while (actionNameIterator.hasNext()) {
                 String name = actionNameIterator.next();
-                if(name.equals(actionName)) {
+                if(name.equals(actionName) && matchesValue(actionTypeList.get(index), event) ) {
                     break;
                 }
                 index++;
@@ -50,6 +51,7 @@ public class InputHandler implements Component {
 
             return true;
         }
+
         return false;
     }
 
@@ -66,5 +68,12 @@ public class InputHandler implements Component {
         } else {
             logger.error("Tried to register additional action with duplicate name: {}", name);
         }
+    }
+
+    private boolean matchesValue(InputActionType inputActionType, InputEvent event) {
+        if(inputActionType == InputActionType.REPEAT_WHILE_DOWN && event.getValue() == 0) {
+           return true;
+        }
+        return false;
     }
 }

@@ -10,7 +10,7 @@ public class MoveLeft implements GameCommand {
         Velocity velocity = entity.getComponent(Velocity.class);
 
         if(velocity != null) {
-            float velocityX = -0.5f;
+            float velocityX = 1.0f;
             velocity.xVelocity -= velocityX * delta;
 
             //TODO: Add a clamp function.

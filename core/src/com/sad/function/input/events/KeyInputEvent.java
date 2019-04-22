@@ -2,7 +2,6 @@ package com.sad.function.input.events;
 
 
 public class KeyInputEvent extends InputEvent {
-    private float value;
 
     public KeyInputEvent() {
         name = "KEYBOARD_INPUT_EVENT";
@@ -23,7 +22,6 @@ public class KeyInputEvent extends InputEvent {
      0 RELEASED
     -1 DOWN
      */
-    public float getValue() { return value; }
 
     public int getId() {
         return id;

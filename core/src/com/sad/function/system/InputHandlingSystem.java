@@ -37,7 +37,7 @@ public class InputHandlingSystem extends IteratingSystem implements Observer<Lis
             //There's a corresponding action for this input.
             if(actionName != null) {
                 //pass it and invoke it.
-                if(handle.handleAction(actionName, entity, deltaTime)) {
+                if(handle.handleAction(actionName, entity, inputEvent, deltaTime)) {
                     //invoke it.
                     eventIterator.remove();
                 }
