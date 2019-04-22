@@ -2,6 +2,6 @@ package com.sad.function.command;
 
 import com.badlogic.ashley.core.Entity;
 
-public interface Command {
-    void execute(Entity entity);
+public interface GameCommand {
+    void execute(Entity entity, float delta);
 }

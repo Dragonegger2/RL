@@ -4,15 +4,17 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sad.function.command.MoveLeft;
 import com.sad.function.components.*;
 import com.sad.function.global.Global;
-import com.sad.function.input.InputContainer;
-import com.sad.function.input.InputManager;
+import com.sad.function.input.InputActionType;
+import com.sad.function.input.KeyboardManager;
 import com.sad.function.screen.BaseScreen;
 import com.sad.function.screen.TestScreen;
+import com.sad.function.system.InputHandlingSystem;
+import com.sad.function.system.PhysicsSystem;
 import com.sad.function.system.RenderSystem;
 
 public class Game extends ApplicationAdapter {
@@ -21,7 +23,8 @@ public class Game extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private BaseScreen currentScreen;
 
-	private InputManager inputManager = new InputManager();
+	private KeyboardManager keyboardManager = new KeyboardManager();
+	private InputHandlingSystem inputHandlingSystem = new InputHandlingSystem();
 
 	@Override
 	public void create () {
@@ -30,24 +33,28 @@ public class Game extends ApplicationAdapter {
 
 		currentScreen = new TestScreen(batch);
 
-		Gdx.input.setInputProcessor(inputManager);
-		Global.activeContextsChain = Global.definedGameContexts.get(0);
+		Gdx.input.setInputProcessor(keyboardManager);
 
 		Entity playerA = new Entity();
 
+		//Register handlers
+		InputHandler playerInputHandler = new InputHandler();
+		    playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft());
+
 		playerA.add(new Texture())
 				.add(new Position())
-				.add(new Velocity());
+				.add(new Velocity())
+                .add(playerInputHandler);
 
 		//Order Matters.
+        engine.addSystem(new InputHandlingSystem());
+		engine.addSystem(new PhysicsSystem());
 		engine.addSystem(new RenderSystem(batch));
 		engine.addEntity(playerA);
 	}
 
 	@Override
 	public void render () {
-		handleInput();
-
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -57,7 +64,8 @@ public class Game extends ApplicationAdapter {
 
 		batch.end();
 
-		inputManager.update();
+		keyboardManager.update();
+		inputHandlingSystem.clearEventQueue();
 	}
 	
 	@Override
@@ -78,23 +86,5 @@ public class Game extends ApplicationAdapter {
 		currentScreen.exit();
 		this.currentScreen = newScreen;
 		currentScreen.enter();
-	}
-
-	private void handleInput() {
-		InputContainer inputContainer = new InputContainer();
-		inputContainer.keyStates.addAll(inputManager.getKeyboardState());
-
-		//Handle input.
-		//My input manager is the low level collection of keystates. I can add additional controllers for it too.
-		//There is no binding between this low level input, and actual actions/states/ranges etc.
-		if(inputManager.isKeyReleased(Input.Keys.A)) {
-			System.out.println("ACTION TRIGGERED");
-			/*
-			Could dispatch from here?
-
-			inputManager.notify( Action action )
-			 */
-
-		}
 	}
 }
