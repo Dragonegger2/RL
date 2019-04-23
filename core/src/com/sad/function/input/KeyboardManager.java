@@ -2,8 +2,7 @@ package com.sad.function.input;
 
 import com.badlogic.gdx.InputProcessor;
 import com.sad.function.common.Subject;
-import com.sad.function.input.events.InputEvent;
-import com.sad.function.input.events.KeyInputEvent;
+import com.sad.function.event.KeyInputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +10,8 @@ import java.util.List;
 /**
  * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle these events.
  */
-public class KeyboardManager extends Subject<List<InputEvent>> implements InputProcessor {
+public class KeyboardManager implements InputProcessor, Subject {
     private List<KeyState> keyStates = new ArrayList<>();
-
-    private List<InputEvent> keyInputEvents = new ArrayList<>();
 
     public KeyboardManager() {
         for (int i = 0; i < 256; i++) {
@@ -24,11 +21,9 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
 
     @Override
     public boolean keyDown(int keycode) {
-        //fire a key pressed.
         keyStates.get(keycode).pressed = true;
         keyStates.get(keycode).down = true;
 
-        keyInputEvents.add(new KeyInputEvent().setValue(1).setId(keycode));
         return false;
     }
 
@@ -36,9 +31,6 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
     public boolean keyUp(int keycode) {
         keyStates.get(keycode).down = false;
         keyStates.get(keycode).released = true;
-
-        //Push a new released event.
-        keyInputEvents.add(new KeyInputEvent().setValue(0).setId(keycode));
 
         return false;
     }
@@ -49,12 +41,14 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
      */
     public void dispatch(float delta) {
         for(KeyState keyState : keyStates) {
-            if(keyState.down) {
-                keyInputEvents.add(new KeyInputEvent().setValue(0).setId(keyState.key));
+            if(keyState.pressed || keyState.down ) {
+                getObservers().forEach(observer -> observer.onNotify(new KeyInputEvent().setValue(1).setId(keyState.key)));
+            }
+            if(keyState.released) {
+                getObservers().forEach(observer -> observer.onNotify(new KeyInputEvent().setValue(0).setId(keyState.key)));
+
             }
         }
-
-        getObservers().forEach(listObserver -> listObserver.onNotify(keyInputEvents));
     }
 
     @Override
@@ -97,8 +91,6 @@ public class KeyboardManager extends Subject<List<InputEvent>> implements InputP
             k.pressed = false;
             k.released = false;
         }
-
-        keyInputEvents.clear();
     }
 
     class InputState {

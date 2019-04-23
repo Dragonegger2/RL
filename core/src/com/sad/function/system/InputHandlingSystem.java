@@ -7,16 +7,18 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Input;
 import com.sad.function.common.Observer;
 import com.sad.function.components.InputHandler;
-import com.sad.function.input.events.InputEvent;
+import com.sad.function.event.Event;
+import com.sad.function.event.EventType;
+import com.sad.function.event.InputEvent;
 
 import java.util.*;
 
-public class InputHandlingSystem extends IteratingSystem implements Observer<List<InputEvent>> {
+public class InputHandlingSystem extends IteratingSystem implements Observer {
     private final ComponentMapper<InputHandler> inputHandler = ComponentMapper.getFor(InputHandler.class);
 
     private Queue<InputEvent> inputInputEventQueue = new LinkedList<>();
 
-    //Stand-in for a context map. id value, action name.
+    //Stand-in for a context map. id value, action type.
     public HashMap<String, String> values = new HashMap<>();
 
     public InputHandlingSystem() {
@@ -46,8 +48,10 @@ public class InputHandlingSystem extends IteratingSystem implements Observer<Lis
     }
 
     @Override
-    public void onNotify(List<InputEvent> inputEvent) {
-        inputInputEventQueue.addAll(inputEvent);
+    public void onNotify(Event event) {
+        if(event.getEventType() == EventType.INPUT) {
+            inputInputEventQueue.add((InputEvent)event);
+        }
     }
 
     /**

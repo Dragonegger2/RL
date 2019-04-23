@@ -1,11 +1,7 @@
-package com.sad.function.input.events;
+package com.sad.function.event;
 
 
 public class KeyInputEvent extends InputEvent {
-
-    public KeyInputEvent() {
-        name = "KEYBOARD_INPUT_EVENT";
-    }
 
     public KeyInputEvent setValue(float value) {
         this.value = value;
@@ -38,6 +34,6 @@ public class KeyInputEvent extends InputEvent {
 
     @Override
     public int hashCode() {
-        return (int) (id * name.hashCode() * value);
+        return (int) (id * type.hashCode() * value);
     }
 }

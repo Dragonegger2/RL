@@ -26,8 +26,18 @@ public class PhysicsSystem extends IteratingSystem {
         Position position = this.position.get(entity);
         Velocity velocity = this.velocity.get(entity);
 
+        //Drag coefficient of the surface we're in contact with.
+        float k = 0;
+        //Mass of the object in question.
+        float m = 100;
+
+        //Apply Drag.
+        //velocity.xVelocity = (float) (velocity.xVelocity - k * velocity.xVelocity - m * Math.pow(velocity.xVelocity, 2));
+
+
         //Need to do loading of resources.
         position.x += velocity.xVelocity;
         position.y += velocity.yVelocity;
+
     }
 }

@@ -2,21 +2,18 @@ package com.sad.function.common;
 
 import java.util.ArrayList;
 
-public abstract class Subject<T> {
-    private ArrayList<Observer<T>> observers = new ArrayList<>();
-    private int numberOfObservers;
+public interface Subject {
+    ArrayList<Observer> observers = new ArrayList<>();
 
-    public void addObserver(Observer<T> observer) {
+    default void addObserver(Observer observer) {
         observers.add(observer);
-        numberOfObservers++;
     }
 
-    public void removeObserver(Observer<T> observer) {
+    default void removeObserver(Observer observer) {
         observers.remove(observer);
-        numberOfObservers--;
     }
 
-    public ArrayList<Observer<T>> getObservers() {
+    default ArrayList<Observer> getObservers() {
         return observers;
     }
 }

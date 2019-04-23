@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.command.MoveLeft;
+import com.sad.function.command.MoveRight;
 import com.sad.function.command.QuitGame;
 import com.sad.function.components.*;
 import com.sad.function.global.Global;
@@ -41,14 +42,23 @@ public class Game extends ApplicationAdapter {
 		//Register handlers
 		InputHandler playerInputHandler = new InputHandler();
 
-		//Update handlers with a name, action type, and GameCommand.
-		playerInputHandler.associateAction("MOVE_LEFT", InputActionType.ON_RELEASE_ONLY, new MoveLeft(10f));
+		float xVelocity = 100f;
+		//Update handlers with a type, action type, and GameCommand.
+		playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft(xVelocity));
+		playerInputHandler.associateAction("MOVE_RIGHT", InputActionType.REPEAT_WHILE_DOWN, new MoveRight(xVelocity));
 		playerInputHandler.associateAction("QUIT", InputActionType.ON_PRESS_ONLY, new QuitGame());
 
-		//Bind keys/buttons/etc with an action name. RAW->ACTION_NAME
+		/*
+		THESE THINGS SHOULD BE MOVED SOMEWHERE ELSE.
+		Bind keys/buttons/etc with an action type. RAW->ACTION_NAME
+		 */
+		//
 		//TODO: Convert this to an active context system like before.
-		inputHandlingSystem.values.put("LEFT", "MOVE_LEFT");
-		inputHandlingSystem.values.put("ESCAPE", "QUIT");
+		//    							KEY_NAME, ACTION_NAME
+		inputHandlingSystem.values.put("Left", "MOVE_LEFT");
+		inputHandlingSystem.values.put("Right", "MOVE_RIGHT");
+		inputHandlingSystem.values.put("Escape", "QUIT");
+
 
 		//Register the input device with the inputHandlingSystem
 		keyboardManager.addObserver(inputHandlingSystem);
