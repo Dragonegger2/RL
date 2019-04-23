@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Input;
 import com.sad.function.common.Observer;
+import com.sad.function.common.Subject;
 import com.sad.function.components.InputHandler;
 import com.sad.function.event.Event;
 import com.sad.function.event.EventType;
@@ -13,7 +14,7 @@ import com.sad.function.event.InputEvent;
 
 import java.util.*;
 
-public class InputHandlingSystem extends IteratingSystem implements Observer {
+public class InputHandlingSystem extends IteratingSystem implements Observer, Subject {
     private final ComponentMapper<InputHandler> inputHandler = ComponentMapper.getFor(InputHandler.class);
 
     private Queue<InputEvent> inputInputEventQueue = new LinkedList<>();
@@ -59,7 +60,9 @@ public class InputHandlingSystem extends IteratingSystem implements Observer {
      * that aren't registered.
      */
     public void clearEventQueue() {
-        //TODO: Have this inherit from Subject<Event>, dispatch clear events to all registered input devices.
         inputInputEventQueue.clear();
+
+        //Clear all registered devices event queues.
+        observers.forEach(device -> device.onNotify(new Event(EventType.CLEAR_INPUT_QUEUE)));
     }
 }

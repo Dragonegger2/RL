@@ -1,6 +1,6 @@
 package com.sad.function.event;
 
-public abstract class Event {
+public class Event {
     protected EventType type;
 
     public Event(EventType type) { this.type = type; }

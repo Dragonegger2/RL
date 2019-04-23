@@ -4,12 +4,9 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sad.function.command.MoveLeft;
-import com.sad.function.command.MoveRight;
-import com.sad.function.command.QuitGame;
+import com.sad.function.command.*;
 import com.sad.function.components.*;
 import com.sad.function.global.Global;
 import com.sad.function.input.InputActionType;
@@ -39,13 +36,19 @@ public class Game extends ApplicationAdapter {
 
 		Entity playerA = new Entity();
 
+
 		//Register handlers
 		InputHandler playerInputHandler = new InputHandler();
 
-		float xVelocity = 100f;
+		//Register managed devices.
+		inputHandlingSystem.addObserver(keyboardManager);
+
+		float velocity = 100f;
 		//Update handlers with a type, action type, and GameCommand.
-		playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft(xVelocity));
-		playerInputHandler.associateAction("MOVE_RIGHT", InputActionType.REPEAT_WHILE_DOWN, new MoveRight(xVelocity));
+		playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft(velocity));
+		playerInputHandler.associateAction("MOVE_RIGHT", InputActionType.REPEAT_WHILE_DOWN, new MoveRight(velocity));
+		playerInputHandler.associateAction("MOVE_UP", InputActionType.REPEAT_WHILE_DOWN, new MoveUp(velocity));
+		playerInputHandler.associateAction("MOVE_DOWN", InputActionType.REPEAT_WHILE_DOWN, new MoveDown(velocity));
 		playerInputHandler.associateAction("QUIT", InputActionType.ON_PRESS_ONLY, new QuitGame());
 
 		/*
@@ -89,7 +92,6 @@ public class Game extends ApplicationAdapter {
 		batch.end();
 
 		//Clear out the input devices.
-		keyboardManager.update();
 		inputHandlingSystem.clearEventQueue();
 	}
 	

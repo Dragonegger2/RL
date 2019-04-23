@@ -1,7 +1,10 @@
 package com.sad.function.input;
 
 import com.badlogic.gdx.InputProcessor;
+import com.sad.function.common.Observer;
 import com.sad.function.common.Subject;
+import com.sad.function.event.Event;
+import com.sad.function.event.EventType;
 import com.sad.function.event.KeyInputEvent;
 
 import java.util.ArrayList;
@@ -10,7 +13,7 @@ import java.util.List;
 /**
  * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle these events.
  */
-public class KeyboardManager implements InputProcessor, Subject {
+public class KeyboardManager implements InputProcessor, Subject, Observer {
     private List<KeyState> keyStates = new ArrayList<>();
 
     public KeyboardManager() {
@@ -85,11 +88,18 @@ public class KeyboardManager implements InputProcessor, Subject {
      * Our reset method. A good place to actually store/dispatch a list of KeyStates for later reference. We're only
      * focusing on the current frame.
      */
-    public void update() {
+    private void clearEventQueue() {
         for (int i = 0; i < 256; i++) {
             KeyState k = keyStates.get(i);
             k.pressed = false;
             k.released = false;
+        }
+    }
+
+    @Override
+    public void onNotify(Event event) {
+        if(event.getEventType() == EventType.CLEAR_INPUT_QUEUE) {
+            clearEventQueue();
         }
     }
 

@@ -24,6 +24,8 @@ public class InputHandler implements Component {
 
     That way on l
      */
+
+
     public InputHandler() {
         actionNames = new LinkedHashSet<>();
         commandList = new ArrayList<>();
