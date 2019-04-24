@@ -1,11 +1,16 @@
 package com.sad.function.command;
 
 import com.badlogic.ashley.core.Entity;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.sad.function.components.Position;
 
+@JsonRootName("move-left")
 public class MoveLeft implements GameCommand {
+    @JsonProperty("x")
     private float xVelocity;
 
+    public MoveLeft() { }
     public MoveLeft(float xVelocity) {
         this.xVelocity = xVelocity;
     }

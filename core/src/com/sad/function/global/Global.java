@@ -1,6 +1,7 @@
 package com.sad.function.global;
 
 import com.badlogic.ashley.core.Entity;
+import com.sad.function.input.devices.DeviceManager;
 
 public class Global {
     /**
@@ -8,6 +9,8 @@ public class Global {
      */
     public static Textures textures = new Textures();
 
-    public Entity globalEntity = new Entity();
+    public static Entity globalEntity = new Entity();
+
+    public static DeviceManager deviceManager = new DeviceManager();
 }
 

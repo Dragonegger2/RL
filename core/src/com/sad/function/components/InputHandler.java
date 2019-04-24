@@ -3,6 +3,7 @@ package com.sad.function.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.sad.function.command.GameCommand;
+import com.sad.function.global.Global;
 import com.sad.function.input.InputActionType;
 import com.sad.function.event.InputEvent;
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +12,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.UUID;
 
 public class InputHandler implements Component {
+    private UUID deviceId;
+    private UUID componentId;
+
     private static Logger logger = LogManager.getLogger(InputHandler.class);
 
     private LinkedHashSet<String> actionNames;
@@ -30,6 +35,8 @@ public class InputHandler implements Component {
         actionNames = new LinkedHashSet<>();
         commandList = new ArrayList<>();
         actionTypeList = new ArrayList<>();
+
+        componentId = UUID.randomUUID();
     }
 
     /**
@@ -93,4 +100,13 @@ public class InputHandler implements Component {
 
         return inputActionType == InputActionType.ON_PRESS_AND_RELEASE && event.getValue() == 0;
     }
+
+    public UUID getDeviceId() {
+        return deviceId;
+    }
+    public void setDeviceId(UUID deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public UUID getComponentId() { return componentId; }
 }

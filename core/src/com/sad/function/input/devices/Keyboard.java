@@ -1,25 +1,28 @@
-package com.sad.function.input;
+package com.sad.function.input.devices;
 
 import com.badlogic.gdx.InputProcessor;
-import com.sad.function.common.Observer;
-import com.sad.function.common.Subject;
 import com.sad.function.event.Event;
-import com.sad.function.event.EventType;
 import com.sad.function.event.KeyInputEvent;
+import com.sad.function.input.KeyState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle these events.
  */
-public class KeyboardManager implements InputProcessor, Subject, Observer {
+public class Keyboard implements InputProcessor, IDevice {
+    private UUID deviceId;
+
     private List<KeyState> keyStates = new ArrayList<>();
 
-    public KeyboardManager() {
+    public Keyboard() {
         for (int i = 0; i < 256; i++) {
             keyStates.add(new KeyState(i));
         }
+
+        deviceId = UUID.randomUUID();
     }
 
     @Override
@@ -36,22 +39,6 @@ public class KeyboardManager implements InputProcessor, Subject, Observer {
         keyStates.get(keycode).released = true;
 
         return false;
-    }
-
-    /**
-     * Push all down events into the key event queue and then onto the observers registered to this object.
-     * @param delta
-     */
-    public void dispatch(float delta) {
-        for(KeyState keyState : keyStates) {
-            if(keyState.pressed || keyState.down ) {
-                getObservers().forEach(observer -> observer.onNotify(new KeyInputEvent().setValue(1).setId(keyState.key)));
-            }
-            if(keyState.released) {
-                getObservers().forEach(observer -> observer.onNotify(new KeyInputEvent().setValue(0).setId(keyState.key)));
-
-            }
-        }
     }
 
     @Override
@@ -84,11 +71,39 @@ public class KeyboardManager implements InputProcessor, Subject, Observer {
         return false;
     }
 
+    @Override
+    public List<Event> pollDevice() {
+        List<Event> eventList = new ArrayList<>();
+
+        for (KeyState keyState : keyStates) {
+            if (keyState.pressed || keyState.down) {
+                //TODO: Fix the bug that currently exists in the the values. We can't actually check pressed vs. constantly down. Need to add a field for relative/absolute.
+                eventList.add(new KeyInputEvent().setValue(1).setId(keyState.key));
+            }
+            if (keyState.released) {
+                eventList.add(new KeyInputEvent().setValue(0).setId(keyState.key));
+            }
+        }
+
+        return eventList;
+    }
+
+    @Override
+    public void updateDeviceId(UUID id) {
+        this.deviceId = id;
+    }
+
+    @Override
+    public UUID getDeviceId() {
+        return deviceId;
+    }
+
     /**
      * Our reset method. A good place to actually store/dispatch a list of KeyStates for later reference. We're only
      * focusing on the current frame.
      */
-    private void clearEventQueue() {
+    @Override
+    public void clear() {
         for (int i = 0; i < 256; i++) {
             KeyState k = keyStates.get(i);
             k.pressed = false;
@@ -96,24 +111,6 @@ public class KeyboardManager implements InputProcessor, Subject, Observer {
         }
     }
 
-    @Override
-    public void onNotify(Event event) {
-        if(event.getEventType() == EventType.CLEAR_INPUT_QUEUE) {
-            clearEventQueue();
-        }
-    }
 
-    class InputState {
-        boolean pressed = false;
-        boolean down = false;
-        boolean released = false;
-    }
 
-    public class KeyState extends InputState {
-        public int key;
-
-        KeyState(int key) {
-            this.key = key;
-        }
-    }
 }
