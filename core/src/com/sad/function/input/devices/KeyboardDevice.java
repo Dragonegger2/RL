@@ -1,9 +1,10 @@
 package com.sad.function.input.devices;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.sad.function.event.Event;
-import com.sad.function.event.KeyInputEvent;
-import com.sad.function.input.KeyState;
+import com.sad.function.event.input.KeyInputEvent;
+import com.sad.function.input.states.KeyState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +13,19 @@ import java.util.UUID;
 /**
  * Represents a keyboard. Will fire events at it's listeners. It's up to them to handle these events.
  */
-public class Keyboard implements InputProcessor, IDevice {
+public class KeyboardDevice implements InputProcessor, IDevice {
     private UUID deviceId;
 
     private List<KeyState> keyStates = new ArrayList<>();
 
-    public Keyboard() {
+    public KeyboardDevice() {
         for (int i = 0; i < 256; i++) {
             keyStates.add(new KeyState(i));
         }
 
         deviceId = UUID.randomUUID();
+
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override

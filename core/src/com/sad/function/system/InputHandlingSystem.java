@@ -8,7 +8,7 @@ import com.badlogic.gdx.Input;
 import com.sad.function.components.InputHandler;
 import com.sad.function.event.Event;
 import com.sad.function.event.EventType;
-import com.sad.function.event.InputEvent;
+import com.sad.function.event.input.InputEvent;
 import com.sad.function.global.Global;
 import com.sad.function.input.context.InputContext;
 import org.apache.logging.log4j.LogManager;

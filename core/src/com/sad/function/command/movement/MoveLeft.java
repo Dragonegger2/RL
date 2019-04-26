@@ -1,4 +1,4 @@
-package com.sad.function.command;
+package com.sad.function.command.movement;
 
 import com.badlogic.ashley.core.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -2,10 +2,15 @@ package com.sad.function.game;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sad.function.event.device.DeviceConnected;
+import com.sad.function.event.EventType;
 import com.sad.function.global.Global;
-import com.sad.function.input.devices.Keyboard;
+import com.sad.function.input.devices.ControllerDevice;
+import com.sad.function.input.devices.KeyboardDevice;
 import com.sad.function.screen.TestScreen;
 import com.sad.function.system.InputHandlingSystem;
 
@@ -18,6 +23,19 @@ public class Game extends BaseGame {
 	public void create () {
 		engine = new Engine();
         batch = new SpriteBatch();
+
+        //Register device manager with the global queue.
+		Global.eventQueue.addListenerByEvent(EventType.NEW_DEVICE_CONNECTED, Global.deviceManager);
+		Global.eventQueue.addListenerByEvent(EventType.DEVICE_DISCONNECTED, Global.deviceManager);
+
+		for(Controller controller : Controllers.getControllers()) {
+			controller.addListener(new ControllerDevice());
+		}
+
+		//TODO: Add polling here for controllers.
+
+        //Register keyboard with the device manager.
+		Global.eventQueue.onNotify(new DeviceConnected().setDevice(new KeyboardDevice()));
 
 		pushScreen(new TestScreen(engine, inputHandlingSystem, batch));
 	}

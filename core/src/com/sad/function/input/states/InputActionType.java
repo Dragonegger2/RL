@@ -1,4 +1,4 @@
-package com.sad.function.input;
+package com.sad.function.input.states;
 
 public enum InputActionType {
     REPEAT_WHILE_DOWN,           //Value of 1

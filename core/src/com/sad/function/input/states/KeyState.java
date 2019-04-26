@@ -1,4 +1,4 @@
-package com.sad.function.input;
+package com.sad.function.input.states;
 
 public class KeyState extends InputState {
     public int key;

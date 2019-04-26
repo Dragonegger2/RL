@@ -1,18 +1,17 @@
 package com.sad.function.input.devices;
 
-import com.badlogic.gdx.Gdx;
+import com.sad.function.common.Observer;
 import com.sad.function.common.Subject;
 import com.sad.function.components.InputHandler;
+import com.sad.function.event.device.DeviceConnected;
 import com.sad.function.event.Event;
+import com.sad.function.event.EventType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-/**
- *
- */
-public class DeviceManager implements Subject {
+public class DeviceManager implements Observer, Subject {
     private static final Logger logger = LogManager.getLogger(DeviceManager.class);
 
     private HashMap<UUID, IDevice> registeredDevices;
@@ -22,13 +21,6 @@ public class DeviceManager implements Subject {
         //Register a keyboard manager.
         registeredDevices = new HashMap<>();
         registeredInputHandlers = new HashMap<>();
-
-        Keyboard keyboard = new Keyboard();
-
-        registerDevice(keyboard.getDeviceId(), keyboard);
-
-        //Register the keyboard to gdx's input structure.
-        Gdx.input.setInputProcessor(keyboard);
     }
 
     /**
@@ -91,11 +83,40 @@ public class DeviceManager implements Subject {
     }
 
     /**
+     * Collects a list of devices that have input handlers.
+     * @return the list of device that have input handlers.
+     */
+    public List<UUID> inUseDevices() {
+        List<UUID> inUseDevices = new ArrayList<>();
+
+        for(UUID id : registeredDevices.keySet()) {
+            if(registeredInputHandlers.containsKey(id)) {
+                inUseDevices.add(id);
+            }
+        }
+
+        return inUseDevices;
+    }
+
+    /**
      * Clear out any potential state changes on the devices. IE. pressed, released, etc.
      */
     public void clearDeviceQueues() {
         for(UUID key: registeredDevices.keySet()) {
             registeredDevices.get(key).clear();
+        }
+    }
+
+    @Override
+    public void onNotify(Event event) {
+        if(event.getEventType() == EventType.NEW_DEVICE_CONNECTED) {
+            DeviceConnected deviceConnected = (DeviceConnected)event;
+            this.registerDevice(deviceConnected.getDevice().getDeviceId(), deviceConnected.getDevice());
+            logger.info("NEW DEVICE CONNECTED. {}", deviceConnected);
+        }
+
+        if(event.getEventType() == EventType.DEVICE_DISCONNECTED) {
+            logger.info("DEVICE DISCONNECTED. {}", event);
         }
     }
 }

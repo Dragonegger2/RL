@@ -3,9 +3,8 @@ package com.sad.function.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.sad.function.command.GameCommand;
-import com.sad.function.global.Global;
-import com.sad.function.input.InputActionType;
-import com.sad.function.event.InputEvent;
+import com.sad.function.input.states.InputActionType;
+import com.sad.function.event.input.InputEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

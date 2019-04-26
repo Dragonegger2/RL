@@ -1,4 +1,4 @@
-package com.sad.function.event;
+package com.sad.function.event.input;
 
 
 public class KeyInputEvent extends InputEvent {

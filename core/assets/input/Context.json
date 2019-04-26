@@ -1,0 +1,23 @@
+[
+  {
+    "name" : "TEST",
+    "actions": [
+      {
+        "name" : "MOVE_LEFT",
+        "keyboard" : ["Left"]
+      },
+      {
+        "name" : "MOVE_RIGHT",
+        "Keyboard" : ["Right"]
+      },
+      {
+        "name" : "MOVE_UP",
+        "keyboard" : ["Up"]
+      },
+      {
+        "name" : "MOVE_DOWN",
+        "keyboard" : ["Down"]
+      }
+    ]
+  }
+]
