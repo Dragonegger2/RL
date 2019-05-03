@@ -10,7 +10,7 @@ import com.sad.function.command.movement.MoveRight;
 import com.sad.function.command.movement.MoveUp;
 import com.sad.function.components.InputHandler;
 import com.sad.function.components.Position;
-import com.sad.function.components.Texture;
+import com.sad.function.components.TextureComponent;
 import com.sad.function.components.Velocity;
 import com.sad.function.global.Global;
 import com.sad.function.input.states.InputActionType;
@@ -18,6 +18,7 @@ import com.sad.function.input.context.InputContext;
 import com.sad.function.system.InputHandlingSystem;
 import com.sad.function.system.RenderSystem;
 
+@SuppressWarnings("ALL")
 public class TestScreen extends BaseScreen {
 
     public TestScreen(Engine engine, InputHandlingSystem inputHandlingSystem, SpriteBatch batch) {
@@ -30,7 +31,7 @@ public class TestScreen extends BaseScreen {
         InputHandler playerInputHandler = new InputHandler();
 
         //LOAD IN GAME STATE STUFFS
-        Entity playerA = new Entity().add(new Texture())
+        Entity playerA = new Entity().add(new TextureComponent())
                 .add(new Position())
                 .add(new Velocity())
                 .add(playerInputHandler);

@@ -1,14 +1,16 @@
 package com.sad.function.command.movement;
 
 import com.badlogic.ashley.core.Entity;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.sad.function.command.GameCommand;
 import com.sad.function.components.Position;
 
-public class MoveDown implements GameCommand {
-    private float yVelocity;
+public class MoveHorizontally implements GameCommand {
+    private float xVelocity;
 
-    public MoveDown(float yVelocity) {
-        this.yVelocity = yVelocity;
+    public MoveHorizontally(float xVelocity) {
+        this.xVelocity = xVelocity;
     }
 
     @Override
@@ -16,7 +18,7 @@ public class MoveDown implements GameCommand {
         Velocity velocity = entity.getComponent(Velocity.class);
 
         if(velocity != null) {
-           velocity.yVelocity += yVelocity;
+            velocity.xVelocity += xVelocity * delta;
         }
     }
 }

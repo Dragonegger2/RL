@@ -3,6 +3,7 @@ package com.sad.function.command.movement;
 import com.badlogic.ashley.core.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.sad.function.command.GameCommand;
 import com.sad.function.components.Position;
 
 @JsonRootName("move-left")

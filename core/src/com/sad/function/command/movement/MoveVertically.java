@@ -4,10 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.sad.function.command.GameCommand;
 import com.sad.function.components.Position;
 
-public class MoveDown implements GameCommand {
+public class MoveVertically implements GameCommand {
     private float yVelocity;
 
-    public MoveDown(float yVelocity) {
+    public MoveVertically(float yVelocity) {
         this.yVelocity = yVelocity;
     }
 
@@ -16,7 +16,7 @@ public class MoveDown implements GameCommand {
         Velocity velocity = entity.getComponent(Velocity.class);
 
         if(velocity != null) {
-           velocity.yVelocity += yVelocity;
+            velocity.yVelocity += yVelocity * delta;
         }
     }
 }

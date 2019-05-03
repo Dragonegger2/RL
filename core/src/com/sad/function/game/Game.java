@@ -12,6 +12,7 @@ import com.sad.function.global.Global;
 import com.sad.function.input.devices.ControllerDevice;
 import com.sad.function.input.devices.KeyboardDevice;
 import com.sad.function.screen.TestScreen;
+import com.sad.function.screen.WorldScreen;
 import com.sad.function.system.InputHandlingSystem;
 
 public class Game extends BaseGame {
@@ -28,16 +29,15 @@ public class Game extends BaseGame {
 		Global.eventQueue.addListenerByEvent(EventType.NEW_DEVICE_CONNECTED, Global.deviceManager);
 		Global.eventQueue.addListenerByEvent(EventType.DEVICE_DISCONNECTED, Global.deviceManager);
 
+		//TODO: Add polling here for controllers.
 		for(Controller controller : Controllers.getControllers()) {
 			controller.addListener(new ControllerDevice());
 		}
 
-		//TODO: Add polling here for controllers.
-
         //Register keyboard with the device manager.
 		Global.eventQueue.onNotify(new DeviceConnected().setDevice(new KeyboardDevice()));
 
-		pushScreen(new TestScreen(engine, inputHandlingSystem, batch));
+		pushScreen(new WorldScreen(engine, inputHandlingSystem, batch));
 	}
 
 	@Override

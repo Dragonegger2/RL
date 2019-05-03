@@ -4,14 +4,8 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.ashley.systems.SortedIteratingSystem;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.components.Position;
-import com.sad.function.components.Texture;
 import com.sad.function.components.Velocity;
-import com.sad.function.global.Global;
-
-import java.util.Comparator;
 
 public class PhysicsSystem extends IteratingSystem {
     private final ComponentMapper<Position> position = ComponentMapper.getFor(Position.class);
