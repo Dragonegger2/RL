@@ -8,14 +8,13 @@ import com.sad.function.World;
 import com.sad.function.WorldGenerator;
 import com.sad.function.command.QuitGame;
 import com.sad.function.command.movement.*;
-import com.sad.function.components.InputHandler;
-import com.sad.function.components.Position;
-import com.sad.function.components.TextureComponent;
+import com.sad.function.components.*;
 import com.sad.function.components.Velocity;
 import com.sad.function.global.Global;
 import com.sad.function.input.context.InputContext;
 import com.sad.function.input.states.InputActionType;
 import com.sad.function.system.InputHandlingSystem;
+import com.sad.function.system.PhysicsSystem;
 import com.sad.function.system.RenderSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,9 +46,11 @@ public class WorldScreen extends BaseScreen {
         InputHandler playerInputHandler = new InputHandler();
 
         //LOAD IN GAME STATE STUFFS
-        Entity playerA = new Entity().add(new TextureComponent())
+        Entity playerA = new Entity()
+                .add(new TextureComponent())
                 .add(new Velocity())
                 .add(new Position().setZ(1))
+                .add(new Physics())
                 .add(playerInputHandler);
 
         float velocity = 100f;
@@ -76,8 +77,8 @@ public class WorldScreen extends BaseScreen {
 
         //Register systems
         engine.addSystem(inputHandlingSystem);
+        engine.addSystem(new PhysicsSystem());
         engine.addSystem(new RenderSystem(batch));
-
         engine.addEntity(playerA);
     }
 
