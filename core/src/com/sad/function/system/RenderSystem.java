@@ -29,7 +29,11 @@ public class RenderSystem extends SortedIteratingSystem {
 
         //Need to do loading of resources.
         if(batch.isDrawing()) {
-            batch.draw(textureComponent.getTexture(), position.x, position.y);
+            batch.draw(textureComponent.texture,
+                    position.x,
+                    position.y,
+                    textureComponent.width,
+                    textureComponent.height);
         }
     }
 

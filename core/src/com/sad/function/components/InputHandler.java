@@ -23,13 +23,6 @@ public class InputHandler implements Component {
     private ArrayList<GameCommand> commandList;
     private ArrayList<InputActionType> actionTypeList;
 
-    /*
-    Input Device -> Input Device Registration -> InputHandler
-
-    That way on l
-     */
-
-
     public InputHandler() {
         actionNames = new LinkedHashSet<>();
         commandList = new ArrayList<>();

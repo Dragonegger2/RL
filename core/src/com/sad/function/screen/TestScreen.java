@@ -4,10 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.command.*;
-import com.sad.function.command.movement.MoveDown;
-import com.sad.function.command.movement.MoveLeft;
-import com.sad.function.command.movement.MoveRight;
-import com.sad.function.command.movement.MoveUp;
 import com.sad.function.components.InputHandler;
 import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
@@ -39,10 +35,10 @@ public class TestScreen extends BaseScreen {
 
         float velocity = 100f;
         //Update handlers with a type, action type, and GameCommand.
-        playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft(velocity));
-        playerInputHandler.associateAction("MOVE_RIGHT", InputActionType.REPEAT_WHILE_DOWN, new MoveRight(velocity));
-        playerInputHandler.associateAction("MOVE_UP", InputActionType.REPEAT_WHILE_DOWN, new MoveUp(velocity));
-        playerInputHandler.associateAction("MOVE_DOWN", InputActionType.REPEAT_WHILE_DOWN, new MoveDown(velocity));
+//        playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveLeft(velocity));
+//        playerInputHandler.associateAction("MOVE_RIGHT", InputActionType.REPEAT_WHILE_DOWN, new MoveRight(velocity));
+//        playerInputHandler.associateAction("MOVE_UP", InputActionType.REPEAT_WHILE_DOWN, new MoveUp(velocity));
+//        playerInputHandler.associateAction("MOVE_DOWN", InputActionType.REPEAT_WHILE_DOWN, new MoveDown(velocity));
         playerInputHandler.associateAction("QUIT", InputActionType.ON_PRESS_ONLY, new QuitGame());
 
         InputContext testContext = new InputContext("TEST_CONTEXT");

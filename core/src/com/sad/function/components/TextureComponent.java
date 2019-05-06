@@ -9,20 +9,35 @@ import com.sad.function.global.Global;
  */
 public class TextureComponent implements Component {
 
+    public Texture texture;
     public String internalPath;
+    public int width;
+    public int height;
 
     /**
      * Default constructor means default images.
      */
     public TextureComponent() {
         internalPath = "badlogic.jpg";
+        texture = Global.textures.get(internalPath);
+        width = 256;
+        height = 256;
     }
 
     public TextureComponent(String path) {
         internalPath = path;
+        texture = Global.textures.get(internalPath);
+        height = texture.getHeight();
+        width = texture.getWidth();
     }
 
-    public Texture getTexture() {
-        return Global.textures.get(internalPath);
+    public TextureComponent setHeight(int height) {
+        this.height = height;
+        return this;
+    }
+
+    public TextureComponent setWidth(int width) {
+        this.width = width;
+        return this;
     }
 }

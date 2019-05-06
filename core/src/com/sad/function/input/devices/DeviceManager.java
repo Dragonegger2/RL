@@ -55,6 +55,7 @@ public class DeviceManager implements Observer, Subject {
         }
 
     }
+
     /**
      * Fetch the underlying device.
      * @param id of the registered device.

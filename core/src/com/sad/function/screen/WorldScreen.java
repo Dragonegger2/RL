@@ -47,13 +47,13 @@ public class WorldScreen extends BaseScreen {
 
         //LOAD IN GAME STATE STUFFS
         Entity playerA = new Entity()
-                .add(new TextureComponent())
+                .add(new TextureComponent().setHeight(32).setWidth(32))
                 .add(new Velocity())
                 .add(new Position().setZ(1))
                 .add(new Physics())
                 .add(playerInputHandler);
 
-        float velocity = 100f;
+        float velocity = 10f;
 
         //Update handlers with a type, action type, and GameCommand.
         playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveHorizontally(-velocity));
@@ -79,6 +79,7 @@ public class WorldScreen extends BaseScreen {
         engine.addSystem(inputHandlingSystem);
         engine.addSystem(new PhysicsSystem());
         engine.addSystem(new RenderSystem(batch));
+
         engine.addEntity(playerA);
     }
 
@@ -93,6 +94,7 @@ public class WorldScreen extends BaseScreen {
 
         logger.info("Finished creating {} tile entities.", worldGenerator.getWorldHeight() * worldGenerator.getWorldWidth());
     }
+
     @Override
     public void enter() {
 
