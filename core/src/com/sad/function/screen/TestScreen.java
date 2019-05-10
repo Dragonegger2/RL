@@ -2,12 +2,13 @@ package com.sad.function.screen;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.command.*;
 import com.sad.function.components.InputHandler;
 import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
-import com.sad.function.components.Velocity;
+import com.sad.function.components.VelocityComponent;
 import com.sad.function.global.Global;
 import com.sad.function.input.states.InputActionType;
 import com.sad.function.input.context.InputContext;
@@ -29,7 +30,7 @@ public class TestScreen extends BaseScreen {
         //LOAD IN GAME STATE STUFFS
         Entity playerA = new Entity().add(new TextureComponent())
                 .add(new Position())
-                .add(new Velocity())
+                .add(new VelocityComponent())
                 .add(playerInputHandler);
 
 
@@ -68,5 +69,10 @@ public class TestScreen extends BaseScreen {
     @Override
     public void exit() {
 
+    }
+
+    @Override
+    public Camera getCamera() {
+        return null;
     }
 }

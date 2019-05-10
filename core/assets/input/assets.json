@@ -1,0 +1,46 @@
+{
+  "atlas": [
+    {
+      "file": "packed/hero-male.atlas",
+      "name": "hero-male",
+      "animationSequences": {
+        "hero-male-back-attack": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-side-attack": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-front-attack": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-back-walk": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-side-walk": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-front-walk": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-back-idle": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-side-idle": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        },
+        "hero-male-front-idle": {
+          "playMode": "LOOP",
+          "frameDuration": 0.033
+        }
+      }
+    }
+  ]
+}

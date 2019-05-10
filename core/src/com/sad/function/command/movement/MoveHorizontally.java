@@ -3,32 +3,23 @@ package com.sad.function.command.movement;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.sad.function.command.GameCommand;
-import com.sad.function.components.Velocity;
-
-import static com.badlogic.gdx.math.MathUtils.clamp;
+import com.sad.function.components.VelocityComponent;
 
 public class MoveHorizontally implements GameCommand {
-    private final ComponentMapper<Velocity> velocityMapper = ComponentMapper.getFor(Velocity.class);
+    private final ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
 
-    private float fixedVelocity;
+    private float acceleration;
 
     public MoveHorizontally(float xVelocity) {
-        this.fixedVelocity = xVelocity;
+        this.acceleration = xVelocity;
     }
 
     @Override
     public void execute(Entity entity, float delta) {
-        Velocity velocity = velocityMapper.get(entity);
+        VelocityComponent velocityComponent = velocityMapper.get(entity);
 
-        if(velocity != null) {
-            velocity.x += fixedVelocity * delta;
-
-            float signum = Math.signum(velocity.x);
-
-            velocity.x = Math.abs(velocity.x);
-
-            velocity.x = clamp(velocity.x,0,8);
-            velocity.x *= signum;
+        if(velocityComponent != null) {
+            velocityComponent.x += acceleration * delta;
         }
     }
 }

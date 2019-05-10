@@ -2,20 +2,21 @@ package com.sad.function.screen;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sad.function.Tile;
-import com.sad.function.World;
-import com.sad.function.WorldGenerator;
+import com.sad.function.World.Tile;
+import com.sad.function.World.World;
+import com.sad.function.World.WorldGenerator;
 import com.sad.function.command.QuitGame;
 import com.sad.function.command.movement.*;
 import com.sad.function.components.*;
-import com.sad.function.components.Velocity;
+import com.sad.function.components.VelocityComponent;
 import com.sad.function.global.Global;
 import com.sad.function.input.context.InputContext;
 import com.sad.function.input.states.InputActionType;
-import com.sad.function.system.InputHandlingSystem;
-import com.sad.function.system.PhysicsSystem;
-import com.sad.function.system.RenderSystem;
+import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,10 @@ public class WorldScreen extends BaseScreen {
     private Engine engine;
     private SpriteBatch batch;
     private InputHandlingSystem inputHandlingSystem;
+    private OrthographicCamera camera;
+
+    private int WORLD_HEIGHT = 500*32;
+    private int WORLD_WIDHT = 500*32;
 
     private WorldGenerator worldGenerator = new WorldGenerator(10, 500, 500);
 
@@ -36,6 +41,15 @@ public class WorldScreen extends BaseScreen {
         this.engine = engine;
         this.batch = batch;
         this.inputHandlingSystem = inputHandlingSystem;
+
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+
+        float viewportWidth = 180;
+        camera = new OrthographicCamera(viewportWidth,viewportWidth * (h/w));
+
+        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight/ 2f, 0);
+        camera.update();
 
         initialize();
         worldGenerator.initializeWorld();
@@ -48,12 +62,14 @@ public class WorldScreen extends BaseScreen {
         //LOAD IN GAME STATE STUFFS
         Entity playerA = new Entity()
                 .add(new TextureComponent().setHeight(32).setWidth(32))
-                .add(new Velocity())
+                .add(new VelocityComponent())
                 .add(new Position().setZ(1))
                 .add(new Physics())
+                .add(new FollowMeComponent())
+                .add(new AnimationComponent())
                 .add(playerInputHandler);
 
-        float velocity = 10f;
+        float velocity = 100f;
 
         //Update handlers with a type, action type, and GameCommand.
         playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveHorizontally(-velocity));
@@ -77,7 +93,9 @@ public class WorldScreen extends BaseScreen {
 
         //Register systems
         engine.addSystem(inputHandlingSystem);
+        engine.addSystem(new MovementSystem());
         engine.addSystem(new PhysicsSystem());
+        engine.addSystem(new FollowerPlayerCamera(camera, batch));
         engine.addSystem(new RenderSystem(batch));
 
         engine.addEntity(playerA);
@@ -103,5 +121,10 @@ public class WorldScreen extends BaseScreen {
     @Override
     public void exit() {
 
+    }
+
+    @Override
+    public Camera getCamera() {
+        return camera;
     }
 }
