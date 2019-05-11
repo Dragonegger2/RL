@@ -19,7 +19,7 @@ public class Global {
 
     public static AssetManager assetManager = new AssetManager();
 
-    public static final float MAX_MOVEMENT_SPEED = 40;
-    public static final float MIN_MOVEMENT_SPEED = -40;
+    public static final float MAX_MOVEMENT_SPEED = 80;
+    public static final float MIN_MOVEMENT_SPEED = -80;
 }
 

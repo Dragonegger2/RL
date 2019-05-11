@@ -2,11 +2,13 @@ package com.sad.function.game;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sad.function.screen.BaseScreen;
 
 public class BaseGame extends ApplicationAdapter {
 	protected Engine engine;
-	private BaseScreen currentScreen;
+	protected SpriteBatch batch;
+	protected BaseScreen currentScreen;
 
 	@Override
 	public void create () {
