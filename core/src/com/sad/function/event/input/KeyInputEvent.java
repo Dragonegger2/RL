@@ -2,7 +2,6 @@ package com.sad.function.event.input;
 
 
 public class KeyInputEvent extends InputEvent {
-
     public KeyInputEvent setValue(float value) {
         this.value = value;
         return this;

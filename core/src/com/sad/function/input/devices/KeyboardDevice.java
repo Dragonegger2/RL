@@ -2,8 +2,10 @@ package com.sad.function.input.devices;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.sad.function.InputEventPool;
 import com.sad.function.event.Event;
-import com.sad.function.event.input.KeyInputEvent;
+import com.sad.function.event.input.InputEvent;
+import com.sad.function.global.Global;
 import com.sad.function.input.states.KeyState;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.UUID;
  */
 public class KeyboardDevice implements InputProcessor, IDevice {
     private UUID deviceId;
+    private InputEventPool inputEventPool;
 
     private List<KeyState> keyStates = new ArrayList<>();
 
@@ -24,6 +27,7 @@ public class KeyboardDevice implements InputProcessor, IDevice {
         }
 
         deviceId = UUID.randomUUID();
+        this.inputEventPool = Global.inputEventPool;
 
         Gdx.input.setInputProcessor(this);
     }
@@ -80,11 +84,16 @@ public class KeyboardDevice implements InputProcessor, IDevice {
 
         for (KeyState keyState : keyStates) {
             if (keyState.pressed || keyState.down) {
+                 InputEvent event = inputEventPool.create(keyState.key, 1);
+                 if(event != null) eventList.add(event);
+
                 //TODO: Fix the bug that currently exists in the the values. We can't actually check pressed vs. constantly down. Need to add a field for relative/absolute.
-                eventList.add(new KeyInputEvent().setValue(1).setId(keyState.key));
+//                eventList.add(new KeyInputEvent().setValue(1).setId(keyState.key));
             }
             if (keyState.released) {
-                eventList.add(new KeyInputEvent().setValue(0).setId(keyState.key));
+                InputEvent event = inputEventPool.create(keyState.key, 0);
+                if(event != null) eventList.add(event);
+//                eventList.add(new KeyInputEvent().setValue(0).setId(keyState.key));
             }
         }
 

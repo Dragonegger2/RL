@@ -5,10 +5,11 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector3;
 import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
+import com.sad.function.global.Global;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,25 +29,24 @@ public class RenderSystem implements EntityListener {
 
     private boolean dirty = false;
 
+    //NOTES: Pretty sure that the camera in LibGDX measures from the center, but sprites measure from their lower-left hand corner.
+    private int renderedEntityCounter = 0;
+
     public RenderSystem(Batch batch, OrthographicCamera camera) {
         this.entityList = new ArrayList<>();
         this.batch = batch;
         this.camera = camera;
     }
 
-    private Vector3 calculationVector = new Vector3();
-    private int renderedEntityCounter = 0;
-
     private void processEntity(Entity entity, float deltaTime) {
         Position position = this.position.get(entity);
         TextureComponent textureComponent = this.texture.get(entity);
 
-        //Need to do loading of resources.
-        calculationVector.x = position.x;
-        calculationVector.y = position.y;
-
-        if(camera.frustum.pointInFrustum(calculationVector)) {
-            batch.draw(textureComponent.texture,
+        if (camera.frustum.pointInFrustum(position.x, position.y, position.z) ||
+                camera.frustum.pointInFrustum(position.x + textureComponent.width, position.y, position.z) ||
+                camera.frustum.pointInFrustum(position.x + textureComponent.width, position.y + textureComponent.height, position.z) ||
+                camera.frustum.pointInFrustum(position.x, position.y + textureComponent.height, position.z)) {
+            batch.draw(Global.assetManager.get(textureComponent.internalPath, Texture.class),
                     position.x,
                     position.y,
                     textureComponent.width,
@@ -85,11 +85,16 @@ public class RenderSystem implements EntityListener {
             dirty = true;
             entityList.add(entity);
         }
+        //TODO: Look into having this also register entities that have a camera class.
     }
 
     @Override
     public void entityRemoved(Entity entity) {
         entityList.remove(entity);
+    }
+
+    public double distance(double x1, double x2, double y1, double y2) {
+        return Math.sqrt(Math.pow(x2 - x2, 2) + Math.pow(y2 - y1, 2));
     }
 
     private static class ZComparator implements Comparator<Entity> {

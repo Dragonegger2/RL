@@ -2,8 +2,7 @@ package com.sad.function.system;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.Input;
 import com.sad.function.components.InputHandler;
 import com.sad.function.event.Event;
@@ -17,21 +16,20 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InputHandlingSystem extends IteratingSystem {
+public class InputHandlingSystem implements EntityListener {
     private static final Logger logger = LogManager.getLogger(InputHandlingSystem.class);
 
     private final ComponentMapper<InputHandler> inputHandler = ComponentMapper.getFor(InputHandler.class);
 
     private List<InputContext> activeContexts;
+    private List<Entity> entitiesWithInputHandlers;
 
     public InputHandlingSystem() {
-        super(Family.one(InputHandler.class).get());
-
         activeContexts = new ArrayList<>();
+        entitiesWithInputHandlers = new ArrayList<>();
     }
 
-    @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    private void processEntity(Entity entity, float deltaTime) {
         InputHandler inputHandler = this.inputHandler.get(entity);
 
         //Make sure it has a handler registered.
@@ -50,10 +48,20 @@ public class InputHandlingSystem extends IteratingSystem {
                         //Dispatch the action and event.
                         inputHandler.handleAction(actionName, entity, inputEvent, deltaTime);
                     }
+
+                    //Release is back into memory.
+                    inputEvent.inUse = false;
                 }
+
             }
         } else {
             logger.warn("No device registered for this handler: {}", inputHandler.getComponentId());
+        }
+    }
+
+    public void handleInput(float delta) {
+        for(Entity entity : entitiesWithInputHandlers) {
+            processEntity(entity, delta);
         }
     }
 
@@ -71,5 +79,17 @@ public class InputHandlingSystem extends IteratingSystem {
         }
 
         return null;
+    }
+
+    @Override
+    public void entityAdded(Entity entity) {
+        logger.info("Added new entity with input handler {}.", entity);
+        entitiesWithInputHandlers.add(entity);
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        logger.info("Removed entity with input handler {}.", entity);
+        entitiesWithInputHandlers.remove(entity);
     }
 }

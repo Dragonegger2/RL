@@ -26,7 +26,6 @@ public class WorldScreen extends BaseScreen {
 
     private World world;
     private Engine engine;
-    private InputHandlingSystem inputHandlingSystem;
     private OrthographicCamera camera;
     private int WORLD_HEIGHT = 500*32;
     private int WORLD_WIDHT = 500*32;
@@ -35,16 +34,15 @@ public class WorldScreen extends BaseScreen {
 
     public WorldScreen(Engine engine, InputHandlingSystem inputHandlingSystem, OrthographicCamera camera) {
         this.engine = engine;
-        this.inputHandlingSystem = inputHandlingSystem;
         this.camera = camera;
-        initialize();
+        initialize(inputHandlingSystem);
 
 
         worldGenerator.initializeWorld();
         registerTilemapInECS();
     }
 
-    private void initialize() {
+    private void initialize(InputHandlingSystem inputHandlingSystem) {
         InputHandler playerInputHandler = new InputHandler();
 
         //LOAD IN GAME STATE STUFFS
@@ -57,7 +55,7 @@ public class WorldScreen extends BaseScreen {
                 .add(new AnimationComponent())
                 .add(playerInputHandler);
 
-        float velocity = 100f;
+        float velocity = 300f;
 
         //Update handlers with a type, action type, and GameCommand.
         playerInputHandler.associateAction("MOVE_LEFT", InputActionType.REPEAT_WHILE_DOWN, new MoveHorizontally(-velocity));
@@ -80,7 +78,6 @@ public class WorldScreen extends BaseScreen {
         Global.deviceManager.assignDevice(playerInputHandler);
 
         //Register systems to be managed by the ECS
-        engine.addSystem(inputHandlingSystem);
         engine.addSystem(new MovementSystem());
         engine.addSystem(new PhysicsSystem());
         engine.addSystem(new FollowerPlayerCamera(camera));

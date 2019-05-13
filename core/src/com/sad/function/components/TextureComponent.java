@@ -8,8 +8,7 @@ import com.sad.function.global.Global;
  * Holds a reference to the internal path to use for a texture.
  */
 public class TextureComponent implements Component {
-
-    public Texture texture;
+    //TODO Make use of a flyweight pattern here. We'll have a ton of objects that are similar.
     public String internalPath;
     public int width;
     public int height;
@@ -18,17 +17,21 @@ public class TextureComponent implements Component {
      * Default constructor means default images.
      */
     public TextureComponent() {
-        internalPath = "badlogic.jpg";
-        texture = Global.textures.get(internalPath);
+        this("badlogic.jpg");
+
         width = 256;
         height = 256;
     }
 
     public TextureComponent(String path) {
         internalPath = path;
-        texture = Global.textures.get(internalPath);
-        height = texture.getHeight();
-        width = texture.getWidth();
+        if(!Global.assetManager.isLoaded(internalPath)) {
+            Global.assetManager.load(internalPath, Texture.class);
+            Global.assetManager.finishLoadingAsset(internalPath);
+        }
+
+        height = Global.assetManager.get(path, Texture.class).getHeight();
+        width = Global.assetManager.get(path, Texture.class).getWidth();
     }
 
     public TextureComponent setHeight(int height) {

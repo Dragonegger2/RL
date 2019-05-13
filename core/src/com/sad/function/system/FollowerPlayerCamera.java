@@ -17,16 +17,13 @@ public class FollowerPlayerCamera extends IteratingSystem {
         super(Family.all(CameraComponent.class, Position.class).get());
 
         this.camera = camera;
-
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         Position pos = position.get(entity);
 
-        float positionX = pos.x;
-
-        camera.position.set(positionX, pos.y, pos.z);
+        camera.position.set(pos.x, pos.y, pos.z);
         camera.update();
     }
 }
