@@ -55,6 +55,7 @@ public class InputHandlingSystem implements EntityListener {
         for(Entity entity : entitiesWithInputHandlers) {
             processEntity(entity, delta);
         }
+        //Clear input queue after handling the input.
     }
 
     public void pushContext(InputContext context) {

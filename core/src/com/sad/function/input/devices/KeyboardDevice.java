@@ -85,14 +85,10 @@ public class KeyboardDevice implements InputProcessor, IDevice {
             if (keyState.pressed || keyState.down) {
                  InputEvent event = inputEventPool.create(keyState.key, 1);
                  if(event != null) eventList.add(event);
-
-                //TODO: Fix the bug that currently exists in the the values. We can't actually check pressed vs. constantly down. Need to add a field for relative/absolute.
-//                eventList.add(new KeyInputEvent().setValue(1).setId(keyState.key));
             }
             if (keyState.released) {
                 InputEvent event = inputEventPool.create(keyState.key, 0);
                 if(event != null) eventList.add(event);
-//                eventList.add(new KeyInputEvent().setValue(0).setId(keyState.key));
             }
         }
 

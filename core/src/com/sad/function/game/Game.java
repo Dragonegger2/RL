@@ -94,7 +94,6 @@ public class Game extends BaseGame {
     @Override
     public void render() {
         final float TARGET_FRAME_RATE = 1.0f/90.0f;
-
         while (!Global.assetManager.update()) {
             logger.info("Loading assets {}% complete", Global.assetManager.getProgress() * 100);
         }
@@ -105,13 +104,11 @@ public class Game extends BaseGame {
 
             inputHandlingSystem.handleInput(delta);
 
-            Gdx.gl.glClearColor(1, 0, 0, 1);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
             engine.update(delta);
 
             Global.deviceManager.clearDeviceQueues();
         }
+
 
         renderingSystem.render(accumulator);
 
