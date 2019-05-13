@@ -5,8 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.Input;
 import com.sad.function.components.InputHandler;
-import com.sad.function.event.Event;
-import com.sad.function.event.EventType;
 import com.sad.function.event.input.InputEvent;
 import com.sad.function.global.Global;
 import com.sad.function.input.context.InputContext;
@@ -34,13 +32,9 @@ public class InputHandlingSystem implements EntityListener {
 
         //Make sure it has a handler registered.
         if (inputHandler.getDeviceId() != null) {
-            List<Event> eventList = Global.deviceManager.pollDevice(inputHandler.getDeviceId());
+            List<InputEvent> inputEvents = Global.deviceManager.pollDevice(inputHandler.getDeviceId());
 
-            for (Event event : eventList) {
-                if (event.getEventType() == EventType.INPUT) {
-                    //Do things.
-                    InputEvent inputEvent = (InputEvent) event;
-
+            for (InputEvent inputEvent : inputEvents) {
                     String actionName = findInContext(Input.Keys.toString(inputEvent.getId()));
 
                     //There's a corresponding action for this input.
@@ -51,8 +45,6 @@ public class InputHandlingSystem implements EntityListener {
 
                     //Release is back into memory.
                     inputEvent.inUse = false;
-                }
-
             }
         } else {
             logger.warn("No device registered for this handler: {}", inputHandler.getComponentId());

@@ -20,7 +20,7 @@ public class InputEventPool {
 
     public InputEvent create(int id, float value) {
         for(int i = 0; i < POOL_SIZE; i++) {
-            if(inputEventPool[i].inUse) {
+            if(!inputEventPool[i].inUse) {
                 inputEventPool[i].initialize(id, value);
                 inputEventPool[i].inUse = true;
 

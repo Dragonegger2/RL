@@ -109,12 +109,13 @@ public class Game extends BaseGame {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             engine.update(delta);
+
+            Global.deviceManager.clearDeviceQueues();
         }
 
         renderingSystem.render(accumulator);
 
         Gdx.graphics.setTitle(String.format("FPS: %s", 1/accumulator));
-        Global.deviceManager.clearDeviceQueues();
         accumulator = 0;
     }
 

@@ -4,7 +4,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
-import com.sad.function.event.Event;
+import com.sad.function.event.input.InputEvent;
 import com.sad.function.input.states.ButtonState;
 import com.sad.function.input.states.KeyState;
 
@@ -79,7 +79,7 @@ public class ControllerDevice implements ControllerListener, IDevice{
     }
 
     @Override
-    public List<Event> pollDevice() {
+    public List<InputEvent> pollDevice() {
         //FIRE ALL MY EVENTS
         return null;
     }

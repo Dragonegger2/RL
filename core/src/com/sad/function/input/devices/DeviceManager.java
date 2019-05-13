@@ -3,9 +3,10 @@ package com.sad.function.input.devices;
 import com.sad.function.common.Observer;
 import com.sad.function.common.Subject;
 import com.sad.function.components.InputHandler;
-import com.sad.function.event.device.DeviceConnected;
 import com.sad.function.event.Event;
 import com.sad.function.event.EventType;
+import com.sad.function.event.device.DeviceConnected;
+import com.sad.function.event.input.InputEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,7 +62,7 @@ public class DeviceManager implements Observer, Subject {
      * @param id of the registered device.
      * @return list of events from the device.
      */
-    public List<Event> pollDevice(UUID id) {
+    public List<InputEvent> pollDevice(UUID id) {
         IDevice device = registeredDevices.get(id);
         if(device != null) {
             //return underlying event queue.

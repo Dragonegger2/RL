@@ -3,7 +3,6 @@ package com.sad.function.input.devices;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.sad.function.InputEventPool;
-import com.sad.function.event.Event;
 import com.sad.function.event.input.InputEvent;
 import com.sad.function.global.Global;
 import com.sad.function.input.states.KeyState;
@@ -79,8 +78,8 @@ public class KeyboardDevice implements InputProcessor, IDevice {
     }
 
     @Override
-    public List<Event> pollDevice() {
-        List<Event> eventList = new ArrayList<>();
+    public List<InputEvent> pollDevice() {
+        List<InputEvent> eventList = new ArrayList<>();
 
         for (KeyState keyState : keyStates) {
             if (keyState.pressed || keyState.down) {
