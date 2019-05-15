@@ -46,12 +46,9 @@ public class RenderSystem implements EntityListener {
         this.resourceManager = resourceManager;
     }
 
-    private Position pos;
-    private TextureComponent txt;
-
     private void processEntity(Entity entity, float deltaTime) {
-        pos = this.position.get(entity);
-        txt = this.texture.get(entity);
+        Position pos = this.position.get(entity);
+        TextureComponent txt = this.texture.get(entity);
 
         if (inView(camera, pos, txt.width, txt.height)) {
             batch.draw(resourceManager.getStaticAsset(txt.internalPath),
@@ -81,10 +78,11 @@ public class RenderSystem implements EntityListener {
             dirty = false;
         }
 
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
 
@@ -93,7 +91,8 @@ public class RenderSystem implements EntityListener {
         }
 
         batch.end();
-        logger.info("Rendered {} object(s)", renderedEntityCounter);
+
+        logger.debug("Rendered {} object(s)", renderedEntityCounter);
         renderedEntityCounter = 0;
     }
 

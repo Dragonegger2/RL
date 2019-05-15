@@ -24,6 +24,5 @@ public class FollowerPlayerCamera extends IteratingSystem {
         Position pos = position.get(entity);
 
         camera.position.set(pos.x, pos.y, pos.z);
-        camera.update();
     }
 }

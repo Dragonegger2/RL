@@ -2,7 +2,7 @@ package com.sad.function.input.devices;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.sad.function.InputEventPool;
+import com.sad.function.input.InputEventPool;
 import com.sad.function.event.input.InputEvent;
 import com.sad.function.global.Global;
 import com.sad.function.input.states.KeyState;

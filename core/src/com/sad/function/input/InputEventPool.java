@@ -1,4 +1,4 @@
-package com.sad.function;
+package com.sad.function.input;
 
 import com.sad.function.event.input.InputEvent;
 import org.apache.logging.log4j.LogManager;

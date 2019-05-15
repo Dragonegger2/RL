@@ -1,7 +1,7 @@
 package com.sad.function.global;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.sad.function.InputEventPool;
+import com.sad.function.input.InputEventPool;
 import com.sad.function.event.GlobalEventQueue;
 import com.sad.function.input.devices.DeviceManager;
 
