@@ -1,236 +1,250 @@
 
 hero-male.png
-size: 138,274
+size: 430,260
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+badlogic
+  rotate: false
+  xy: 2, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+grasstile
+  rotate: false
+  xy: 260, 56
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 hero-male-back-attack
   rotate: false
-  xy: 70, 206
+  xy: 328, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-back-attack
   rotate: false
-  xy: 104, 240
+  xy: 362, 226
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 hero-male-back-attack
   rotate: false
-  xy: 2, 104
+  xy: 260, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 hero-male-back-attack
   rotate: false
-  xy: 36, 138
+  xy: 294, 124
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-back-idle
   rotate: false
-  xy: 70, 70
+  xy: 294, 22
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 hero-male-back-walk
   rotate: false
-  xy: 70, 172
+  xy: 328, 158
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-back-walk
   rotate: false
-  xy: 104, 206
+  xy: 362, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 hero-male-back-walk
   rotate: false
-  xy: 2, 70
+  xy: 396, 226
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
 hero-male-back-walk
   rotate: false
-  xy: 36, 104
+  xy: 294, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 hero-male-back-walk
   rotate: false
-  xy: 2, 2
+  xy: 362, 124
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
 hero-male-back-walk
   rotate: false
-  xy: 36, 2
+  xy: 362, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-front-attack
   rotate: false
-  xy: 2, 206
+  xy: 260, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-front-idle
   rotate: false
-  xy: 2, 206
+  xy: 260, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 hero-male-front-attack
   rotate: false
-  xy: 36, 240
+  xy: 294, 226
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 hero-male-front-attack
   rotate: false
-  xy: 36, 206
+  xy: 260, 158
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
-  index: 4
+  index: 3
 hero-male-front-attack
   rotate: false
-  xy: 70, 138
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-front-walk
-  rotate: false
-  xy: 2, 240
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-front-walk
-  rotate: false
-  xy: 2, 172
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-front-walk
-  rotate: false
-  xy: 70, 240
+  xy: 294, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-front-walk
   rotate: false
-  xy: 2, 138
+  xy: 260, 226
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
+hero-male-front-walk
+  rotate: false
+  xy: 328, 226
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+hero-male-front-walk
+  rotate: false
+  xy: 260, 124
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 5
 hero-male-front-walk
   rotate: false
-  xy: 36, 172
+  xy: 294, 158
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+hero-male-front-walk
+  rotate: false
+  xy: 328, 124
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
 hero-male-front-walk
   rotate: false
-  xy: 70, 2
+  xy: 362, 56
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-side-attack
   rotate: false
-  xy: 104, 172
+  xy: 362, 158
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-side-attack
   rotate: false
-  xy: 2, 36
+  xy: 396, 192
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 hero-male-side-attack
   rotate: false
-  xy: 36, 70
+  xy: 260, 22
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 hero-male-side-attack
   rotate: false
-  xy: 70, 104
+  xy: 294, 56
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-side-idle
   rotate: false
-  xy: 104, 2
+  xy: 362, 22
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 hero-male-side-walk
   rotate: false
-  xy: 104, 138
+  xy: 328, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-side-walk
   rotate: false
-  xy: 36, 36
+  xy: 396, 158
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 6
 hero-male-side-walk
   rotate: false
-  xy: 104, 104
+  xy: 328, 56
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 1
 hero-male-side-walk
   rotate: false
-  xy: 70, 36
+  xy: 396, 124
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 hero-male-side-walk
   rotate: false
-  xy: 104, 70
+  xy: 328, 22
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 2
 hero-male-side-walk
   rotate: false
-  xy: 104, 36
+  xy: 396, 90
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

@@ -30,7 +30,7 @@ public class WorldScreen extends BaseScreen {
     private int WORLD_HEIGHT = 500*32;
     private int WORLD_WIDHT = 500*32;
 
-    private WorldGenerator worldGenerator = new WorldGenerator(10, 500, 500);
+    private WorldGenerator worldGenerator = new WorldGenerator(10, 50, 50);
 
     public WorldScreen(Engine engine, InputHandlingSystem inputHandlingSystem, OrthographicCamera camera) {
         this.engine = engine;

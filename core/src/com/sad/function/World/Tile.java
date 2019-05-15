@@ -24,7 +24,7 @@ public class Tile {
 
     public Entity getTileEntity() {
         return new Entity()
-                .add(new TextureComponent("grasstile.png"))
+                .add(new TextureComponent("tile-grass"))
                 .add(new Position().setX(x*32).setY(y*32).setZ(0));
     }
 }

@@ -1,251 +1,251 @@
 
-hero-male.png
-size: 430,260
+resources.png
+size: 324,324
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-badlogic
+hero-male-back-attack
   rotate: false
-  xy: 2, 2
+  xy: 34, 44
+  size: 32, 22
+  orig: 32, 32
+  offset: 0, 1
+  index: 2
+hero-male-back-attack
+  rotate: false
+  xy: 258, 255
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 1
+hero-male-back-attack
+  rotate: false
+  xy: 292, 280
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 1
+  index: 3
+hero-male-back-attack
+  rotate: false
+  xy: 68, 22
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 1
+  index: 4
+hero-male-back-idle
+  rotate: false
+  xy: 292, 168
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 2
+  index: -1
+hero-male-back-walk
+  rotate: false
+  xy: 102, 45
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 4
+hero-male-back-walk
+  rotate: false
+  xy: 258, 232
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 1
+  index: 2
+hero-male-back-walk
+  rotate: false
+  xy: 258, 209
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 1
+  index: 5
+hero-male-back-walk
+  rotate: false
+  xy: 136, 22
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 1
+hero-male-back-walk
+  rotate: false
+  xy: 170, 23
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 1
+  index: 6
+hero-male-back-walk
+  rotate: false
+  xy: 204, 46
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 1
+  index: 3
+hero-male-front-attack
+  rotate: false
+  xy: 258, 302
+  size: 32, 22
+  orig: 32, 32
+  offset: 0, 1
+  index: 2
+hero-male-front-attack
+  rotate: false
+  xy: 292, 303
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 1
+hero-male-front-idle
+  rotate: false
+  xy: 292, 303
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: -1
+hero-male-front-attack
+  rotate: false
+  xy: 292, 212
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
+hero-male-front-attack
+  rotate: false
+  xy: 292, 147
+  size: 32, 19
+  orig: 32, 32
+  offset: 0, 0
+  index: 4
+hero-male-front-walk
+  rotate: false
+  xy: 0, 10
+  size: 32, 22
+  orig: 32, 32
+  offset: 0, 3
+  index: 4
+hero-male-front-walk
+  rotate: false
+  xy: 258, 278
+  size: 32, 22
+  orig: 32, 32
+  offset: 0, 3
+  index: 1
+hero-male-front-walk
+  rotate: false
+  xy: 34, 21
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 3
+  index: 5
+hero-male-front-walk
+  rotate: false
+  xy: 68, 45
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 3
+  index: 2
+hero-male-front-walk
+  rotate: false
+  xy: 258, 187
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 3
+  index: 3
+hero-male-front-walk
+  rotate: false
+  xy: 258, 165
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 3
+  index: 6
+hero-male-side-attack
+  rotate: false
+  xy: 292, 257
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 1
+hero-male-side-attack
+  rotate: false
+  xy: 102, 22
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: 2
+hero-male-side-attack
+  rotate: false
+  xy: 292, 190
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 2
+  index: 3
+hero-male-side-attack
+  rotate: false
+  xy: 204, 24
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 2
+  index: 4
+hero-male-side-idle
+  rotate: false
+  xy: 170, 45
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 2
+  index: -1
+hero-male-side-walk
+  rotate: false
+  xy: 136, 45
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 3
+  index: 4
+hero-male-side-walk
+  rotate: false
+  xy: 292, 234
+  size: 32, 21
+  orig: 32, 32
+  offset: 0, 3
+  index: 1
+hero-male-side-walk
+  rotate: false
+  xy: 258, 143
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 3
+  index: 6
+hero-male-side-walk
+  rotate: false
+  xy: 258, 121
+  size: 32, 20
+  orig: 32, 32
+  offset: 0, 3
+  index: 3
+hero-male-side-walk
+  rotate: false
+  xy: 258, 100
+  size: 32, 19
+  orig: 32, 32
+  offset: 0, 3
+  index: 2
+hero-male-side-walk
+  rotate: false
+  xy: 292, 126
+  size: 32, 19
+  orig: 32, 32
+  offset: 0, 3
+  index: 5
+null
+  rotate: false
+  xy: 0, 68
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-grasstile
+tile-grass
   rotate: false
-  xy: 260, 56
+  xy: 0, 34
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-hero-male-back-attack
-  rotate: false
-  xy: 328, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-back-attack
-  rotate: false
-  xy: 362, 226
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-back-attack
-  rotate: false
-  xy: 260, 90
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-back-attack
-  rotate: false
-  xy: 294, 124
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-back-idle
-  rotate: false
-  xy: 294, 22
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-hero-male-back-walk
-  rotate: false
-  xy: 328, 158
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-back-walk
-  rotate: false
-  xy: 362, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-back-walk
-  rotate: false
-  xy: 396, 226
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 6
-hero-male-back-walk
-  rotate: false
-  xy: 294, 90
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-back-walk
-  rotate: false
-  xy: 362, 124
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 5
-hero-male-back-walk
-  rotate: false
-  xy: 362, 90
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-front-attack
-  rotate: false
-  xy: 260, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-front-idle
-  rotate: false
-  xy: 260, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-hero-male-front-attack
-  rotate: false
-  xy: 294, 226
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-front-attack
-  rotate: false
-  xy: 260, 158
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-front-attack
-  rotate: false
-  xy: 294, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-front-walk
-  rotate: false
-  xy: 260, 226
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-front-walk
-  rotate: false
-  xy: 328, 226
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-front-walk
-  rotate: false
-  xy: 260, 124
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 5
-hero-male-front-walk
-  rotate: false
-  xy: 294, 158
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-front-walk
-  rotate: false
-  xy: 328, 124
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 6
-hero-male-front-walk
-  rotate: false
-  xy: 362, 56
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-side-attack
-  rotate: false
-  xy: 362, 158
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-side-attack
-  rotate: false
-  xy: 396, 192
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-side-attack
-  rotate: false
-  xy: 260, 22
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-side-attack
-  rotate: false
-  xy: 294, 56
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-side-idle
-  rotate: false
-  xy: 362, 22
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-hero-male-side-walk
-  rotate: false
-  xy: 328, 90
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 4
-hero-male-side-walk
-  rotate: false
-  xy: 396, 158
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 6
-hero-male-side-walk
-  rotate: false
-  xy: 328, 56
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 1
-hero-male-side-walk
-  rotate: false
-  xy: 396, 124
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 3
-hero-male-side-walk
-  rotate: false
-  xy: 328, 22
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 2
-hero-male-side-walk
-  rotate: false
-  xy: 396, 90
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: 5

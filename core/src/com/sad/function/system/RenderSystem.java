@@ -5,13 +5,13 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
-import com.sad.function.global.Global;
+import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,40 +21,53 @@ import java.util.List;
 
 public class RenderSystem implements EntityListener {
     private static final Logger logger = LogManager.getLogger(RenderSystem.class);
+
     private static final ZComparator zComparator = new ZComparator();
+
     private final ComponentMapper<Position> position = ComponentMapper.getFor(Position.class);
     private final ComponentMapper<TextureComponent> texture = ComponentMapper.getFor(TextureComponent.class);
+
     private final Family renderFamily = Family.all(Position.class, TextureComponent.class).get();
-    private OrthographicCamera camera;
+
     private Batch batch;
     private List<Entity> entityList;
+    private OrthographicCamera camera;
+    private ResourceManager resourceManager;
 
     private boolean dirty = false;
 
     //NOTES: Pretty sure that the camera in LibGDX measures from the center, but sprites measure from their lower-left hand corner.
     private int renderedEntityCounter = 0;
 
-    public RenderSystem(Batch batch, OrthographicCamera camera) {
+    public RenderSystem(ResourceManager resourceManager, Batch batch, OrthographicCamera camera) {
         this.entityList = new ArrayList<>();
         this.batch = batch;
         this.camera = camera;
+        this.resourceManager = resourceManager;
     }
 
-    private void processEntity(Entity entity, float deltaTime) {
-        Position position = this.position.get(entity);
-        TextureComponent textureComponent = this.texture.get(entity);
+    private Position pos;
+    private TextureComponent txt;
 
-        if (camera.frustum.pointInFrustum(position.x, position.y, position.z) ||
-                camera.frustum.pointInFrustum(position.x + textureComponent.width, position.y, position.z) ||
-                camera.frustum.pointInFrustum(position.x + textureComponent.width, position.y + textureComponent.height, position.z) ||
-                camera.frustum.pointInFrustum(position.x, position.y + textureComponent.height, position.z)) {
-            batch.draw(Global.assetManager.get(textureComponent.internalPath, Texture.class),
-                    position.x,
-                    position.y,
-                    textureComponent.width,
-                    textureComponent.height);
+    private void processEntity(Entity entity, float deltaTime) {
+        pos = this.position.get(entity);
+        txt = this.texture.get(entity);
+
+        if (inView(camera, pos, txt.width, txt.height)) {
+            batch.draw(resourceManager.getStaticAsset(txt.internalPath),
+                    pos.x,
+                    pos.y,
+                    txt.width,
+                    txt.height);
             renderedEntityCounter++;
         }
+    }
+
+    private boolean inView(Camera camera, Position position, float width, float height) {
+        return camera.frustum.pointInFrustum(position.x, position.y, position.z) ||
+                camera.frustum.pointInFrustum(position.x + width, position.y, position.z) ||
+                camera.frustum.pointInFrustum(position.x + width, position.y + height, position.z) ||
+                camera.frustum.pointInFrustum(position.x, position.y + height, position.z);
     }
 
     /**
@@ -96,10 +109,6 @@ public class RenderSystem implements EntityListener {
     @Override
     public void entityRemoved(Entity entity) {
         entityList.remove(entity);
-    }
-
-    public double distance(double x1, double x2, double y1, double y2) {
-        return Math.sqrt(Math.pow(x2 - x2, 2) + Math.pow(y2 - y1, 2));
     }
 
     private static class ZComparator implements Comparator<Entity> {

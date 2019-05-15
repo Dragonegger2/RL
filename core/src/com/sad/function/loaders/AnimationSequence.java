@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AnimationSequence {
+    @JsonProperty("name")
+    private String name;
     @JsonProperty("playMode")
     private Animation.PlayMode playMode;
     @JsonProperty("frameDuration")
@@ -26,5 +28,13 @@ public class AnimationSequence {
 
     public void setFrameDuration(float frameDuration) {
         this.frameDuration = frameDuration;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

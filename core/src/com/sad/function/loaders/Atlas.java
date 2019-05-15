@@ -3,32 +3,24 @@ package com.sad.function.loaders;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.HashMap;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Atlas {
-    @JsonProperty("file")
-    private String file;
-    @JsonProperty("animationSequences")
-    private
-    HashMap<String, AnimationSequence> animationSequences;
+    @JsonProperty("animations")
+    private List<AnimationSequence> animations;
 
+    @JsonProperty("static")
+    private List<String> staticResources;
+    
     public Atlas() {
     }
 
-    public String getFile() {
-        return file;
+    public List<AnimationSequence> getAnimations() {
+        return animations;
     }
 
-    public void setFile(String file) {
-        this.file = file;
-    }
-
-    public HashMap<String, AnimationSequence>  getAnimationSequences() {
-        return animationSequences;
-    }
-
-    public void setAnimationSequences(HashMap<String, AnimationSequence>  animationSequences) {
-        this.animationSequences = animationSequences;
+    public List<String> getStaticResources() {
+        return staticResources;
     }
 }

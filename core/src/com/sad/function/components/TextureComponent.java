@@ -1,8 +1,6 @@
 package com.sad.function.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.Texture;
-import com.sad.function.global.Global;
 
 /**
  * Holds a reference to the internal path to use for a texture.
@@ -17,7 +15,7 @@ public class TextureComponent implements Component {
      * Default constructor means default images.
      */
     public TextureComponent() {
-        this("badlogic.jpg");
+        this("null");
 
         width = 256;
         height = 256;
@@ -25,13 +23,9 @@ public class TextureComponent implements Component {
 
     public TextureComponent(String path) {
         internalPath = path;
-        if(!Global.assetManager.isLoaded(internalPath)) {
-            Global.assetManager.load(internalPath, Texture.class);
-            Global.assetManager.finishLoadingAsset(internalPath);
-        }
 
-        height = Global.assetManager.get(path, Texture.class).getHeight();
-        width = Global.assetManager.get(path, Texture.class).getWidth();
+        width = 32;
+        height = 32;
     }
 
     public TextureComponent setHeight(int height) {
