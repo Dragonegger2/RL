@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.UUID;
 
-public class InputHandler implements Component {
+public class InputHandler extends com.artemis.Component implements Component {
     private UUID deviceId;
     private UUID componentId;
 

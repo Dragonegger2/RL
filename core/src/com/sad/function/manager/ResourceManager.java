@@ -18,7 +18,6 @@ public class ResourceManager {
     private static final Logger logger = LogManager.getLogger(ResourceManager.class);
     private static final String res = "packed/resources.atlas";
     private ObjectMapper mapper;
-    private TextureRegion nullTexture;
     private TextureAtlas resources;
     private HashMap<String, Animation<TextureRegion>> animationList;
     private HashMap<String, TextureRegion> staticResources;

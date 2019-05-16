@@ -15,4 +15,6 @@ public class Global {
     public static InputEventPool inputEventPool = new InputEventPool(100);
 
     public static final float MAX_MOVEMENT_SPEED = 160f;
+
+    public static float DELTA = 0.0f;
 }

@@ -7,7 +7,7 @@ import com.sad.function.event.EventType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AnimationComponent implements Observer, Component {
+public class AnimationComponent extends com.artemis.Component implements Observer, Component {
     private static final Logger logger = LogManager.getLogger(AnimationComponent.class);
 
     public float stateTime = 0f;

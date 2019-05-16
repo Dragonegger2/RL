@@ -1,5 +1,8 @@
 package com.sad.function.World;
 
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.sad.function.components.Position;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,8 +15,6 @@ public class WorldGenerator {
 
     private int WORLD_HEIGHT;
     private int WORLD_WIDTH;
-
-    private Tile[][] tileMap;
 
     /**
      * Generator with no fixed seed.
@@ -34,25 +35,27 @@ public class WorldGenerator {
         WORLD_HEIGHT = height;
     }
 
-    public void initializeWorld() {
+    public void initializeWorld(Engine engine) {
         logger.info("Initializing world.");
         long startTime = System.nanoTime();
         //initialize world map.
-        tileMap = new Tile[WORLD_WIDTH][WORLD_HEIGHT];
 
         //Randomly fill it in with data.
         for(int x = 0; x < WORLD_WIDTH; x++ ) {
             for(int y = 0; y < WORLD_HEIGHT; y++ ) {
-                tileMap[x][y] = new Tile(random.nextInt(3), x, y);
+                engine.addEntity(new Entity()
+//                        .add(new TextureComponent("tile-grass"))
+                        .add(new Position().setX(x*32).setY(y*32).setZ(0))
+//                        .add(new Dimension(32,32))
+                );
             }
         }
+
         long endTime = System.nanoTime();
         long timeElapsed = endTime - startTime;
         timeElapsed = timeElapsed / 1000000;
         logger.info("Finished world initialization in {} ms.", timeElapsed);
     }
-
-    public Tile[][] getWorld() { return tileMap; }
 
     public int getWorldHeight() { return WORLD_HEIGHT; }
     public int getWorldWidth() { return WORLD_WIDTH; }

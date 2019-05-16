@@ -3,7 +3,6 @@ package com.sad.function.screen;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.sad.function.World.Tile;
 import com.sad.function.World.World;
 import com.sad.function.World.WorldGenerator;
 import com.sad.function.command.QuitGame;
@@ -15,7 +14,6 @@ import com.sad.function.input.context.InputContext;
 import com.sad.function.input.states.InputActionType;
 import com.sad.function.system.FollowerPlayerCamera;
 import com.sad.function.system.InputHandlingSystem;
-import com.sad.function.system.MovementSystem;
 import com.sad.function.system.PhysicsSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +28,7 @@ public class WorldScreen extends BaseScreen {
     private int WORLD_HEIGHT = 500*32;
     private int WORLD_WIDHT = 500*32;
 
-    private WorldGenerator worldGenerator = new WorldGenerator(10, 50, 50);
+    private WorldGenerator worldGenerator = new WorldGenerator(10, 500, 500);
 
     public WorldScreen(Engine engine, InputHandlingSystem inputHandlingSystem, OrthographicCamera camera) {
         this.engine = engine;
@@ -38,8 +36,7 @@ public class WorldScreen extends BaseScreen {
         initialize(inputHandlingSystem);
 
 
-        worldGenerator.initializeWorld();
-        registerTilemapInECS();
+        worldGenerator.initializeWorld(engine);
     }
 
     private void initialize(InputHandlingSystem inputHandlingSystem) {
@@ -47,12 +44,14 @@ public class WorldScreen extends BaseScreen {
 
         //LOAD IN GAME STATE STUFFS
         Entity playerA = new Entity()
-                .add(new TextureComponent().setHeight(32).setWidth(32))
+//                .add(new TextureComponent())
                 .add(new VelocityComponent())
                 .add(new Position().setZ(1))
                 .add(new Physics())
                 .add(new CameraComponent())
                 .add(new AnimationComponent())
+//                .add(new Dimension(32, 32))
+                .add(new Collidable())
                 .add(playerInputHandler);
 
         float velocity = 300f;
@@ -78,7 +77,7 @@ public class WorldScreen extends BaseScreen {
         Global.deviceManager.assignDevice(playerInputHandler);
 
         //Register systems to be managed by the ECS
-        engine.addSystem(new MovementSystem());
+//        engine.addSystem(new MovementSystem());
         engine.addSystem(new PhysicsSystem());
         engine.addSystem(new FollowerPlayerCamera(camera));
 
@@ -87,15 +86,10 @@ public class WorldScreen extends BaseScreen {
 
     private void registerTilemapInECS() {
         logger.info("Registering tiles in ECS.");
-        Tile[][] map = worldGenerator.getWorld();
-        for(int x = 0; x < worldGenerator.getWorldHeight(); x++ ){
-            for(int y = 0; y < worldGenerator.getWorldWidth(); y++) {
-                engine.addEntity(map[x][y].getTileEntity());
-            }
-        }
 
         logger.info("Finished creating {} tile entities.", worldGenerator.getWorldHeight() * worldGenerator.getWorldWidth());
     }
+
 
     @Override
     public void enter() {

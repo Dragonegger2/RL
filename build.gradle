@@ -10,8 +10,7 @@ buildscript {
         google()
     }
     dependencies {
-        
-
+        classpath "net.onedaybeard.artemis:artemis-fluid-gradle-plugin:$artemisVersion"
     }
 }
 
@@ -44,7 +43,6 @@ allprojects {
 
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
-
     }
 }
 
@@ -64,6 +62,7 @@ project(":desktop") {
 }
 
 project(":core") {
+    apply plugin: "java"
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -77,6 +76,9 @@ project(":core") {
         //Logging
         compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
         compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+
+        //artemis-odb
+        compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
     }
 }
 

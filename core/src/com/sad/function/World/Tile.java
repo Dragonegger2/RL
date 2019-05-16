@@ -1,8 +1,6 @@
 package com.sad.function.World;
 
 import com.badlogic.ashley.core.Entity;
-import com.sad.function.components.Position;
-import com.sad.function.components.TextureComponent;
 
 /**
  * Represents all the given data that a single world tile can have.
@@ -23,8 +21,6 @@ public class Tile {
     }
 
     public Entity getTileEntity() {
-        return new Entity()
-                .add(new TextureComponent("tile-grass"))
-                .add(new Position().setX(x*32).setY(y*32).setZ(0));
+        return new Entity();
     }
 }
