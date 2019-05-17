@@ -1,14 +1,10 @@
 package com.sad.function.game;
 
-import com.sad.function.components.CameraComponent;
+import com.sad.function.components.*;
 import com.artemis.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.sad.function.components.Dimension;
-import com.sad.function.components.Layer;
-import com.sad.function.components.Position;
-import com.sad.function.components.TextureComponent;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +28,7 @@ public class Game2 extends BaseGame {
                         new MovementSystem(),
                         new PhysicsSystem(),
                         new CameraSystem(camera),
+                        new AnimationSystem(),
                         new RenderingSystem(resourceManager, camera)
                 )
                 .build();
@@ -40,10 +37,11 @@ public class Game2 extends BaseGame {
 
         Archetype playerArchetype = new ArchetypeBuilder()
                 .add(Position.class)
-                .add(TextureComponent.class)
+                .add(Animation.class)
                 .add(Dimension.class)
                 .add(Layer.class)
                 .add(CameraComponent.class)
+                .add(Collidable.class)
                 .build(world);
 
         ComponentMapper<Layer> layerMapper = world.getMapper(Layer.class);

@@ -1,8 +1,11 @@
 package com.sad.function.components;
 
-import com.badlogic.ashley.core.Component;
+import com.artemis.Component;
 
 /**
- * Notifies the physics system that it should check for collisions between objects.
+ * Collision detection component.
  */
-public class Collidable extends com.artemis.Component implements Component {}
+public class Collidable extends Component {
+    public float width = 32f;
+    public float height = 16f;
+}

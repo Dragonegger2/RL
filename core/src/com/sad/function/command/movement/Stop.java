@@ -6,14 +6,9 @@ import com.sad.function.components.VelocityComponent;
 
 public class Stop implements GameCommand {
 
-    private float acceleration;
-
-    public Stop(float xVelocity) {
-        this.acceleration = xVelocity;
-    }
-
     @Override
     public void execute(World world, int entity, float delta) {
-        world.getMapper(VelocityComponent.class).create(entity).x += acceleration * delta;
+        world.getMapper(VelocityComponent.class).create(entity).x = 0;
+        world.getMapper(VelocityComponent.class).create(entity).y = 0;
     }
 }

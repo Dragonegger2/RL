@@ -1,8 +1,8 @@
 package com.sad.function.components;
 
-import com.badlogic.ashley.core.Component;
+import com.artemis.Component;
 
-public class Dimension extends com.artemis.Component implements Component {
+public class Dimension extends Component {
     public float width = 32;
     public float height = 32;
 }

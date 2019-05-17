@@ -7,10 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
 import com.sad.function.components.*;
+import com.sad.function.global.Global;
 import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,11 +25,14 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<TextureComponent> mTexture;
     private ComponentMapper<Dimension> mDimension;
     private ComponentMapper<Animation> mAnimation;
+    private ComponentMapper<Collidable> mCollidable;
 
     private IntMap<IntSet> entitiesPerLayer;
     private IntArray layersToRender;
     private boolean dirty = false;
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+
     private ResourceManager resourceManager;
     private Camera camera;
 
@@ -36,6 +41,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
         this.resourceManager = resourceManager;
         this.camera = camera;
+        shapeRenderer = new ShapeRenderer();
 
         entitiesPerLayer = new IntMap<>();
         layersToRender = new IntArray();
@@ -87,11 +93,30 @@ public class RenderingSystem extends BaseEntitySystem {
         for (int i = 0; i < layersToRender.size; i++) {
             IntSet.IntSetIterator iterator = entitiesPerLayer.get(layersToRender.get(i)).iterator();
             while (iterator.hasNext) {
-                renderEntity(iterator.next());
+                int entity = iterator.next();
+                renderEntity(entity);
+
             }
         }
 
         batch.end();
+
+        if (Global.DEBUG) {
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+            for (int i = 0; i < layersToRender.size; i++) {
+                IntSet.IntSetIterator iterator = entitiesPerLayer.get(layersToRender.get(i)).iterator();
+                while (iterator.hasNext) {
+                    int entity = iterator.next();
+                    renderBoundingBox(entity);
+
+                }
+            }
+
+            shapeRenderer.end();
+        }
+
     }
 
     private boolean inView(Camera camera, Position position, float width, float height) {
@@ -110,21 +135,21 @@ public class RenderingSystem extends BaseEntitySystem {
             //If it has a texture, it's a static asset.
             //prefer animation component
             if (mAnimation.has(entity)) {
-                ;
-                batch.draw(resourceManager.getAnimationKeyFrame(mAnimation.create(entity).animationName, mAnimation.create(entity).stateTime, mAnimation.create(entity).looping),
-                        pos.x,
+                Animation animation = mAnimation.create(entity);
+                boolean flip = animation.direction == Animation.Direction.LEFT;
+
+                batch.draw(resourceManager.getAnimationKeyFrame(animation.animationName, animation.stateTime, animation.looping),
+                        flip ? pos.x + dim.width : pos.x,
                         pos.y,
-                        dim.width,
+                        flip ? -dim.width : dim.width,
                         dim.height);
-            }
-            else if (mTexture.has(entity)) {
+            } else if (mTexture.has(entity)) {
                 batch.draw(resourceManager.getStaticAsset(mTexture.create(entity).resourceName),
                         pos.x,
                         pos.y,
                         dim.width,
                         dim.height);
-            }
-            else {
+            } else {
                 logger.info("Missing texture information for {}", entity);
                 //Fallback case.
                 batch.draw(resourceManager.getStaticAsset("null"),
@@ -134,6 +159,15 @@ public class RenderingSystem extends BaseEntitySystem {
                         dim.height
                 );
             }
+        }
+    }
+
+    private void renderBoundingBox(int entity) {
+        shapeRenderer.setColor(255f, 0, 0, 0);
+        if (mCollidable.has(entity)) {
+            Collidable coll = mCollidable.create(entity);
+            Position position = mPosition.create(entity);
+            shapeRenderer.rect(position.x, position.y, coll.width, coll.height);
         }
     }
 }
