@@ -1,8 +1,8 @@
 package com.sad.function.components;
 
-import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.artemis.Component;
 
-public class CameraComponent extends com.artemis.Component implements Component {
-    public OrthographicCamera camera;
-}
+/**
+ * Tags an entity such that it should be followed by the camera.
+ */
+public class CameraComponent extends Component {}

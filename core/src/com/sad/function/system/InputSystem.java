@@ -12,7 +12,6 @@ import com.sad.function.command.movement.MoveHorizontally;
 import com.sad.function.command.movement.MoveVertically;
 import com.sad.function.common.DefaultMap;
 import com.sad.function.components.Input;
-import com.sad.function.global.Global;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,34 +41,34 @@ public class InputSystem extends BaseEntitySystem {
     @Override
     protected void processSystem() {
         for (int entity : entitiesWithInputHandlers.items) {
-            processEntity(entity, Global.DELTA);
+            processEntity(entity);
         }
     }
 
-    private void processEntity(int entity, float deltaTime) {
+    private void processEntity(int entity) {
         //TODO push actions into a queue or something.
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            actions.get(Action.MOVE_LEFT).execute(world, entity, deltaTime);
+            actions.get(Action.MOVE_LEFT).execute(world, entity, world.delta);
         }
 
         if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            actions.get(Action.MOVE_RIGHT).execute(world, entity, deltaTime);
+            actions.get(Action.MOVE_RIGHT).execute(world, entity, world.delta);
         }
 
         if (Gdx.input.isKeyPressed(Keys.UP)) {
-            actions.get(Action.MOVE_UP).execute(world, entity, deltaTime);
+            actions.get(Action.MOVE_UP).execute(world, entity, world.delta);
         }
 
         if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-            actions.get(Action.MOVE_DOWN).execute(world, entity, deltaTime);
+            actions.get(Action.MOVE_DOWN).execute(world, entity, world.delta);
         }
 
         if (!Gdx.input.isKeyPressed(Keys.DOWN) && Gdx.input.isKeyPressed(Keys.UP) && Gdx.input.isKeyPressed(Keys.LEFT) && Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            actions.get(Action.STOP).execute(world, entity, deltaTime);
+            actions.get(Action.STOP).execute(world, entity, world.delta);
         }
 
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            actions.get(Action.QUIT_GAME).execute(world, entity, deltaTime);
+            actions.get(Action.QUIT_GAME).execute(world, entity, world.delta);
         }
     }
 

@@ -6,7 +6,7 @@ package com.sad.function.game;
     They do reuse the same texture now, but they're not exactly lightweight objects. For ground tiles, I should look
     into a Flyweight pattern object for them. At least the texture component. That would actually be pretty simple.
 
-    AnimationComponent (light weight)
+    Animation (light weight)
         - Current time
         - Animation name
 

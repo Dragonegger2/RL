@@ -28,8 +28,8 @@ public class MovementSystem extends IteratingSystem {
         velocityComponent.x = MathUtils.clamp(velocityComponent.x, -Global.MAX_MOVEMENT_SPEED, Global.MAX_MOVEMENT_SPEED);
         velocityComponent.y = MathUtils.clamp(velocityComponent.y, -Global.MAX_MOVEMENT_SPEED, Global.MAX_MOVEMENT_SPEED);
 
-        position.x += velocityComponent.x * Global.DELTA;
-        position.y += velocityComponent.y * Global.DELTA;
+        position.x += velocityComponent.x * world.delta;
+        position.y += velocityComponent.y * world.delta;
 
         logger.debug("Entity Position: {},{}", position.x, position.y);
     }

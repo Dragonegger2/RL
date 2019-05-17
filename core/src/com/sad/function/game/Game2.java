@@ -1,5 +1,6 @@
 package com.sad.function.game;
 
+import com.sad.function.components.CameraComponent;
 import com.artemis.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -8,12 +9,8 @@ import com.sad.function.components.Dimension;
 import com.sad.function.components.Layer;
 import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
-import com.sad.function.global.Global;
 import com.sad.function.manager.ResourceManager;
-import com.sad.function.system.InputSystem;
-import com.sad.function.system.MovementSystem;
-import com.sad.function.system.PhysicsSystem;
-import com.sad.function.system.RenderingSystem;
+import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +31,7 @@ public class Game2 extends BaseGame {
                         new InputSystem(),
                         new MovementSystem(),
                         new PhysicsSystem(),
+                        new CameraSystem(camera),
                         new RenderingSystem(resourceManager, camera)
                 )
                 .build();
@@ -45,6 +43,7 @@ public class Game2 extends BaseGame {
                 .add(TextureComponent.class)
                 .add(Dimension.class)
                 .add(Layer.class)
+                .add(CameraComponent.class)
                 .build(world);
 
         ComponentMapper<Layer> layerMapper = world.getMapper(Layer.class);
@@ -106,12 +105,11 @@ public class Game2 extends BaseGame {
 
     @Override
     public void render() {
-        Global.DELTA = Gdx.graphics.getDeltaTime();
 
-        world.setDelta(Global.DELTA);
+        world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
 
-        Gdx.graphics.setTitle(String.format("FPS: %s", 1f / Global.DELTA));
+        Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
     }
 
     @Override

@@ -6,15 +6,11 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
-import com.sad.function.components.Dimension;
-import com.sad.function.components.Layer;
-import com.sad.function.components.Position;
-import com.sad.function.components.TextureComponent;
+import com.sad.function.components.*;
 import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +18,12 @@ import org.apache.logging.log4j.Logger;
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
 
-    private static Texture nullTexture = new Texture("badlogic.jpg");
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Position> mPosition;
     private ComponentMapper<TextureComponent> mTexture;
     private ComponentMapper<Dimension> mDimension;
+    private ComponentMapper<Animation> mAnimation;
+
     private IntMap<IntSet> entitiesPerLayer;
     private IntArray layersToRender;
     private boolean dirty = false;
@@ -108,18 +105,29 @@ public class RenderingSystem extends BaseEntitySystem {
         Position pos = mPosition.create(entity);
         Dimension dim = mDimension.create(entity);
 
+        //Check if in view before bothering to render the entity.
         if (inView(camera, pos, dim.width, dim.height)) {   //Frustum Culling.
             //If it has a texture, it's a static asset.
-            if (mTexture.has(entity)) {
+            //prefer animation component
+            if (mAnimation.has(entity)) {
+                ;
+                batch.draw(resourceManager.getAnimationKeyFrame(mAnimation.create(entity).animationName, mAnimation.create(entity).stateTime, mAnimation.create(entity).looping),
+                        pos.x,
+                        pos.y,
+                        dim.width,
+                        dim.height);
+            }
+            else if (mTexture.has(entity)) {
                 batch.draw(resourceManager.getStaticAsset(mTexture.create(entity).resourceName),
                         pos.x,
                         pos.y,
                         dim.width,
                         dim.height);
             }
-            //TODO Add animation check here.
             else {
-                batch.draw(nullTexture,
+                logger.info("Missing texture information for {}", entity);
+                //Fallback case.
+                batch.draw(resourceManager.getStaticAsset("null"),
                         pos.x,
                         pos.y,
                         dim.width,
