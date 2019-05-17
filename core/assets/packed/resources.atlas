@@ -1,250 +1,250 @@
 
 resources.png
-size: 324,324
+size: 338,338
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 hero-male-back-attack
   rotate: false
-  xy: 34, 44
-  size: 32, 22
+  xy: 292, 272
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
-  index: 2
-hero-male-back-attack
-  rotate: false
-  xy: 258, 255
-  size: 32, 21
-  orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 1
 hero-male-back-attack
   rotate: false
-  xy: 292, 280
-  size: 32, 21
+  xy: 68, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
+  offset: 0, 0
+  index: 2
+hero-male-back-attack
+  rotate: false
+  xy: 102, 48
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 3
 hero-male-back-attack
   rotate: false
-  xy: 68, 22
-  size: 32, 21
+  xy: 258, 204
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
+  offset: 0, 0
   index: 4
 hero-male-back-idle
   rotate: false
-  xy: 292, 168
-  size: 32, 20
+  xy: 292, 136
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: -1
 hero-male-back-walk
   rotate: false
-  xy: 102, 45
-  size: 32, 21
+  xy: 292, 238
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 4
 hero-male-back-walk
   rotate: false
-  xy: 258, 232
-  size: 32, 21
+  xy: 102, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
+  offset: 0, 0
   index: 2
 hero-male-back-walk
   rotate: false
-  xy: 258, 209
-  size: 32, 21
+  xy: 136, 48
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
-  index: 5
-hero-male-back-walk
-  rotate: false
-  xy: 136, 22
-  size: 32, 21
-  orig: 32, 32
-  offset: 0, 2
-  index: 1
-hero-male-back-walk
-  rotate: false
-  xy: 170, 23
-  size: 32, 20
-  orig: 32, 32
-  offset: 0, 1
+  offset: 0, 0
   index: 6
 hero-male-back-walk
   rotate: false
-  xy: 204, 46
-  size: 32, 20
+  xy: 258, 170
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
+  offset: 0, 0
   index: 3
+hero-male-back-walk
+  rotate: false
+  xy: 204, 48
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 5
+hero-male-back-walk
+  rotate: false
+  xy: 292, 102
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
 hero-male-front-attack
   rotate: false
-  xy: 258, 302
-  size: 32, 22
+  xy: 0, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 1
-  index: 2
-hero-male-front-attack
-  rotate: false
-  xy: 292, 303
-  size: 32, 21
-  orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 1
 hero-male-front-idle
   rotate: false
-  xy: 292, 303
-  size: 32, 21
+  xy: 0, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: -1
 hero-male-front-attack
   rotate: false
-  xy: 292, 212
-  size: 32, 20
+  xy: 34, 48
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+hero-male-front-attack
+  rotate: false
+  xy: 258, 272
+  size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 3
 hero-male-front-attack
   rotate: false
-  xy: 292, 147
-  size: 32, 19
+  xy: 292, 306
+  size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: 4
 hero-male-front-walk
   rotate: false
-  xy: 0, 10
-  size: 32, 22
+  xy: 0, 48
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
+  index: 3
+hero-male-front-walk
+  rotate: false
+  xy: 34, 14
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 4
 hero-male-front-walk
   rotate: false
-  xy: 258, 278
-  size: 32, 22
+  xy: 68, 48
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
-  index: 1
-hero-male-front-walk
-  rotate: false
-  xy: 34, 21
-  size: 32, 21
-  orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
   index: 5
 hero-male-front-walk
   rotate: false
-  xy: 68, 45
-  size: 32, 21
+  xy: 258, 238
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
+  index: 6
+hero-male-front-walk
+  rotate: false
+  xy: 170, 48
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 2
 hero-male-front-walk
   rotate: false
-  xy: 258, 187
-  size: 32, 20
+  xy: 272, 68
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
-  index: 3
-hero-male-front-walk
-  rotate: false
-  xy: 258, 165
-  size: 32, 20
-  orig: 32, 32
-  offset: 0, 3
-  index: 6
-hero-male-side-attack
-  rotate: false
-  xy: 292, 257
-  size: 32, 21
-  orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 1
 hero-male-side-attack
   rotate: false
-  xy: 102, 22
-  size: 32, 21
+  xy: 292, 204
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 2
 hero-male-side-attack
   rotate: false
-  xy: 292, 190
-  size: 32, 20
+  xy: 136, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
+  index: 1
+hero-male-side-attack
+  rotate: false
+  xy: 258, 136
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 3
 hero-male-side-attack
   rotate: false
-  xy: 204, 24
-  size: 32, 20
+  xy: 292, 170
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: 4
 hero-male-side-idle
   rotate: false
-  xy: 170, 45
-  size: 32, 21
+  xy: 306, 68
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 2
+  offset: 0, 0
   index: -1
 hero-male-side-walk
   rotate: false
-  xy: 136, 45
-  size: 32, 21
+  xy: 170, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
   index: 4
 hero-male-side-walk
   rotate: false
-  xy: 292, 234
-  size: 32, 21
+  xy: 258, 102
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
-  index: 1
-hero-male-side-walk
-  rotate: false
-  xy: 258, 143
-  size: 32, 20
-  orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
   index: 6
 hero-male-side-walk
   rotate: false
-  xy: 258, 121
-  size: 32, 20
+  xy: 204, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
+  index: 1
+hero-male-side-walk
+  rotate: false
+  xy: 238, 48
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
   index: 3
 hero-male-side-walk
   rotate: false
-  xy: 258, 100
-  size: 32, 19
+  xy: 238, 14
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
   index: 2
 hero-male-side-walk
   rotate: false
-  xy: 292, 126
-  size: 32, 19
+  xy: 272, 34
+  size: 32, 32
   orig: 32, 32
-  offset: 0, 3
+  offset: 0, 0
   index: 5
 null
   rotate: false
-  xy: 0, 68
+  xy: 0, 82
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
 tile-grass
   rotate: false
-  xy: 0, 34
+  xy: 258, 306
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
