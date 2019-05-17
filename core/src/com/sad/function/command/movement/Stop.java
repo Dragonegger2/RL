@@ -4,15 +4,16 @@ import com.artemis.World;
 import com.sad.function.command.GameCommand;
 import com.sad.function.components.VelocityComponent;
 
-public class MoveVertically implements GameCommand {
+public class Stop implements GameCommand {
+
     private float acceleration;
 
-    public MoveVertically(float acceleration) {
-        this.acceleration = acceleration;
+    public Stop(float xVelocity) {
+        this.acceleration = xVelocity;
     }
 
     @Override
     public void execute(World world, int entity, float delta) {
-        world.getMapper(VelocityComponent.class).create(entity).y += acceleration * delta;
+        world.getMapper(VelocityComponent.class).create(entity).x += acceleration * delta;
     }
 }

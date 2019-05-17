@@ -10,7 +10,9 @@ import com.sad.function.components.Position;
 import com.sad.function.components.TextureComponent;
 import com.sad.function.global.Global;
 import com.sad.function.manager.ResourceManager;
+import com.sad.function.system.InputSystem;
 import com.sad.function.system.MovementSystem;
+import com.sad.function.system.PhysicsSystem;
 import com.sad.function.system.RenderingSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +31,9 @@ public class Game2 extends BaseGame {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
+                        new InputSystem(),
                         new MovementSystem(),
+                        new PhysicsSystem(),
                         new RenderingSystem(resourceManager, camera)
                 )
                 .build();
@@ -53,7 +57,7 @@ public class Game2 extends BaseGame {
         dim.width = 32;
         dim.height = 32;
 
-        createTiles(world, 500, 500);
+        createTiles(world, 200, 100);
     }
 
     private void setupCamera() {

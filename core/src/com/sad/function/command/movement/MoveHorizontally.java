@@ -1,12 +1,10 @@
 package com.sad.function.command.movement;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
+import com.artemis.World;
 import com.sad.function.command.GameCommand;
 import com.sad.function.components.VelocityComponent;
 
 public class MoveHorizontally implements GameCommand {
-    private final ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
 
     private float acceleration;
 
@@ -15,11 +13,7 @@ public class MoveHorizontally implements GameCommand {
     }
 
     @Override
-    public void execute(Entity entity, float delta) {
-        VelocityComponent velocityComponent = velocityMapper.get(entity);
-
-        if(velocityComponent != null) {
-            velocityComponent.x += acceleration * delta;
-        }
+    public void execute(World world, int entity, float delta) {
+        world.getMapper(VelocityComponent.class).create(entity).x += acceleration * delta;
     }
 }

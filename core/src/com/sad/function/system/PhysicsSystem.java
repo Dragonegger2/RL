@@ -1,29 +1,25 @@
 package com.sad.function.system;
 
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.sad.function.components.Position;
+import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
+import com.artemis.systems.IteratingSystem;
 import com.sad.function.components.VelocityComponent;
-
-import static com.badlogic.gdx.math.MathUtils.clamp;
+import com.sad.function.global.Global;
 
 public class PhysicsSystem extends IteratingSystem {
-    private final ComponentMapper<VelocityComponent> velocity = ComponentMapper.getFor(VelocityComponent.class);
+    private ComponentMapper<VelocityComponent> velocity;
 
     public PhysicsSystem() {
-        super(Family.all(VelocityComponent.class).get());
+        super(Aspect.all(VelocityComponent.class));
     }
 
     @Override
-    protected void processEntity(Entity entity, float delta) {
-        VelocityComponent velocityComponent = this.velocity.get(entity);
+    protected void process(int entity) {
+        VelocityComponent velocityComponent = this.velocity.create(entity);
 
         float drag = 5f;
 
-        velocityComponent.x = velocityComponent.x * (1 - delta * drag);
-        velocityComponent.y = velocityComponent.y * (1 - delta * drag);
+        velocityComponent.x = velocityComponent.x * (1 - Global.DELTA * drag);
+        velocityComponent.y = velocityComponent.y * (1 - Global.DELTA * drag);
     }
 }

@@ -1,7 +1,7 @@
 package com.sad.function.command;
 
-import com.badlogic.ashley.core.Entity;
+import com.artemis.World;
 
 public interface GameCommand {
-    void execute(Entity entity, float delta);
+    void execute(World world, int entity, float delta);
 }

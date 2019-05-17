@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
+
     private static Texture nullTexture = new Texture("badlogic.jpg");
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Position> mPosition;
@@ -115,7 +116,9 @@ public class RenderingSystem extends BaseEntitySystem {
                         pos.y,
                         dim.width,
                         dim.height);
-            } else {
+            }
+            //TODO Add animation check here.
+            else {
                 batch.draw(nullTexture,
                         pos.x,
                         pos.y,
