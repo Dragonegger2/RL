@@ -5,6 +5,7 @@ import com.artemis.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,7 @@ public class Game2 extends BaseGame {
 
         world = new World(config);
 
+
         Archetype playerArchetype = new ArchetypeBuilder()
                 .add(Position.class)
                 .add(Animation.class)
@@ -42,15 +44,19 @@ public class Game2 extends BaseGame {
                 .add(Layer.class)
                 .add(CameraComponent.class)
                 .add(Collidable.class)
+                .add(Input.class)
                 .build(world);
 
-        ComponentMapper<Layer> layerMapper = world.getMapper(Layer.class);
-
         int player = world.create(playerArchetype);
+
+        WallEntityFactory wallFactory = new WallEntityFactory(world);
+
+        wallFactory.createWall(40, 40, 100,100);
 
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
         world.getEntity(player).getComponent(Layer.class).zIndex = 1;
+        world.getEntity(player).getComponent(Collidable.class).collisionGroup = Collidable.CollisionGroup.PLAYER;
         dim.width = 32;
         dim.height = 32;
 

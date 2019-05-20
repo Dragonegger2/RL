@@ -11,6 +11,7 @@ public class AnimationSystem extends IteratingSystem {
     public AnimationSystem() {
         super(Aspect.one(Animation.class));
     }
+
     @Override
     protected void process(int entityId) {
         mAnimation.create(entityId).stateTime += world.delta;

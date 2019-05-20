@@ -8,7 +8,7 @@ public class NullGameCommand implements GameCommand {
     private static final Logger logger = LogManager.getLogger(NullGameCommand.class);
 
     @Override
-    public void execute(World world, int entity, float delta) {
+    public void execute(World world, int entity) {
         logger.info("Null command triggered for entity: {}", entity);
     }
 }

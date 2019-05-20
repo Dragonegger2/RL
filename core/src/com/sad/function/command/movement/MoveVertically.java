@@ -12,7 +12,7 @@ public class MoveVertically implements GameCommand {
     }
 
     @Override
-    public void execute(World world, int entity, float delta) {
-        world.getMapper(VelocityComponent.class).create(entity).y += acceleration * delta;
+    public void execute(World world, int entity) {
+        world.getMapper(VelocityComponent.class).create(entity).y += acceleration * world.delta;
     }
 }

@@ -49,18 +49,18 @@ public class InputSystem extends BaseEntitySystem {
     }
 
     private void processEntity(int entity) {
-        //TODO push actions into a queue or something.
+        //TODO push actions into a queue or something so they're not happening willy-nilly.
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            actions.get(Action.MOVE_LEFT).execute(world, entity, world.delta);
+            actions.get(Action.MOVE_LEFT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
         } else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            actions.get(Action.MOVE_RIGHT).execute(world, entity, world.delta);
+            actions.get(Action.MOVE_RIGHT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
         } else if (Gdx.input.isKeyPressed(Keys.UP)) {
-            actions.get(Action.MOVE_UP).execute(world, entity, world.delta);
+            actions.get(Action.MOVE_UP).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-back-walk";
         } else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-            actions.get(Action.MOVE_DOWN).execute(world, entity, world.delta);
+            actions.get(Action.MOVE_DOWN).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-front-walk";
         } else {
             switch (mAnimation.create(entity).direction) {
@@ -76,11 +76,11 @@ public class InputSystem extends BaseEntitySystem {
                     break;
             }
 
-            actions.get(Action.STOP).execute(world, entity, world.delta);
+            actions.get(Action.STOP).execute(world, entity);
         }
 
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-            actions.get(Action.QUIT_GAME).execute(world, entity, world.delta);
+            actions.get(Action.QUIT_GAME).execute(world, entity);
         }
     }
 

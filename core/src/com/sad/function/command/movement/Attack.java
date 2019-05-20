@@ -6,7 +6,7 @@ import com.sad.function.command.GameCommand;
 public class Attack implements GameCommand {
 
     @Override
-    public void execute(World world, int entity, float delta) {
+    public void execute(World world, int entity) {
         //Set the animation to attack!
     }
 

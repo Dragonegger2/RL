@@ -3,47 +3,47 @@
     {
       "name": "hero-male-back-attack",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-side-attack",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-front-attack",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-back-walk",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-side-walk",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-front-walk",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-back-idle",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-side-idle",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     },
     {
       "name": "hero-male-front-idle",
       "playMode": "LOOP",
-      "frameDuration": 0.033
+      "frameDuration": 0.1
     }
   ],
   "static" : [

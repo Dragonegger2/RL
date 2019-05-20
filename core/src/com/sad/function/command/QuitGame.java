@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 public class QuitGame implements GameCommand {
 
     @Override
-    public void execute(World world, int entity, float delta) {
+    public void execute(World world, int entity) {
         Gdx.app.exit();
     }
 

@@ -13,8 +13,8 @@ public class MoveDown implements GameCommand {
     }
 
     @Override
-    public void execute(World world, int entity, float delta) {
-        world.getMapper(VelocityComponent.class).create(entity).y -= acceleration * delta;
+    public void execute(World world, int entity) {
+        world.getMapper(VelocityComponent.class).create(entity).y -= acceleration * world.delta;
 
         if (world.getMapper(Animation.class).has(entity)) {
             world.getMapper(Animation.class).create(entity).direction = Animation.Direction.DOWN;
