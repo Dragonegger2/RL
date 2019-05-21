@@ -6,6 +6,7 @@ import com.artemis.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
@@ -18,10 +19,12 @@ public class Game2 extends BaseGame {
     private World world;
     private Camera camera;
 
+    private TileFactory tileFactory;
+    private WallEntityFactory wallFactory;
+
     @Override
     public void create() {
         ResourceManager resourceManager = new ResourceManager();
-
         setupCamera();
 
         WorldConfiguration config = new WorldConfigurationBuilder()
@@ -53,9 +56,11 @@ public class Game2 extends BaseGame {
 
         int player = world.create(playerArchetype);
 
-        WallEntityFactory wallFactory = new WallEntityFactory(world);
+        tileFactory = new TileFactory(world);
+        wallFactory = new WallEntityFactory(world);
 
-        wallFactory.createWall(40, 40, 100,100);
+        wallFactory.createWall(32, 32, 32,32);
+        wallFactory.createWall(64, 32, 32, 32);
 
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
@@ -67,9 +72,28 @@ public class Game2 extends BaseGame {
         dim.width = 32;
         dim.height = 32;
 
-        world.getSystem(TagManager.class).register("PLAYER", player);
 
-        createTiles(world, 200, 100);
+        createTiles(100, 100);
+        createBox();
+
+        world.getSystem(TagManager.class).register("PLAYER", player);
+    }
+
+    private void createBox() {
+        Archetype boxArchetype = new ArchetypeBuilder()
+                .add(Position.class)
+                .add(TextureComponent.class)
+                .add(Dimension.class)
+                .add(Layer.class)
+                .add(Collidable.class)
+                .build(world);
+
+        int box = world.create(boxArchetype);
+
+        world.getMapper(Position.class).create(box).setX(150).setY(150);
+        world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
+        world.getMapper(Collidable.class).create(box).isStatic = false;
+        world.getMapper(Dimension.class).create(box).setDimensions(32f,32f);
     }
 
     private void setupCamera() {
@@ -83,30 +107,12 @@ public class Game2 extends BaseGame {
         camera.update();
     }
 
-    private void createTiles(World world, int width, int height) {
-        ComponentMapper<Position> mPosition = world.getMapper(Position.class);
-        ComponentMapper<TextureComponent> mTexture = world.getMapper(TextureComponent.class);
-        ComponentMapper<Layer> mLayer = world.getMapper(Layer.class);
-
-        Archetype tileArchetype = new ArchetypeBuilder()
-                //.add(Position.class)
-                //.add(TextureComponent.class)
-                //.add(Layer.class)
-                .add(Dimension.class)
-                .build(world);
-
+    private void createTiles(int width, int height) {
         double start = System.currentTimeMillis();
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int tile = world.create(tileArchetype);
-
-                Position pos = mPosition.create(tile);
-                pos.x = x * 32;
-                pos.y = y * 32;
-
-                mLayer.create(tile).layer = Layer.RENDERABLE_LAYER.GROUND;
-                mTexture.create(tile).resourceName = "tile-grass";
+                tileFactory.create(x * 32, y * 32, "tile-grass");
             }
         }
 

@@ -31,8 +31,10 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<Dimension> mDimension;
     private ComponentMapper<Animation> mAnimation;
     private ComponentMapper<Collidable> mCollidable;
+
     private IntMap<IntSet> entitiesPerLayer;
     private IntArray layersToRender;
+
     private boolean dirty = false;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
@@ -50,7 +52,7 @@ public class RenderingSystem extends BaseEntitySystem {
     };
 
     public RenderingSystem(ResourceManager resourceManager, Camera camera) {
-        super(Aspect.all(Position.class).one(TextureComponent.class, Animation.class));
+        super(Aspect.all(Position.class, Layer.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
@@ -120,13 +122,9 @@ public class RenderingSystem extends BaseEntitySystem {
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-            for (int i = 0; i < layersToRender.size; i++) {
-                IntSet.IntSetIterator iterator = entitiesPerLayer.get(layersToRender.get(i)).iterator();
-                while (iterator.hasNext) {
-                    int entity = iterator.next();
-                    renderBoundingBox(entity);
-
-                }
+            Iterator<Integer> iterator = layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT).iterator();
+            while (iterator.hasNext()) {
+                renderBoundingBox(iterator.next());
             }
 
             shapeRenderer.end();

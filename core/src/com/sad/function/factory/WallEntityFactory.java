@@ -22,7 +22,7 @@ public class WallEntityFactory {
     }
 
     /**
-     * Register the creation of a new wall with the world use to initialize this factory.
+     * Register the creation of a new wall with the world use to create this factory.
      * @param x position
      * @param y position
      * @return entity int.

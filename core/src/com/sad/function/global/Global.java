@@ -10,8 +10,6 @@ public class Global {
 
     public static final float MAX_MOVEMENT_SPEED = 160f;
 
-    public static float DELTA = 0.0f;
-
     public static final boolean DEBUG = true;
 
 }

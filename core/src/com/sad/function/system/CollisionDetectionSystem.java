@@ -4,7 +4,6 @@ import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.Position;
@@ -23,6 +22,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private NarrowSpacialManager narrowSpacialManager;
 
     private IntBag collidables;
+    private Vector2 penetration = new Vector2();
 
     public CollisionDetectionSystem() {
         super(Aspect.all(Collidable.class, Position.class));
@@ -32,25 +32,31 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         collidables = new IntBag();
     }
 
-    private Vector2 penetration = new Vector2();
-
     @Override
     protected void processSystem() {
         for (int a = 0; a < collidables.size(); a++) {
             for (int b = a + 1; b < collidables.size(); b++) {
 
-                //Skip if both entities are "sleeping."
-                if(areBoxesColliding(a, b, penetration)) {
+                int e1 = collidables.get(a);
+                int e2 = collidables.get(b);
+                //Ignore static elements.
+                if(mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
+                    break;
+                }
+                if (boxesAreColliding(e1, e2, penetration)) {
                     //Apply the penetration?
                     //Figure out who, if anybody is static.
                     //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
 
                     //Both are dynamic
-                    if(!mCollidable.create(a).isStatic && !mCollidable.create(b).isStatic) {
-                        logger.info("Both entities were dynamic. Needs a case to be written for it.");
+                    if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
+
+                        //Split the penetration vector.
+                        mPosition.create(e1).x -= penetration.x;
+                        mPosition.create(e1).y -= penetration.y;
                     } else {
                         //Figure out which one is dynamic.
-                        int dynamic = mCollidable.create(a).isStatic ? b : a; //if a is static use b, otherwise just use a.
+                        int dynamic = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
 
                         mPosition.create(dynamic).x -= penetration.x;
                         mPosition.create(dynamic).y -= penetration.y;
@@ -62,7 +68,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
 
     }
 
-    private boolean areBoxesColliding(int a, int b, Vector2 penetration) {
+    private boolean boxesAreColliding(int a, int b, Vector2 penetration) {
 
         float minkowskiTop = top(a) - bottom(b);
         float minkowskiBottom = bottom(a) - top(b);
@@ -70,7 +76,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         float minkowskiRight = right(a) - left(b);
 
         //If colliding calculate the penetration vector.
-        if(minkowskiRight >= 0 && minkowskiLeft <= 0 && minkowskiTop >= 0 && minkowskiBottom <= 0) {
+        if (minkowskiRight >= 0 && minkowskiLeft <= 0 && minkowskiTop >= 0 && minkowskiBottom <= 0) {
             float min = Float.MAX_VALUE;
 
             if (abs(minkowskiLeft) < min) {
@@ -92,7 +98,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
             return true;
         }
 
-        penetration.set(0f,0f);
+        penetration.set(0f, 0f);
 
         return false;
     }
@@ -113,45 +119,6 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         return mPosition.create(entity).x + mCollidable.create(entity).width;
     }
 
-    private Rectangle check(int a, int b) {
-        return narrowSpacialManager.minkowskiDifference(
-                world.getMapper(Position.class).create(a).x,
-                world.getMapper(Position.class).create(a).y,
-                world.getMapper(Collidable.class).create(a).width,
-                world.getMapper(Collidable.class).create(a).height,
-                world.getMapper(Position.class).create(b).x,
-                world.getMapper(Position.class).create(b).y,
-                world.getMapper(Collidable.class).create(b).width,
-                world.getMapper(Collidable.class).create(b).height
-        );
-    }
-
-    private int whoIsAwake(int a, int b) {
-        boolean aIsAwake = mCollidable.create(a).isStatic;
-        boolean bIsAwake = mCollidable.create(b).isStatic;
-
-        //Both are isStatic
-        if (bIsAwake && aIsAwake) {
-            return a + b + 1;           //"Random" offset to prevent error when an entity has an id of 0.
-        }
-        //A is isStatic
-        if (aIsAwake) {
-            return a;
-        }
-        //B is isStatic
-        if (bIsAwake) {
-            return b;
-        }
-
-        //Nobody is isStatic.
-        return -1;
-    }
-
-    public boolean detect() {
-
-        return false;
-    }
-
     @Override
     public void inserted(int entity) {
         collidables.add(entity);
@@ -163,4 +130,10 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
             collidables.remove(collidables.indexOf(entity));
         }
     }
+
+    public class CollisionEvent {
+        public int entityCollidedWith;
+        public Vector2 penetrationVector;
+    }
+    
 }
