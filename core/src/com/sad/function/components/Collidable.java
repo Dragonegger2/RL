@@ -11,7 +11,7 @@ public class Collidable extends Component {
     public float height = 16f;
     public CollisionGroup collisionGroup = CollisionGroup.STATIC;
 
-    public boolean isStatic = true;                //Used to detect only moving objects.
+    public boolean isStatic = false;                //Used to detect only moving objects.
     public IntBag collidedWith = new IntBag();
 
     public void setDimensions(float width, float height) {

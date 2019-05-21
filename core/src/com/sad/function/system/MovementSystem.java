@@ -32,14 +32,5 @@ public class MovementSystem extends IteratingSystem {
 
         position.x += velocityComponent.x * world.delta;
         position.y += velocityComponent.y * world.delta;
-
-
-        if (velocityComponent.x != 0 || velocityComponent.y != 0) {
-            if (mCollidable.has(entityId)) {
-                mCollidable.create(entityId).isStatic = false;
-            }
-        } else {
-            mCollidable.create(entityId).isStatic = true;
-        }
     }
 }

@@ -37,7 +37,7 @@ public class WallEntityFactory {
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
         world.getMapper(Collidable.class).create(wall).setDimensions(width, height);
-        world.getMapper(Collidable.class).create(wall).isStatic = false;
+        world.getMapper(Collidable.class).create(wall).isStatic = true;
 
         return wall;
     }
