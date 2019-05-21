@@ -33,12 +33,13 @@ public class WallEntityFactory {
         world.getMapper(Position.class).create(wall).x = x;
         world.getMapper(Position.class).create(wall).y = y;
 
-        world.getMapper(Layer.class).create(wall).zIndex = 1;
+        world.getMapper(Layer.class).create(wall).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
         world.getMapper(Collidable.class).create(wall).setDimensions(width, height);
         world.getMapper(Collidable.class).create(wall).isStatic = true;
 
+        world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
     }
 }

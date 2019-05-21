@@ -3,6 +3,7 @@ package com.sad.function.system;
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
+import com.artemis.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -17,8 +18,12 @@ import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.*;
+
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
+    //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
+    private ZComparator zComparator;
 
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Position> mPosition;
@@ -26,18 +31,26 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<Dimension> mDimension;
     private ComponentMapper<Animation> mAnimation;
     private ComponentMapper<Collidable> mCollidable;
-
     private IntMap<IntSet> entitiesPerLayer;
     private IntArray layersToRender;
     private boolean dirty = false;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-
     private ResourceManager resourceManager;
     private Camera camera;
+    private HashMap<Layer.RENDERABLE_LAYER, List<Integer>> layerCollections;            //Used for rendering.
+    private IntMap<Layer.RENDERABLE_LAYER> idCollection;                                //Used for removed.
+
+    private Layer.RENDERABLE_LAYER[] layers = new Layer.RENDERABLE_LAYER[]{
+            Layer.RENDERABLE_LAYER.GROUND,
+            Layer.RENDERABLE_LAYER.GROUND_DECALS,
+            Layer.RENDERABLE_LAYER.DEFAULT,
+            Layer.RENDERABLE_LAYER.WEATHER,
+            Layer.RENDERABLE_LAYER.UI
+    };
 
     public RenderingSystem(ResourceManager resourceManager, Camera camera) {
-        super(Aspect.all());
+        super(Aspect.all(Position.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
@@ -46,37 +59,41 @@ public class RenderingSystem extends BaseEntitySystem {
         entitiesPerLayer = new IntMap<>();
         layersToRender = new IntArray();
 
+        layerCollections = new HashMap<>();
+        idCollection = new IntMap<>();
+
         batch = new SpriteBatch();
+
+        for (Layer.RENDERABLE_LAYER layer : layers) {
+            layerCollections.put(layer, new ArrayList<>());
+        }
     }
 
     @Override
     public void begin() {
-        if (dirty) {
-            layersToRender.sort();
-            dirty = false;
+        if (zComparator == null) {
+            zComparator = new ZComparator(getWorld(), 100);
+        }
+        for (Layer.RENDERABLE_LAYER layer : layerCollections.keySet()) {
+            //Going to sort the same way for all of the collections.
+            //TODO Sort by y / ratio - yOffset of each entity.
+            layerCollections.get(layer).sort(zComparator);
         }
     }
 
     @Override
     protected void inserted(int entity) {
-        int zIndex = mLayer.create(entity).zIndex;
-        IntSet entities = entitiesPerLayer.get(zIndex);
-        if (entities == null) {
-            entities = new IntSet();
-            entitiesPerLayer.put(zIndex, entities);
-            layersToRender.add(zIndex);
+        if (!layerCollections.containsKey(mLayer.create(entity).layer)) {
+            layerCollections.put(mLayer.create(entity).layer, new ArrayList<>());
         }
-        entities.add(entity);
-        dirty = true;
+
+        layerCollections.get(mLayer.create(entity).layer).add(entity);
+        idCollection.put(entity, mLayer.create(entity).layer);
     }
 
     @Override
     protected void removed(int entity) {
-        int zIndex = mLayer.get(entity).zIndex;
-        IntSet entities = entitiesPerLayer.get(zIndex);
-        if (entities != null) {
-            entities.remove(entity);
-        }
+        layerCollections.get(idCollection.get(entity)).remove(entity);
     }
 
     @Override
@@ -90,12 +107,10 @@ public class RenderingSystem extends BaseEntitySystem {
 
         batch.begin();
 
-        for (int i = 0; i < layersToRender.size; i++) {
-            IntSet.IntSetIterator iterator = entitiesPerLayer.get(layersToRender.get(i)).iterator();
-            while (iterator.hasNext) {
-                int entity = iterator.next();
-                renderEntity(entity);
-
+        for (Layer.RENDERABLE_LAYER layer : layers) {
+            Iterator<Integer> iterator = layerCollections.get(layer).iterator();
+            while (iterator.hasNext()) {
+                renderEntity(iterator.next());
             }
         }
 
@@ -150,7 +165,7 @@ public class RenderingSystem extends BaseEntitySystem {
                         dim.width,
                         dim.height);
             } else {
-                logger.info("Missing texture information for {}", entity);
+                logger.error("Missing texture information for {}", entity);
                 //Fallback case.
                 batch.draw(resourceManager.getStaticAsset("null"),
                         pos.x,
@@ -168,6 +183,25 @@ public class RenderingSystem extends BaseEntitySystem {
             Collidable coll = mCollidable.create(entity);
             Position position = mPosition.create(entity);
             shapeRenderer.rect(position.x, position.y, coll.width, coll.height);
+        }
+    }
+
+    private class ZComparator implements Comparator<Integer> {
+        private World world;
+        private float isometricRangePerYValue = 100f;
+
+        ZComparator(World world, float isometricRangePerYValue) {
+            this.world = world;
+            this.isometricRangePerYValue = isometricRangePerYValue;
+        }
+
+        @Override
+        public int compare(Integer e1, Integer e2) {
+
+            //TODO Need to take into account the offset variable in layer.
+            return (int) Math.signum(
+                    (-world.getMapper(Position.class).create(e1).y * isometricRangePerYValue)
+                            + (world.getMapper(Position.class).create(e2).y * isometricRangePerYValue));
         }
     }
 }

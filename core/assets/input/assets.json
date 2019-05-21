@@ -48,6 +48,8 @@
   ],
   "static" : [
     "null",
-    "tile-grass"
+    "tile-grass",
+    "wall",
+    "beaten_brick_tiled"
   ]
 }

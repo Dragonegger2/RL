@@ -60,8 +60,9 @@ public class Game2 extends BaseGame {
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
         world.getMapper(Collidable.class).create(player).isStatic = false;
-        world.getEntity(player).getComponent(Layer.class).zIndex = 1;
         world.getEntity(player).getComponent(Collidable.class).collisionGroup = Collidable.CollisionGroup.PLAYER;
+
+        world.getEntity(player).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         dim.width = 32;
         dim.height = 32;
@@ -104,8 +105,7 @@ public class Game2 extends BaseGame {
                 pos.x = x * 32;
                 pos.y = y * 32;
 
-                mLayer.create(tile).zIndex = 0;
-
+                mLayer.create(tile).layer = Layer.RENDERABLE_LAYER.GROUND;
                 mTexture.create(tile).resourceName = "tile-grass";
             }
         }
