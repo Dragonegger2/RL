@@ -1,5 +1,6 @@
 package com.sad.function.game;
 
+import com.artemis.managers.TagManager;
 import com.sad.function.components.*;
 import com.artemis.*;
 import com.badlogic.gdx.Gdx;
@@ -25,9 +26,12 @@ public class Game2 extends BaseGame {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
+                        new TagManager(),
                         new InputSystem(),
                         new MovementSystem(),
                         new PhysicsSystem(),
+                        new CollisionDetectionSystem(),
+                        //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),
                         new RenderingSystem(resourceManager, camera)
@@ -57,8 +61,11 @@ public class Game2 extends BaseGame {
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
         world.getEntity(player).getComponent(Layer.class).zIndex = 1;
         world.getEntity(player).getComponent(Collidable.class).collisionGroup = Collidable.CollisionGroup.PLAYER;
+
         dim.width = 32;
         dim.height = 32;
+
+        world.getSystem(TagManager.class).register("PLAYER", player);
 
         createTiles(world, 200, 100);
     }

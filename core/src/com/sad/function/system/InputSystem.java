@@ -75,7 +75,6 @@ public class InputSystem extends BaseEntitySystem {
                     world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-idle";
                     break;
             }
-
             actions.get(Action.STOP).execute(world, entity);
         }
 

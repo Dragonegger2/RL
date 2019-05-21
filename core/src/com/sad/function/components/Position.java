@@ -3,9 +3,10 @@ package com.sad.function.components;
 import com.badlogic.ashley.core.Component;
 
 /**
- * Contains the coordinates of an entity in world space.
+ * Contains the coordinates of an entity in world space based on the center of the object.
  */
 public class Position extends com.artemis.Component implements Component {
+
     public float x = 0.0f;
     public float y = 0.0f;
     public float z = 0.0f;
