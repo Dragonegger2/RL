@@ -101,7 +101,7 @@ public class RenderingSystem extends BaseEntitySystem {
     @Override
     protected void processSystem() {
 
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(100f/255f, 149f/255f, 237f/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();

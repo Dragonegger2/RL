@@ -9,7 +9,6 @@ import com.artemis.utils.IntBag;
 public class Collidable extends Component {
     public float width = 32f;
     public float height = 16f;
-    public CollisionGroup collisionGroup = CollisionGroup.STATIC;
 
     public boolean isStatic = false;                //Used to detect only moving objects.
     public IntBag collidedWith = new IntBag();
@@ -19,8 +18,18 @@ public class Collidable extends Component {
         this.height = height;
     }
 
-    public enum CollisionGroup {
-        PLAYER,
-        STATIC
+    public Collidable setHeight(float height) {
+        this.height = height;
+        return this;
+    }
+
+    public Collidable setWidth(float width) {
+        this.width = width;
+        return this;
+    }
+
+    public Collidable setIsState(boolean isStatic) {
+        this.isStatic = isStatic;
+        return this;
     }
 }

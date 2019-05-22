@@ -30,9 +30,4 @@ class NarrowSpacialManager {
 
         return md;
     }
-
-//    public boolean areCollidint(float aX, float aY, float aWidth, float aHeight, float bX, float bY, float bWidth, float bHeight, Vector2 penetration) {
-//        Rectangle minkowski;
-//
-//    }
 }

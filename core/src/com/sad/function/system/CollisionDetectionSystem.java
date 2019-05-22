@@ -44,19 +44,22 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
                     break;
                 }
                 if (boxesAreColliding(e1, e2, penetration)) {
-                    //Apply the penetration?
-                    //Figure out who, if anybody is static.
                     //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
-
                     //Both are dynamic
                     if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
-
+                        logger.info("Both are dynamic. Need to handle this case.");
                         //Split the penetration vector.
-                        mPosition.create(e1).x -= penetration.x;
-                        mPosition.create(e1).y -= penetration.y;
-                    } else {
+                        mPosition.create(e1).x -= penetration.x / 2f;
+                        mPosition.create(e1).y -= penetration.y / 2f;
+
+                        mPosition.create(e2).x += penetration.x / 2f;
+                        mPosition.create(e2).y += penetration.y / 2f;
+
+                    } else { //Only one is dynamic.
                         //Figure out which one is dynamic.
                         int dynamic = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
+
+                        //TODO Alert whomever is dynamic with the event.
 
                         mPosition.create(dynamic).x -= penetration.x;
                         mPosition.create(dynamic).y -= penetration.y;
@@ -135,5 +138,5 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         public int entityCollidedWith;
         public Vector2 penetrationVector;
     }
-    
+
 }

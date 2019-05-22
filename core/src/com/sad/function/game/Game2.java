@@ -1,11 +1,11 @@
 package com.sad.function.game;
 
-import com.artemis.managers.TagManager;
-import com.sad.function.components.*;
 import com.artemis.*;
+import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.sad.function.components.*;
 import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.manager.ResourceManager;
@@ -22,9 +22,11 @@ public class Game2 extends BaseGame {
     private TileFactory tileFactory;
     private WallEntityFactory wallFactory;
 
+    private ResourceManager resourceManager;
     @Override
     public void create() {
-        ResourceManager resourceManager = new ResourceManager();
+        resourceManager = new ResourceManager();
+
         setupCamera();
 
         WorldConfiguration config = new WorldConfigurationBuilder()
@@ -65,7 +67,6 @@ public class Game2 extends BaseGame {
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
         world.getMapper(Collidable.class).create(player).isStatic = false;
-        world.getEntity(player).getComponent(Collidable.class).collisionGroup = Collidable.CollisionGroup.PLAYER;
 
         world.getEntity(player).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
@@ -74,12 +75,13 @@ public class Game2 extends BaseGame {
 
 
         createTiles(100, 100);
-        createBox();
+        createBox(150,150);
+        createBox(190,190);
 
         world.getSystem(TagManager.class).register("PLAYER", player);
     }
 
-    private void createBox() {
+    private void createBox(float x, float y) {
         Archetype boxArchetype = new ArchetypeBuilder()
                 .add(Position.class)
                 .add(TextureComponent.class)
@@ -90,9 +92,10 @@ public class Game2 extends BaseGame {
 
         int box = world.create(boxArchetype);
 
-        world.getMapper(Position.class).create(box).setX(150).setY(150);
+        world.getMapper(TextureComponent.class).create(box).resourceName = "box";
+        world.getMapper(Position.class).create(box).setX(x).setY(y);
         world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
-        world.getMapper(Collidable.class).create(box).isStatic = false;
+        world.getMapper(Collidable.class).create(box).setIsState(false).setHeight(32f).setWidth(32f);
         world.getMapper(Dimension.class).create(box).setDimensions(32f,32f);
     }
 
@@ -123,7 +126,6 @@ public class Game2 extends BaseGame {
 
     @Override
     public void render() {
-
         world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
 
@@ -132,6 +134,6 @@ public class Game2 extends BaseGame {
 
     @Override
     public void dispose() {
-
+        resourceManager.dispose();
     }
 }
