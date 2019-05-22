@@ -50,6 +50,7 @@
     "null",
     "tile-grass",
     "wall",
-    "beaten_brick_tiled"
+    "beaten_brick_tiled",
+    "box"
   ]
 }

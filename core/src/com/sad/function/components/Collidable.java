@@ -1,6 +1,7 @@
 package com.sad.function.components;
 
 import com.artemis.Component;
+import com.sad.function.system.CollisionCategory;
 
 /**
  * Collision detection component.
@@ -10,8 +11,11 @@ public class Collidable extends Component {
     public float height = 16f;
     public float xOffset = 0f;
     public float yOffset = 0f;
+    public CollisionCategory collisionCategory = CollisionCategory.NULL;
 
     public boolean isStatic = false;                //Used to detect only moving objects.
+
+    private CollisionHandler handler;
 
     public void setDimensions(float width, float height) {
         this.width = width;
@@ -41,5 +45,22 @@ public class Collidable extends Component {
     public Collidable setYOffset(float yOffset) {
         this.yOffset = yOffset;
         return this;
+    }
+
+    public Collidable setCollisionCategory(CollisionCategory collisionCategory) {
+        this.collisionCategory = collisionCategory;
+        return this;
+    }
+
+    public Collidable setHandler(CollisionHandler handler) {
+        this.handler = handler;
+        return this;
+    }
+
+    public CollisionHandler getHandler() {
+        if(handler == null) {
+            handler = new NullHandler();
+        }
+        return handler;
     }
 }

@@ -4,13 +4,17 @@ import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.sad.function.components.*;
+import com.sad.function.system.CollisionCategory;
 
 public class WallEntityFactory {
     private World world;
     private Archetype wallArchetype;
+    private static NullHandler wallHandler;
 
     public WallEntityFactory(World world) {
         this.world = world;
+
+        wallHandler = new NullHandler();
 
         wallArchetype = new ArchetypeBuilder()
                 .add(Position.class)
@@ -38,6 +42,9 @@ public class WallEntityFactory {
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
         world.getMapper(Collidable.class).create(wall).setDimensions(width, height);
         world.getMapper(Collidable.class).create(wall).isStatic = true;
+        world.getMapper(Collidable.class).create(wall)
+                .setCollisionCategory(CollisionCategory.WALL)
+                .setHandler(wallHandler);
 
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;

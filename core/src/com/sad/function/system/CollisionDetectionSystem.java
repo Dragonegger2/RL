@@ -18,16 +18,11 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private ComponentMapper<Collidable> mCollidable;
     private ComponentMapper<Position> mPosition;
 
-    //TODO: Add broad phase spacial management.
-    private NarrowSpacialManager narrowSpacialManager;
-
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
 
     public CollisionDetectionSystem() {
         super(Aspect.all(Collidable.class, Position.class));
-
-        narrowSpacialManager = new NarrowSpacialManager();
 
         collidables = new IntBag();
     }
@@ -39,30 +34,36 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
 
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
+
                 //Ignore static elements.
                 if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
                     break;
                 }
+
+                //Are we colliding?
                 if (boxesAreColliding(e1, e2, penetration)) {
                     //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
                     //Both are dynamic
                     if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
-                        logger.info("Both are dynamic. Need to handle this case.");
-                        //Split the penetration vector.
-                        mPosition.create(e1).x -= penetration.x / 2f;
-                        mPosition.create(e1).y -= penetration.y / 2f;
-
-                        mPosition.create(e2).x += penetration.x / 2f;
-                        mPosition.create(e2).y += penetration.y / 2f;
+                        mCollidable.create(e1).getHandler().handleCollision(world, e2, penetration);
+                        mCollidable.create(e2).getHandler().handleCollision(world, e1, penetration);
+                        //STEP Separate the two colliding objects:
+//                        mPosition.create(e1).x -= penetration.x / 2f;
+//                        mPosition.create(e1).y -= penetration.y / 2f;
+//
+//                        mPosition.create(e2).x += penetration.x / 2f;
+//                        mPosition.create(e2).y += penetration.y / 2f;
 
                     } else { //Only one is dynamic.
                         //Figure out which one is dynamic.
-                        int dynamic = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
+                        int dynamicEntity = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
+                        int staticEntity = mCollidable.create(e1).isStatic ? e1 : e2;
 
                         //TODO Alert whomever is dynamic with the event.
-
-                        mPosition.create(dynamic).x -= penetration.x;
-                        mPosition.create(dynamic).y -= penetration.y;
+                        //Separate the two objects, only the dynamic object moves in this case.
+//                        mPosition.create(dynamic).x -= penetration.x;
+//                        mPosition.create(dynamic).y -= penetration.y;
+                        mCollidable.create(dynamicEntity).getHandler().handleCollision(world, staticEntity, penetration);
                     }
                 }
 
@@ -132,11 +133,6 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         if (collidables.indexOf(entity) != -1) {
             collidables.remove(collidables.indexOf(entity));
         }
-    }
-
-    public class CollisionEvent {
-        public int entityCollidedWith;
-        public Vector2 penetrationVector;
     }
 
 }

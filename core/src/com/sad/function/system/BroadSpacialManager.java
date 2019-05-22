@@ -114,7 +114,6 @@ public class BroadSpacialManager {
      * Returns a list of nearby entities that are currently placed in the collection.
      *
      * @param obj UUID of an object managed by the EntityManager. Must have a SpriteComponent and TransformComponent (currently)
-     *            TODO:Enhancement move data around so it's not necessary.
      * @return The list of objects that are colliding with the passed in obj.
      */
     public List<Integer> getNearby(int obj) {

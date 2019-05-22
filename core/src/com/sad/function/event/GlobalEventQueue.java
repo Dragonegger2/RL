@@ -32,7 +32,7 @@ public class GlobalEventQueue implements Observer {
     }
 
     /**
-     * Register a listener by type.
+     * Register a listener by collisionCategory.
      * @param type of event to listen for.
      * @param listener to pass event to when event gets fired.
      */

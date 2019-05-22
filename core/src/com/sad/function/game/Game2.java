@@ -45,7 +45,19 @@ public class Game2 extends BaseGame {
 
         world = new World(config);
 
+        tileFactory = new TileFactory(world);
+        wallFactory = new WallEntityFactory(world);
 
+        createPlayer();
+
+
+        createTiles(100, 100);
+        createBox(150,150);
+        createBox(190,190);
+
+    }
+
+    private void createPlayer() {
         Archetype playerArchetype = new ArchetypeBuilder()
                 .add(Position.class)
                 .add(Animation.class)
@@ -58,28 +70,23 @@ public class Game2 extends BaseGame {
 
         int player = world.create(playerArchetype);
 
-        tileFactory = new TileFactory(world);
-        wallFactory = new WallEntityFactory(world);
-
         wallFactory.createWall(32, 32, 32,32);
         wallFactory.createWall(64, 32, 32, 32);
 
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
-        world.getMapper(Collidable.class).create(player).setIsState(false).setXOffset(6f).setWidth(20f);
+        world.getMapper(Collidable.class).create(player)
+                .setIsState(false)
+                .setXOffset(6f)
+                .setWidth(20f)
+                .setHandler(new PlayerCollisionHandler(player)).setCollisionCategory(CollisionCategory.PLAYER);
         world.getEntity(player).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         dim.width = 32;
         dim.height = 32;
-
-
-        createTiles(100, 100);
-        createBox(150,150);
-        createBox(190,190);
-
         world.getSystem(TagManager.class).register("PLAYER", player);
-    }
 
+    }
     private void createBox(float x, float y) {
         Archetype boxArchetype = new ArchetypeBuilder()
                 .add(Position.class)
@@ -94,7 +101,7 @@ public class Game2 extends BaseGame {
         world.getMapper(TextureComponent.class).create(box).resourceName = "box";
         world.getMapper(Position.class).create(box).setX(x).setY(y);
         world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
-        world.getMapper(Collidable.class).create(box).setIsState(false).setHeight(32f).setWidth(32f);
+        world.getMapper(Collidable.class).create(box).setIsState(false).setHeight(32f).setWidth(32f).setCollisionCategory(CollisionCategory.BOX);
         world.getMapper(Dimension.class).create(box).setDimensions(32f,32f);
     }
 
