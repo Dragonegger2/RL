@@ -66,8 +66,7 @@ public class Game2 extends BaseGame {
 
         world.getEntity(player).getComponent(Position.class).x = 10;
         Dimension dim = world.getEntity(player).getComponent(Dimension.class);
-        world.getMapper(Collidable.class).create(player).isStatic = false;
-
+        world.getMapper(Collidable.class).create(player).setIsState(false).setXOffset(6f).setWidth(20f);
         world.getEntity(player).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         dim.width = 32;

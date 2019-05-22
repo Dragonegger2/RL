@@ -180,7 +180,7 @@ public class RenderingSystem extends BaseEntitySystem {
         if (mCollidable.has(entity)) {
             Collidable coll = mCollidable.create(entity);
             Position position = mPosition.create(entity);
-            shapeRenderer.rect(position.x, position.y, coll.width, coll.height);
+            shapeRenderer.rect(position.x + coll.xOffset, position.y + coll.yOffset, coll.width, coll.height);
         }
     }
 

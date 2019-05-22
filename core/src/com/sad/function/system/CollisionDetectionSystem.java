@@ -40,7 +40,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
                 //Ignore static elements.
-                if(mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
+                if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
                     break;
                 }
                 if (boxesAreColliding(e1, e2, penetration)) {
@@ -107,19 +107,19 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     }
 
     private float bottom(int entity) {
-        return mPosition.create(entity).y;
+        return mPosition.create(entity).y + mCollidable.create(entity).yOffset;
     }
 
     private float top(int entity) {
-        return mPosition.create(entity).y + mCollidable.create(entity).height;
+        return mPosition.create(entity).y + mCollidable.create(entity).yOffset + mCollidable.create(entity).height;
     }
 
     private float left(int entity) {
-        return mPosition.create(entity).x;
+        return mPosition.create(entity).x + mCollidable.create(entity).xOffset;
     }
 
     private float right(int entity) {
-        return mPosition.create(entity).x + mCollidable.create(entity).width;
+        return mPosition.create(entity).x + mCollidable.create(entity).xOffset + mCollidable.create(entity).width;
     }
 
     @Override
