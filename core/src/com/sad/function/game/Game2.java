@@ -87,6 +87,7 @@ public class Game2 extends BaseGame {
         world.getSystem(TagManager.class).register("PLAYER", player);
 
     }
+
     private void createBox(float x, float y) {
         Archetype boxArchetype = new ArchetypeBuilder()
                 .add(Position.class)
@@ -101,7 +102,13 @@ public class Game2 extends BaseGame {
         world.getMapper(TextureComponent.class).create(box).resourceName = "box";
         world.getMapper(Position.class).create(box).setX(x).setY(y);
         world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
-        world.getMapper(Collidable.class).create(box).setIsState(false).setHeight(32f).setWidth(32f).setCollisionCategory(CollisionCategory.BOX);
+        world.getMapper(Collidable.class).create(box)
+                .setIsState(false)
+                .setHeight(32f)
+                .setWidth(32f)
+                .setCollisionCategory(CollisionCategory.BOX)
+                .setHandler(new BoxCollisionHandler(box));
+
         world.getMapper(Dimension.class).create(box).setDimensions(32f,32f);
     }
 

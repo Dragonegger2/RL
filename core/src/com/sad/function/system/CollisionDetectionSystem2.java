@@ -1,8 +1,8 @@
 package com.sad.function.system;
 
 import com.artemis.Aspect;
-import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
+import com.artemis.systems.IntervalIteratingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 
 import static java.lang.Math.abs;
 
-public class CollisionDetectionSystem extends BaseEntitySystem {
-    private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem.class);
+public class CollisionDetectionSystem2 extends IntervalIteratingSystem {
+    private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem2.class);
 
     private ComponentMapper<Collidable> mCollidable;
     private ComponentMapper<Position> mPosition;
@@ -21,44 +21,31 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
 
-    public CollisionDetectionSystem() {
-        super(Aspect.all(Collidable.class, Position.class));
+    public CollisionDetectionSystem2() {
+        super(Aspect.all(Collidable.class, Position.class), 100);
 
         collidables = new IntBag();
     }
 
     @Override
-    protected void processSystem() {
-        for (int a = 0; a < collidables.size(); a++) {
-            for (int b = a + 1; b < collidables.size(); b++) {
+    protected void process(int e1) {
+        for(int index = 0; index < collidables.size(); index++) {
+            int e2 = collidables.get(index);
 
-                int e1 = collidables.get(a);
-                int e2 = collidables.get(b);
+            if(collidables.get(index) == e1) { break; } // Can't collide with myself.
+            if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) { break; } //Static elements don't move, and therefore can't collide.
+            if(boxesAreColliding(e1, e2, penetration)) {
+                if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
+                    mCollidable.create(e1).getHandler().handleCollision(world, e2, penetration);
+                    mCollidable.create(e2).getHandler().handleCollision(world, e1, penetration);
+                } else {
+                    int dynamicEntity = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
+                    int staticEntity = mCollidable.create(e1).isStatic ? e1 : e2;
 
-                //Ignore static elements.
-                if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
-                    break;
+                    mCollidable.create(dynamicEntity).getHandler().handleCollision(world, staticEntity, penetration);
                 }
-
-                //Are we colliding?
-                if (boxesAreColliding(e1, e2, penetration)) {
-                    //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
-                    //Both are dynamic
-                    if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
-                        mCollidable.create(e1).getHandler().handleCollision(world, e2, penetration);
-                        mCollidable.create(e2).getHandler().handleCollision(world, e1, penetration);
-                    } else { //Only one is dynamic.
-                        //Figure out which one is dynamic.
-                        int dynamicEntity = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
-                        int staticEntity = mCollidable.create(e1).isStatic ? e1 : e2;
-
-                        mCollidable.create(dynamicEntity).getHandler().handleCollision(world, staticEntity, penetration);
-                    }
-                }
-
             }
         }
-
     }
 
     private boolean boxesAreColliding(int a, int b, Vector2 penetration) {
