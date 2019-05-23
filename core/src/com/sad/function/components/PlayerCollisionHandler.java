@@ -17,11 +17,13 @@ public class PlayerCollisionHandler extends CollisionHandler {
     public void handleCollision(World world, int other, Vector2 penetrationVector) {
         switch (world.getMapper(Collidable.class).create(other).collisionCategory) {
             case BOX:
-                world.getMapper(Position.class).create(id).x -= penetrationVector.x / 2;
-                world.getMapper(Position.class).create(id).y -= penetrationVector.y / 2;
+                logger.info("You touched a box!");
+                world.getMapper(Position.class).create(id).x -= penetrationVector.x;
+                world.getMapper(Position.class).create(id).y -= penetrationVector.y;
 
                 break;
             case WALL:
+                logger.info("You hit a wall!");
                 world.getMapper(Position.class).create(id).x -= penetrationVector.x;
                 world.getMapper(Position.class).create(id).y -= penetrationVector.y;
 

@@ -6,7 +6,7 @@ import com.artemis.World;
 import com.sad.function.components.*;
 import com.sad.function.system.CollisionCategory;
 
-public class WallEntityFactory {
+public class WallEntityFactory extends Factory {
     private World world;
     private Archetype wallArchetype;
     private static NullHandler wallHandler;

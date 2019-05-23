@@ -5,7 +5,7 @@ import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.sad.function.components.*;
 
-public class TileFactory {
+public class TileFactory extends Factory{
     private World world;
     private Archetype tileArchetype;
 

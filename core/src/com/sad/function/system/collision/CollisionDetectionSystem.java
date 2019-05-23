@@ -1,4 +1,4 @@
-package com.sad.function.system;
+package com.sad.function.system.collision;
 
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
@@ -27,6 +27,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         collidables = new IntBag();
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     protected void processSystem() {
         for (int a = 0; a < collidables.size(); a++) {

@@ -5,16 +5,21 @@ import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
 import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
+import com.sad.function.system.collision.SeriouslyYetAnotherCollisionDetectionSystemThisTimeInBox2D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Game2 extends BaseGame {
-    private static final Logger logger = LogManager.getLogger(Game2.class);
+public class ApocalypticGame extends BaseGame {
+    private static final Logger logger = LogManager.getLogger(ApocalypticGame.class);
 
     private World world;
     private Camera camera;
@@ -35,7 +40,7 @@ public class Game2 extends BaseGame {
                         new InputSystem(),
                         new MovementSystem(),
                         new PhysicsSystem(),
-                        new CollisionDetectionSystem(),
+                        new SeriouslyYetAnotherCollisionDetectionSystemThisTimeInBox2D(null),//TODO
                         //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),
@@ -49,7 +54,6 @@ public class Game2 extends BaseGame {
         wallFactory = new WallEntityFactory(world);
 
         createPlayer();
-
 
         createTiles(100, 100);
         createBox(150,150);
@@ -66,9 +70,28 @@ public class Game2 extends BaseGame {
                 .add(CameraComponent.class)
                 .add(Collidable.class)
                 .add(Input.class)
+                .add(PhysicsBody.class)
                 .build(world);
 
         int player = world.create(playerArchetype);
+
+        //Actual body of the player.
+        Body pBody;
+
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.DynamicBody;
+        def.position.set (0,0);
+        def.fixedRotation = true;   //Prevent it from rotating.
+
+        com.badlogic.gdx.physics.box2d.World physicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0,0), true);
+
+        pBody = physicsWorld.createBody(def);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(32/2,32/2); //Takes it from the center, not another origin.
+
+        pBody.createFixture(shape, 1.0f);
+        shape.dispose();
 
         wallFactory.createWall(32, 32, 32,32);
         wallFactory.createWall(64, 32, 32, 32);
@@ -81,11 +104,10 @@ public class Game2 extends BaseGame {
                 .setWidth(20f)
                 .setHandler(new PlayerCollisionHandler(player)).setCollisionCategory(CollisionCategory.PLAYER);
         world.getEntity(player).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
-
+        world.getMapper(PhysicsBody.class).create(player).body = pBody;
         dim.width = 32;
         dim.height = 32;
         world.getSystem(TagManager.class).register("PLAYER", player);
-
     }
 
     private void createBox(float x, float y) {
@@ -104,7 +126,7 @@ public class Game2 extends BaseGame {
         world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
         world.getMapper(Collidable.class).create(box)
                 .setIsState(false)
-                .setHeight(32f)
+                .setHeight(16f)
                 .setWidth(32f)
                 .setCollisionCategory(CollisionCategory.BOX)
                 .setHandler(new BoxCollisionHandler(box));

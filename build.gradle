@@ -79,6 +79,9 @@ project(":core") {
 
         //artemis-odb
         compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
+
+        //Collision Detection
+        compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
     }
 }
 
