@@ -135,7 +135,11 @@ public class RenderingSystem extends BaseEntitySystem {
         }
     }
 
-
+    /**
+     * Animations are the only ones that will really flip.
+     * @param entity to check for flippage.
+     * @return if the renderer should flip the TextureRegion.
+     */
     private boolean shouldFlip(int entity) {
         if (mAnimation.has(entity)) {
             return mAnimation.create(entity).direction == Animation.Direction.LEFT;
@@ -144,6 +148,11 @@ public class RenderingSystem extends BaseEntitySystem {
         return false;
     }
 
+    /**
+     * Figure out which type of entity we are and get the correct texture region.
+     * @param entity to find the animation for.
+     * @return the texture region from the AnimationManager.
+     */
     private TextureRegion getEntityTexture(int entity) {
         if (mAnimation.has(entity)) {    //Animation assets.
             Animation animation = mAnimation.create(entity);
