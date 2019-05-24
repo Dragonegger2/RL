@@ -119,16 +119,18 @@ public class RenderingSystem extends BaseEntitySystem {
         }
         batch.end();
 
-        shapeRenderer.setColor(Color.FIREBRICK);
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        if (GameInfo.DEBUG) {
+            shapeRenderer.setColor(Color.FIREBRICK);
+            shapeRenderer.setProjectionMatrix(camera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
             //Render only the default layer, for now.
-            for(Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+            for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
                 renderOutline(integer);
             }
-        shapeRenderer.end();
 
-        if (GameInfo.DEBUG) {
+            shapeRenderer.end();
+
             box2DDebugRenderer.render(pWorld, camera.combined);
         }
 
@@ -138,7 +140,7 @@ public class RenderingSystem extends BaseEntitySystem {
         Vector3 pos = getPosition(entity);
         Dimension dim = mDimension.create(entity);
 
-        if(inView(camera, pos, dim.width, dim.height)) {
+        if (inView(camera, pos, dim.width, dim.height)) {
             shapeRenderer.rect(pos.x, pos.y, dim.width, dim.height);
         }
     }
@@ -198,7 +200,7 @@ public class RenderingSystem extends BaseEntitySystem {
             PhysicsBody pBody = mPhysicsBody.create(entity);
             Dimension dimension = mDimension.create(entity);
 
-            float sWidth =  dimension.width;
+            float sWidth = dimension.width;
             float sHeight = dimension.height;
 
             float xOffset = dimension.renderOffset.x;
