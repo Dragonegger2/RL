@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
-import com.sad.function.system.CollisionCategory;
 
 @SuppressWarnings("Duplicates")
 public class WallEntityFactory extends Factory {
@@ -15,13 +14,10 @@ public class WallEntityFactory extends Factory {
     private com.badlogic.gdx.physics.box2d.World pWorld;
 
     private Archetype wallArchetype;
-    private static NullHandler wallHandler;
 
     public WallEntityFactory(World world, com.badlogic.gdx.physics.box2d.World pWorld) {
         this.world = world;
         this.pWorld = pWorld;
-
-        wallHandler = new NullHandler();
 
         wallArchetype = new ArchetypeBuilder()
                 .add(Position.class)
@@ -47,14 +43,10 @@ public class WallEntityFactory extends Factory {
         world.getMapper(Layer.class).create(wall).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
-        world.getMapper(Collidable.class).create(wall).setDimensions(width, height);
-        world.getMapper(Collidable.class).create(wall).isStatic = true;
-        world.getMapper(Collidable.class).create(wall)
-                .setCollisionCategory(CollisionCategory.WALL)
-                .setHandler(wallHandler);
 
         world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
-
+        world.getMapper(PhysicsBody.class).create(wall).width = width;
+        world.getMapper(PhysicsBody.class).create(wall).height= height;
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
     }

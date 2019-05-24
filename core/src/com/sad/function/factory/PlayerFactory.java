@@ -41,13 +41,15 @@ public class PlayerFactory extends Factory {
         //TODO: Remove collidable
 
         float calculatedWidth = 32f/ 32f;
+        float calculatedHeight = 32f/ 32f;
         //The physics body is the one with all my data.
-        world.getMapper(PhysicsBody.class).create(playerId).body = createPBody(x, y, calculatedWidth / 2, 32f/32f / 2);
-        world.getMapper(PhysicsBody.class).create(playerId).width = calculatedWidth / 2;
-        world.getMapper(PhysicsBody.class).create(playerId).height = calculatedWidth / 2;
+        world.getMapper(PhysicsBody.class).create(playerId).body = createPBody(x, y, calculatedWidth, calculatedHeight);
+        world.getMapper(PhysicsBody.class).create(playerId).width = calculatedWidth ;
+        world.getMapper(PhysicsBody.class).create(playerId).height = calculatedHeight;
+
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
-        world.getMapper(Dimension.class).create(playerId).setDimensions(calculatedWidth, 32.0f/32f);
+        world.getMapper(Dimension.class).create(playerId).setDimensions(calculatedWidth, calculatedHeight);
 
         //TODO Move offset logic to some other object.
         return playerId;
