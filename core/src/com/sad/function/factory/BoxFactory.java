@@ -41,7 +41,7 @@ public class BoxFactory extends Factory {
                 .setPosition(x, y)
                 .setBodyType(BodyDef.BodyType.DynamicBody)
                 .buildBody(pWorld)
-                .createBoxFixture(width / 2f, height / 2f, 200.0f)
+                .createBoxFixture(width / 2f, height / 2f, 200.0f, 20f)
                 .getBody();
 
         world.getMapper(PhysicsBody.class).create(id).shape = PhysicsBody.BodyShape.RECTANGLE;

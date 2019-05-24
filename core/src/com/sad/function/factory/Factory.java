@@ -48,18 +48,20 @@ public abstract class Factory {
                 this.body = body;
             }
 
-            public BodyFactory createBoxFixture(float width, float height, float density) {
+            public BodyFactory createBoxFixture(float width, float height, float density, float friction) {
                 PolygonShape shape = new PolygonShape();
                 shape.setAsBox(width, height);
 
                 Fixture hitbox = body.createFixture(shape, density);
+                hitbox.setFriction(friction);
+                //TODO: Update friction in circle.
                 shape.dispose();
 
                 return this;
             }
 
             public BodyFactory createCircleFixture(float radius, float density) {
-                Shape shape = new CircleShape();
+                Shape shape = new CircleShape(); 
                 shape.setRadius(radius);
                 body.createFixture(shape, density).setFriction(0.7f);
 
