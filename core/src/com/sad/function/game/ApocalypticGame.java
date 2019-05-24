@@ -1,11 +1,13 @@
 package com.sad.function.game;
 
-import com.artemis.*;
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.components.*;
+import com.sad.function.factory.BoxFactory;
 import com.sad.function.factory.PlayerFactory;
 import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
@@ -28,6 +30,7 @@ public class ApocalypticGame extends BaseGame {
     private TileFactory tileFactory;
     private WallEntityFactory wallFactory;
     private PlayerFactory playerFactory;
+    private BoxFactory boxFactory;
 
     private ResourceManager resourceManager;
 
@@ -37,11 +40,12 @@ public class ApocalypticGame extends BaseGame {
         resourceManager = new ResourceManager();
 
         setupCamera();
-        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0,0), true);
+        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0), true);
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
                         new InputSystem(),
+                        new PhysicsSystem(),
                         new Box2DSystem(pWorld),
 
                         //Animation based systems
@@ -56,38 +60,15 @@ public class ApocalypticGame extends BaseGame {
         tileFactory = new TileFactory(world);
         wallFactory = new WallEntityFactory(world, pWorld);
         playerFactory = new PlayerFactory(world, pWorld);
+        boxFactory = new BoxFactory(world, pWorld);
 
-        playerFactory.create(0,0);
-        wallFactory.createWall(2, 2, 1,1);
+        playerFactory.create(0, 0);
+        wallFactory.createWall(2, 2, 1, 1);
         wallFactory.createWall(3, 3, 1, 1);
 
         createTiles(100, 100);
-        createBox(150,150);
-        createBox(190,190);
-    }
-
-    private void createBox(float x, float y) {
-        Archetype boxArchetype = new ArchetypeBuilder()
-                .add(Position.class)
-                .add(TextureComponent.class)
-                .add(Dimension.class)
-                .add(Layer.class)
-                .add(Collidable.class)
-                .build(world);
-
-        int box = world.create(boxArchetype);
-
-        world.getMapper(TextureComponent.class).create(box).resourceName = "box";
-        world.getMapper(Position.class).create(box).setX(x).setY(y);
-        world.getMapper(Layer.class).create(box).layer = Layer.RENDERABLE_LAYER.DEFAULT;
-        world.getMapper(Collidable.class).create(box)
-                .setIsState(false)
-                .setHeight(16f)
-                .setWidth(32f)
-                .setCollisionCategory(CollisionCategory.BOX)
-                .setHandler(new BoxCollisionHandler(box));
-
-        world.getMapper(Dimension.class).create(box).setDimensions(32f,32f);
+        boxFactory.create(0, 2, 1, 1);
+        boxFactory.create(0, 3, 1, 1);
     }
 
     private void setupCamera() {
@@ -121,7 +102,7 @@ public class ApocalypticGame extends BaseGame {
 
     @Override
     public void resize(int width, int height) {
-        camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float)height, VIRTUAL_HEIGHT);
+        camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
 
 
         //TODO Revisit the potato pixels.

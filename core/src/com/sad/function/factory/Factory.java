@@ -52,7 +52,7 @@ public abstract class Factory {
                 PolygonShape shape = new PolygonShape();
                 shape.setAsBox(width, height);
 
-                body.createFixture(shape, density);
+                Fixture hitbox = body.createFixture(shape, density);
                 shape.dispose();
 
                 return this;
@@ -61,7 +61,7 @@ public abstract class Factory {
             public BodyFactory createCircleFixture(float radius, float density) {
                 Shape shape = new CircleShape();
                 shape.setRadius(radius);
-                body.createFixture(shape, density);
+                body.createFixture(shape, density).setFriction(0.7f);
 
                 return this;
             }

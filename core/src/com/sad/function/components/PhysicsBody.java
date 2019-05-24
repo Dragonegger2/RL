@@ -15,6 +15,7 @@ public class PhysicsBody extends Component {
 
     private float width = 0f;
     private float height = 0f;
+    public float density = 1.0f;
 
     public BodyShape shape = BodyShape.RECTANGLE;
 

@@ -31,6 +31,8 @@ public class TileFactory extends Factory{
         world.getMapper(Layer.class).create(tile).layer = Layer.RENDERABLE_LAYER.GROUND;
         world.getMapper(TextureComponent.class).create(tile).resourceName = resourceName;
 
+//        world.getMapper(PhysicsBody.class).create(tile).
+        //TODO Should this be a box2d static body with sensors attached? https://stackoverflow.com/questions/2569374/friction-in-box2d
         return tile;
     }
 }

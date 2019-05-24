@@ -23,5 +23,6 @@ public class Box2DSystem extends BaseSystem {
     @Override
     protected void processSystem() {
         pWorld.step(1/60f, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+        pWorld.clearForces();
     }
 }
