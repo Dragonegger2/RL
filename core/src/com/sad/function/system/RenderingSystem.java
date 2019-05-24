@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
@@ -99,7 +100,7 @@ public class RenderingSystem extends BaseEntitySystem {
     @Override
     protected void processSystem() {
 
-        Gdx.gl.glClearColor(100f/255f, 149f/255f, 237f/255f, 1);
+        Gdx.gl.glClearColor(100f / 255f, 149f / 255f, 237f / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -121,6 +122,38 @@ public class RenderingSystem extends BaseEntitySystem {
 
     }
 
+    private void renderEntity(int entity) {
+        Vector3 pos = getPosition(entity);
+        Dimension dim = mDimension.create(entity);
+
+        if (inView(camera, pos, dim.width, dim.height)) {   //Frustum Culling: Check if in view before bothering to render the entity.
+            batch.draw(getEntityTexture(entity),
+                    shouldFlip(entity) ? pos.x + dim.width : pos.x,
+                    pos.y,
+                    shouldFlip(entity) ? -dim.width : dim.width,
+                    dim.height);
+        }
+    }
+
+
+    private boolean shouldFlip(int entity) {
+        if (mAnimation.has(entity)) {
+            return mAnimation.create(entity).direction == Animation.Direction.LEFT;
+        }
+
+        return false;
+    }
+
+    private TextureRegion getEntityTexture(int entity) {
+        if (mAnimation.has(entity)) {    //Animation assets.
+            Animation animation = mAnimation.create(entity);
+
+            return resourceManager.getAnimationKeyFrame(animation.animationName, animation.stateTime, animation.looping);
+        } else {    //Static assets.
+            return resourceManager.getStaticAsset(mTexture.create(entity).resourceName);
+        }
+    }
+
     private boolean inView(Camera camera, Vector3 position, float width, float height) {
         return camera.frustum.pointInFrustum(position.x, position.y, position.z) ||
                 camera.frustum.pointInFrustum(position.x + width, position.y, position.z) ||
@@ -129,47 +162,11 @@ public class RenderingSystem extends BaseEntitySystem {
     }
 
     private Vector3 getPosition(int entity) {
-        if(world.getMapper(PhysicsBody.class).has(entity)) {
+        if (world.getMapper(PhysicsBody.class).has(entity)) {
             //TODO Fix this.
             return new Vector3(mPhysicsBody.create(entity).getPositionX(), mPhysicsBody.create(entity).getPositionY(), 0f);
         }
-        return new Vector3(mPosition.create(entity).x,mPosition.create(entity).y, mPosition.create(entity).z);
-    }
-
-    private void renderEntity(int entity) {
-        Vector3 pos = getPosition(entity);
-        Dimension dim = mDimension.create(entity);
-
-        //Check if in view before bothering to render the entity.
-        if (inView(camera, pos, dim.width, dim.height)) {   //Frustum Culling.
-            //If it has a texture, it's a static asset.
-            //prefer animation component
-            if (mAnimation.has(entity)) {
-                Animation animation = mAnimation.create(entity);
-                boolean flip = animation.direction == Animation.Direction.LEFT;
-
-                batch.draw(resourceManager.getAnimationKeyFrame(animation.animationName, animation.stateTime, animation.looping),
-                        flip ? pos.x + dim.width : pos.x,
-                        pos.y,
-                        flip ? -dim.width : dim.width,
-                        dim.height);
-            } else if (mTexture.has(entity)) {
-                batch.draw(resourceManager.getStaticAsset(mTexture.create(entity).resourceName),
-                        pos.x,
-                        pos.y,
-                        dim.width,
-                        dim.height);
-            } else {
-                logger.error("Missing texture information for {}", entity);
-                //Fallback case.
-                batch.draw(resourceManager.getStaticAsset("null"),
-                        pos.x,
-                        pos.y,
-                        dim.width,
-                        dim.height
-                );
-            }
-        }
+        return new Vector3(mPosition.create(entity).x, mPosition.create(entity).y, mPosition.create(entity).z);
     }
 
     @Override
