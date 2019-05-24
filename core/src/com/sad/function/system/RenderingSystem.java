@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
@@ -30,6 +31,7 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<TextureComponent> mTexture;
     private ComponentMapper<Dimension> mDimension;
     private ComponentMapper<Animation> mAnimation;
+    private ComponentMapper<PhysicsBody> mPhysicsBody;
     private ComponentMapper<Collidable> mCollidable;
 
     private IntMap<IntSet> entitiesPerLayer;
@@ -52,7 +54,7 @@ public class RenderingSystem extends BaseEntitySystem {
     };
 
     public RenderingSystem(ResourceManager resourceManager, Camera camera) {
-        super(Aspect.all(Position.class, Layer.class).one(TextureComponent.class, Animation.class));
+        super(Aspect.all(Layer.class).one(Position.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
@@ -132,15 +134,23 @@ public class RenderingSystem extends BaseEntitySystem {
 
     }
 
-    private boolean inView(Camera camera, Position position, float width, float height) {
+    private boolean inView(Camera camera, Vector3 position, float width, float height) {
         return camera.frustum.pointInFrustum(position.x, position.y, position.z) ||
                 camera.frustum.pointInFrustum(position.x + width, position.y, position.z) ||
                 camera.frustum.pointInFrustum(position.x + width, position.y + height, position.z) ||
                 camera.frustum.pointInFrustum(position.x, position.y + height, position.z);
     }
 
+    private Vector3 getPosition(int entity) {
+        if(world.getMapper(PhysicsBody.class).has(entity)) {
+            return new Vector3(mPhysicsBody.create(entity).body.getPosition().x, mPhysicsBody.create(entity).body.getPosition().y, 0f);
+        }
+        return new Vector3(mPosition.create(entity).x,mPosition.create(entity).y, mPosition.create(entity).z);
+    }
+
+
     private void renderEntity(int entity) {
-        Position pos = mPosition.create(entity);
+        Vector3 pos = getPosition(entity);
         Dimension dim = mDimension.create(entity);
 
         //Check if in view before bothering to render the entity.

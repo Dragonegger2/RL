@@ -3,8 +3,8 @@ package com.sad.function.components;
 import com.artemis.Component;
 
 public class Dimension extends Component {
-    public float width = 32;
-    public float height = 32;
+    public float width = 1f;
+    public float height = 1f;
 
     public void setDimensions(float width, float height) {
         this.width = width;

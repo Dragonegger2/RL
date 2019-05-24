@@ -2,23 +2,18 @@ package com.sad.function.command.movement;
 
 import com.artemis.World;
 import com.sad.function.command.GameCommand;
-import com.sad.function.components.Animation;
-import com.sad.function.components.VelocityComponent;
+import com.sad.function.components.PhysicsBody;
 
 public class MoveLeft implements GameCommand {
 
-    private float acceleration;
+    private float MAX_SPEED;
 
     public MoveLeft(float xVelocity) {
-        this.acceleration = xVelocity;
+        this.MAX_SPEED = xVelocity;
     }
 
     @Override
     public void execute(World world, int entity) {
-        world.getMapper(VelocityComponent.class).create(entity).x -= acceleration * world.delta;
-
-        if(world.getMapper(Animation.class).has(entity)) {
-            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.LEFT;
-        }
+        world.getMapper(PhysicsBody.class).create(entity).body.setLinearVelocity(-MAX_SPEED, 0);
     }
 }

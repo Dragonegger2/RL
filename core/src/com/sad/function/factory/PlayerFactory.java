@@ -19,12 +19,9 @@ public class PlayerFactory extends Factory {
         this.pWorld = pWorld;
 
         playerArchetype = new ArchetypeBuilder()
-                .add(Position.class)
                 .add(Animation.class)
-                .add(Dimension.class)
                 .add(Layer.class)
                 .add(CameraComponent.class)
-                .add(Collidable.class)
                 .add(Input.class)
                 .add(PhysicsBody.class)
                 .build(world);
@@ -37,10 +34,17 @@ public class PlayerFactory extends Factory {
      * @param y position
      * @return entity int.
      */
-    public int create(float x, float y, String resourceName) {
+    public int create(float x, float y) {
         int playerId = world.create(playerArchetype);
 
-        //Don't need a position class.
+        //Todo: Remove Position
+        //TODO: Remove collidable
+        //The physics body is the one with all my data.
+        world.getMapper(PhysicsBody.class).create(playerId).body = createPBody(x, y, 32.0f/32f / 2, 32f/32f / 2);
+        world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
+        world.getMapper(Dimension.class).create(playerId).setDimensions(32.0f/32f, 32.0f/32f);
+
+        //TODO Move offset logic to some other object.
         return playerId;
     }
 
@@ -49,7 +53,7 @@ public class PlayerFactory extends Factory {
 
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.DynamicBody; //Value that is willing and able to move!
-        def.position.set(0, 0);
+        def.position.set(x, y);
         def.fixedRotation = true; //Don't rotate.
 
         pBody = pWorld.createBody(def);

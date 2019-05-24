@@ -32,7 +32,7 @@ public class InputSystem extends BaseEntitySystem {
         entitiesWithInputHandlers = new IntArray();
         actions = new DefaultMap<>(new NullGameCommand());
 
-        float velocity = 140f;
+        float velocity = 3;
         actions.put(Action.MOVE_LEFT, new MoveLeft(velocity));
         actions.put(Action.MOVE_RIGHT, new MoveRight(velocity));
         actions.put(Action.MOVE_UP, new MoveUp(velocity));
@@ -49,20 +49,34 @@ public class InputSystem extends BaseEntitySystem {
     }
 
     private void processEntity(int entity) {
+        boolean moving = false;
         //TODO push actions into a queue or something so they're not happening willy-nilly.
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
             actions.get(Action.MOVE_LEFT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
-        } else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+            moving = true;
+        }
+
+        if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
             actions.get(Action.MOVE_RIGHT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
-        } else if (Gdx.input.isKeyPressed(Keys.UP)) {
+            moving = true;
+
+        }
+
+        if (Gdx.input.isKeyPressed(Keys.UP)) {
             actions.get(Action.MOVE_UP).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-back-walk";
-        } else if (Gdx.input.isKeyPressed(Keys.DOWN)) {
+            moving = true;
+        }
+
+        if (Gdx.input.isKeyPressed(Keys.DOWN)) {
             actions.get(Action.MOVE_DOWN).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-front-walk";
-        } else {
+            moving = true;
+        }
+
+        if(!moving){
             switch (mAnimation.create(entity).direction) {
                 case UP:
                     world.getMapper(Animation.class).create(entity).animationName = "hero-male-back-idle";

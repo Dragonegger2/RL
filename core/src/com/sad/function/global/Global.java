@@ -12,4 +12,5 @@ public class Global {
 
     public static final boolean DEBUG = true;
 
+    public static final float PPM = 32f; // 100 pixels per meter.
 }

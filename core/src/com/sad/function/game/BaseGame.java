@@ -10,18 +10,6 @@ public class BaseGame extends ApplicationAdapter {
 	protected SpriteBatch batch;
 	protected BaseScreen currentScreen;
 
-	@Override
-	public void create () {
-	}
-
-	@Override
-	public void render () {
-	}
-	
-	@Override
-	public void dispose () {
-	}
-
 	/**
 	 * Transitions between two screens. Calls the exit method of the screen that is going to be replaced, allowing
 	 * us to store data, display graphics, etc.
