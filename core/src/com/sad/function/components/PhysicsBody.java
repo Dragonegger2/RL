@@ -20,10 +20,10 @@ public class PhysicsBody extends Component {
      * @return lower-left origin based x coordinate.
      */
     public float getPositionX() {
-        return body.getPosition().x - width;
+        return body.getPosition().x - width * 2;
     }
 
     public float getPositionY() {
-        return body.getPosition().y - height;
+        return body.getPosition().y - height * 2;
     }
 }

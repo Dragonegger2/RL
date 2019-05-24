@@ -3,7 +3,6 @@ package com.sad.function.system;
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
-import com.artemis.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,14 +17,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
     //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
-    private ZComparator zComparator;
+    private IsometricRangeYValueComparator isometricRangeYValueComparator;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
@@ -73,13 +71,13 @@ public class RenderingSystem extends BaseEntitySystem {
 
     @Override
     public void begin() {
-        if (zComparator == null) {
-            zComparator = new ZComparator(getWorld(), 100);
+        if (isometricRangeYValueComparator == null) {
+            isometricRangeYValueComparator = new IsometricRangeYValueComparator(getWorld(), 100);
         }
         for (Layer.RENDERABLE_LAYER layer : layerCollections.keySet()) {
             //Going to sort the same way for all of the collections.
             //TODO Sort by y / ratio - yOffset of each entity.
-            layerCollections.get(layer).sort(zComparator);
+            layerCollections.get(layer).sort(isometricRangeYValueComparator);
         }
     }
 
@@ -132,6 +130,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
     private Vector3 getPosition(int entity) {
         if(world.getMapper(PhysicsBody.class).has(entity)) {
+            //TODO Fix this.
             return new Vector3(mPhysicsBody.create(entity).getPositionX(), mPhysicsBody.create(entity).getPositionY(), 0f);
         }
         return new Vector3(mPosition.create(entity).x,mPosition.create(entity).y, mPosition.create(entity).z);
@@ -170,40 +169,6 @@ public class RenderingSystem extends BaseEntitySystem {
                         dim.height
                 );
             }
-        }
-    }
-
-//    private void renderBoundingBox(int entity) {
-//        shapeRenderer.setColor(255f, 0, 0, 0);
-//        if (mCollidable.has(entity)) {
-//            Collidable coll = mCollidable.create(entity);
-//            Position position = mPosition.create(entity);
-//            shapeRenderer.rect(position.x + coll.xOffset, position.y + coll.yOffset, coll.width, coll.height);
-//        }
-//    }
-
-    private class ZComparator implements Comparator<Integer> {
-        private World world;
-        private float isometricRangePerYValue = 100f;
-
-        ZComparator(World world) {
-            this.world = world;
-        }
-
-        ZComparator(World world, float isometricRangePerYValue) {
-            this.world = world;
-            this.isometricRangePerYValue = isometricRangePerYValue;
-        }
-
-        @Override
-        public int compare(Integer e1, Integer e2) {
-
-            //TODO Need to take into account the offset variable in layer.
-            //TODO Need to change what we use to get position. Otherwise the physics bodies we use won't ever get sorted properly.
-
-            return (int) Math.signum(
-                    (-world.getMapper(Position.class).create(e1).y * isometricRangePerYValue)
-                            + (world.getMapper(Position.class).create(e2).y * isometricRangePerYValue));
         }
     }
 
