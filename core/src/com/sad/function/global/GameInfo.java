@@ -12,5 +12,5 @@ public class GameInfo {
 
     public static final boolean DEBUG = true;
 
-    public static final float VIRTUAL_HEIGHT = 12f;
+    public static final float VIRTUAL_HEIGHT = 3f;
 }

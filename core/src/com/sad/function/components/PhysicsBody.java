@@ -6,24 +6,61 @@ import com.badlogic.gdx.physics.box2d.Body;
 /**
  * Holds the data for my box2d collision detection.
  *
- * The height and width are the size of the body.
+ * The height and width are the size of the body in extant form (halfsize).
+ *
+ * If you are a circle, store the radius in width.
  */
 public class PhysicsBody extends Component {
     public Body body;
 
-    public float height;
-    public float width;
+    private float width = 0f;
+    private float height = 0f;
+
+    public BodyShape shape = BodyShape.RECTANGLE;
 
     /**
-     * Box2D uses origin/center based coordinates. I dont' use that anywhere else.
-     *
-     * @return lower-left origin based x coordinate.
+     * If the shape is a circle, return the width as that is an alias for radius.
+     * @return height in halfsize.
      */
-    public float getPositionX() {
-        return body.getPosition().x - width / 2;
+    public float getHeight() {
+        if(shape == BodyShape.CIRCLE) {
+            return width;
+        }
+
+        return height;
     }
 
-    public float getPositionY() {
-        return body.getPosition().y - height / 2;
+    /**
+     * Returns the width.
+     * @return width of the body in halfsize.
+     */
+    public float getWidth() {
+        return width;
+    }
+
+    public PhysicsBody setWidth(float width) {
+        this.width = width;
+        return this;
+    }
+
+    /**
+     * If this body is a circle, update width instead of the height.
+     * @param height to assign to this shape.
+     * @return this for chaining.
+     */
+    public PhysicsBody setHeight(float height) {
+        if(shape == BodyShape.CIRCLE) {
+            this.width = height;
+        } else {
+            this.height = height;
+        }
+
+        return this;
+    }
+
+    public enum BodyShape {
+        CIRCLE,
+        RECTANGLE,
+        POLYGON
     }
 }

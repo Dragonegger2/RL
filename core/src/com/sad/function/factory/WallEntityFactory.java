@@ -44,9 +44,9 @@ public class WallEntityFactory extends Factory {
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
 
+
         world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
-        world.getMapper(PhysicsBody.class).create(wall).width = width;
-        world.getMapper(PhysicsBody.class).create(wall).height= height;
+        world.getMapper(PhysicsBody.class).create(wall).setWidth(width).setHeight(height);
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
     }
@@ -56,7 +56,7 @@ public class WallEntityFactory extends Factory {
 
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(0,0);
+        def.position.set(x,y);
         def.fixedRotation = true;
 
         pBody = pWorld.createBody(def);

@@ -5,9 +5,11 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
@@ -39,6 +41,8 @@ public class RenderingSystem extends BaseEntitySystem {
     private com.badlogic.gdx.physics.box2d.World pWorld;
 
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+
     private ResourceManager resourceManager;
     private Camera camera;
     private HashMap<Layer.RENDERABLE_LAYER, List<Integer>> layerCollections;            //Used for rendering.
@@ -63,6 +67,7 @@ public class RenderingSystem extends BaseEntitySystem {
         idCollection = new IntMap<>();
 
         batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
         box2DDebugRenderer = new Box2DDebugRenderer();
 
         for (Layer.RENDERABLE_LAYER layer : layers) {
@@ -107,19 +112,35 @@ public class RenderingSystem extends BaseEntitySystem {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-
         for (Layer.RENDERABLE_LAYER layer : layers) {
             for (Integer integer : layerCollections.get(layer)) {
                 renderEntity(integer);
             }
         }
-
         batch.end();
+
+        shapeRenderer.setColor(Color.FIREBRICK);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            //Render only the default layer, for now.
+            for(Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+                renderOutline(integer);
+            }
+        shapeRenderer.end();
 
         if (GameInfo.DEBUG) {
             box2DDebugRenderer.render(pWorld, camera.combined);
         }
 
+    }
+
+    private void renderOutline(int entity) {
+        Vector3 pos = getPosition(entity);
+        Dimension dim = mDimension.create(entity);
+
+        if(inView(camera, pos, dim.width, dim.height)) {
+            shapeRenderer.rect(pos.x, pos.y, dim.width, dim.height);
+        }
     }
 
     private void renderEntity(int entity) {
@@ -137,6 +158,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
     /**
      * Animations are the only ones that will really flip.
+     *
      * @param entity to check for flippage.
      * @return if the renderer should flip the TextureRegion.
      */
@@ -150,6 +172,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
     /**
      * Figure out which type of entity we are and get the correct texture region.
+     *
      * @param entity to find the animation for.
      * @return the texture region from the AnimationManager.
      */
@@ -171,10 +194,22 @@ public class RenderingSystem extends BaseEntitySystem {
     }
 
     private Vector3 getPosition(int entity) {
-        if (world.getMapper(PhysicsBody.class).has(entity)) {
-            //TODO Fix this.
-            return new Vector3(mPhysicsBody.create(entity).getPositionX(), mPhysicsBody.create(entity).getPositionY(), 0f);
+        if (mPhysicsBody.has(entity)) {
+            PhysicsBody pBody = mPhysicsBody.create(entity);
+            Dimension dimension = mDimension.create(entity);
+
+            float sWidth =  dimension.width;
+            float sHeight = dimension.height;
+
+            float xOffset = dimension.renderOffset.x;
+            float yOffset = dimension.renderOffset.y;
+
+            float renderX = pBody.body.getPosition().x - sWidth / 2 - xOffset;
+            float renderY = pBody.body.getPosition().y - sHeight / 2 - yOffset;
+
+            return new Vector3(renderX, renderY, 0.0f);
         }
+
         return new Vector3(mPosition.create(entity).x, mPosition.create(entity).y, mPosition.create(entity).z);
     }
 

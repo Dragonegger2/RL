@@ -124,6 +124,7 @@ public class ApocalypticGame extends BaseGame {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float)height, VIRTUAL_HEIGHT);
 
 
+        //TODO Revisit the potato pixels.
         Matrix4 debugMatrix = new Matrix4(camera.combined);
         debugMatrix.translate((-Gdx.graphics.getWidth() / 2f), (-Gdx.graphics.getHeight() / 2f), 0);
         debugMatrix.scale(32f, 32f, 1f);
