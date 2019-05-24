@@ -32,7 +32,7 @@ public class InputSystem extends BaseEntitySystem {
         entitiesWithInputHandlers = new IntArray();
         actions = new DefaultMap<>(new NullGameCommand());
 
-        float velocity = 3;
+        float velocity = 8f;
         actions.put(Action.MOVE_LEFT, new MoveLeft(velocity));
         actions.put(Action.MOVE_RIGHT, new MoveRight(velocity));
         actions.put(Action.MOVE_UP, new MoveUp(velocity));

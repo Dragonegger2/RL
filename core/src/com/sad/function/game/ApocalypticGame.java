@@ -1,12 +1,10 @@
 package com.sad.function.game;
 
 import com.artemis.*;
-import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.sad.function.components.*;
 import com.sad.function.factory.PlayerFactory;
 import com.sad.function.factory.TileFactory;
@@ -17,9 +15,10 @@ import com.sad.function.system.collision.Box2DSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
+
 public class ApocalypticGame extends BaseGame {
     private static final Logger logger = LogManager.getLogger(ApocalypticGame.class);
-    private float VIRTUAL_HEIGHT = 12f;
 
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
@@ -32,33 +31,30 @@ public class ApocalypticGame extends BaseGame {
 
     private ResourceManager resourceManager;
 
-    private Box2DDebugRenderer b2dr;
+
     @Override
     public void create() {
         resourceManager = new ResourceManager();
-        b2dr = new Box2DDebugRenderer();
 
         setupCamera();
         pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0,0), true);
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new TagManager(),
                         new InputSystem(),
-                        new MovementSystem(),
-                        new PhysicsSystem(),
                         new Box2DSystem(pWorld),
+
                         //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),
-                        new RenderingSystem(resourceManager, camera)
+                        new RenderingSystem(resourceManager, pWorld, camera)
                 )
                 .build();
 
         world = new World(config);
 
         tileFactory = new TileFactory(world);
-        wallFactory = new WallEntityFactory(world);
+        wallFactory = new WallEntityFactory(world, pWorld);
         playerFactory = new PlayerFactory(world, pWorld);
 
         playerFactory.create(0,0);
@@ -68,19 +64,6 @@ public class ApocalypticGame extends BaseGame {
         createTiles(100, 100);
         createBox(150,150);
         createBox(190,190);
-
-    }
-
-    private void createPlayer() {
-
-
-
-//        world.getMapper(Collidable.class).create(player)
-//                .setIsState(false)
-//                .setXOffset(6f)
-//                .setWidth(20f)
-//                .setHandler(new PlayerCollisionHandler(player)).setCollisionCategory(CollisionCategory.PLAYER);
-
     }
 
     private void createBox(float x, float y) {
@@ -130,9 +113,10 @@ public class ApocalypticGame extends BaseGame {
         world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
 
-//        b2dr.render(pWorld, camera.combined);
-
         Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
+
+        //TODO: Update the render method to render based on position
+        //TODO: Add values to the PhysicsBody for the body height and width.
     }
 
     @Override
@@ -148,6 +132,5 @@ public class ApocalypticGame extends BaseGame {
     @Override
     public void dispose() {
         resourceManager.dispose();
-        b2dr.dispose();
     }
 }

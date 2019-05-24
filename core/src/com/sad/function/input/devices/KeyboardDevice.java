@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.sad.function.input.InputEventPool;
 import com.sad.function.event.input.InputEvent;
-import com.sad.function.global.Global;
+import com.sad.function.global.GameInfo;
 import com.sad.function.input.states.KeyState;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class KeyboardDevice implements InputProcessor, IDevice {
         }
 
         deviceId = UUID.randomUUID();
-        this.inputEventPool = Global.inputEventPool;
+        this.inputEventPool = GameInfo.inputEventPool;
 
         Gdx.input.setInputProcessor(this);
     }

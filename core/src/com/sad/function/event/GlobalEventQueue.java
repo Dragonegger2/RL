@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Global event queue.
+ * GameInfo event queue.
  */
 public class GlobalEventQueue implements Observer {
     private static final Logger logger = LogManager.getLogger(GlobalEventQueue.class);

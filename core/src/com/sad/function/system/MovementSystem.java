@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.Position;
 import com.sad.function.components.VelocityComponent;
-import com.sad.function.global.Global;
+import com.sad.function.global.GameInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,8 +27,8 @@ public class MovementSystem extends IteratingSystem {
         Position position = mPosition.create(entityId);
         VelocityComponent velocityComponent = mVelocity.create(entityId);
 
-        velocityComponent.x = MathUtils.clamp(velocityComponent.x, -Global.MAX_MOVEMENT_SPEED, Global.MAX_MOVEMENT_SPEED);
-        velocityComponent.y = MathUtils.clamp(velocityComponent.y, -Global.MAX_MOVEMENT_SPEED, Global.MAX_MOVEMENT_SPEED);
+        velocityComponent.x = MathUtils.clamp(velocityComponent.x, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
+        velocityComponent.y = MathUtils.clamp(velocityComponent.y, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
 
         position.x += velocityComponent.x * world.delta;
         position.y += velocityComponent.y * world.delta;

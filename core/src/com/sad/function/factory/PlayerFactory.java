@@ -40,8 +40,10 @@ public class PlayerFactory extends Factory {
         //Todo: Remove Position
         //TODO: Remove collidable
         //The physics body is the one with all my data.
-        world.getMapper(PhysicsBody.class).create(playerId).body = createPBody(x, y, 32.0f/32f / 2, 32f/32f / 2);
+        world.getMapper(PhysicsBody.class).create(playerId).body = createPBody(x, y, 32f/32f / 2, 32f/32f / 2);
+
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
+
         world.getMapper(Dimension.class).create(playerId).setDimensions(32.0f/32f, 32.0f/32f);
 
         //TODO Move offset logic to some other object.

@@ -8,23 +8,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.IntSet;
 import com.sad.function.components.*;
-import com.sad.function.global.Global;
+import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
     //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
     private ZComparator zComparator;
+
+    private Box2DDebugRenderer box2DDebugRenderer;
 
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Position> mPosition;
@@ -34,12 +37,9 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<PhysicsBody> mPhysicsBody;
     private ComponentMapper<Collidable> mCollidable;
 
-    private IntMap<IntSet> entitiesPerLayer;
-    private IntArray layersToRender;
+    private com.badlogic.gdx.physics.box2d.World pWorld;
 
-    private boolean dirty = false;
     private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
     private ResourceManager resourceManager;
     private Camera camera;
     private HashMap<Layer.RENDERABLE_LAYER, List<Integer>> layerCollections;            //Used for rendering.
@@ -53,20 +53,18 @@ public class RenderingSystem extends BaseEntitySystem {
             Layer.RENDERABLE_LAYER.UI
     };
 
-    public RenderingSystem(ResourceManager resourceManager, Camera camera) {
+    public RenderingSystem(ResourceManager resourceManager, com.badlogic.gdx.physics.box2d.World pWorld, Camera camera) {
         super(Aspect.all(Layer.class).one(Position.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
-        shapeRenderer = new ShapeRenderer();
-
-        entitiesPerLayer = new IntMap<>();
-        layersToRender = new IntArray();
+        this.pWorld = pWorld;
 
         layerCollections = new HashMap<>();
         idCollection = new IntMap<>();
 
         batch = new SpriteBatch();
+        box2DDebugRenderer = new Box2DDebugRenderer();
 
         for (Layer.RENDERABLE_LAYER layer : layers) {
             layerCollections.put(layer, new ArrayList<>());
@@ -112,24 +110,15 @@ public class RenderingSystem extends BaseEntitySystem {
         batch.begin();
 
         for (Layer.RENDERABLE_LAYER layer : layers) {
-            Iterator<Integer> iterator = layerCollections.get(layer).iterator();
-            while (iterator.hasNext()) {
-                renderEntity(iterator.next());
+            for (Integer integer : layerCollections.get(layer)) {
+                renderEntity(integer);
             }
         }
 
         batch.end();
 
-        if (Global.DEBUG) {
-            shapeRenderer.setProjectionMatrix(camera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-            Iterator<Integer> iterator = layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT).iterator();
-            while (iterator.hasNext()) {
-                renderBoundingBox(iterator.next());
-            }
-
-            shapeRenderer.end();
+        if (GameInfo.DEBUG) {
+            box2DDebugRenderer.render(pWorld, camera.combined);
         }
 
     }
@@ -143,11 +132,10 @@ public class RenderingSystem extends BaseEntitySystem {
 
     private Vector3 getPosition(int entity) {
         if(world.getMapper(PhysicsBody.class).has(entity)) {
-            return new Vector3(mPhysicsBody.create(entity).body.getPosition().x, mPhysicsBody.create(entity).body.getPosition().y, 0f);
+            return new Vector3(mPhysicsBody.create(entity).getPositionX(), mPhysicsBody.create(entity).getPositionY(), 0f);
         }
         return new Vector3(mPosition.create(entity).x,mPosition.create(entity).y, mPosition.create(entity).z);
     }
-
 
     private void renderEntity(int entity) {
         Vector3 pos = getPosition(entity);
@@ -185,18 +173,22 @@ public class RenderingSystem extends BaseEntitySystem {
         }
     }
 
-    private void renderBoundingBox(int entity) {
-        shapeRenderer.setColor(255f, 0, 0, 0);
-        if (mCollidable.has(entity)) {
-            Collidable coll = mCollidable.create(entity);
-            Position position = mPosition.create(entity);
-            shapeRenderer.rect(position.x + coll.xOffset, position.y + coll.yOffset, coll.width, coll.height);
-        }
-    }
+//    private void renderBoundingBox(int entity) {
+//        shapeRenderer.setColor(255f, 0, 0, 0);
+//        if (mCollidable.has(entity)) {
+//            Collidable coll = mCollidable.create(entity);
+//            Position position = mPosition.create(entity);
+//            shapeRenderer.rect(position.x + coll.xOffset, position.y + coll.yOffset, coll.width, coll.height);
+//        }
+//    }
 
     private class ZComparator implements Comparator<Integer> {
         private World world;
         private float isometricRangePerYValue = 100f;
+
+        ZComparator(World world) {
+            this.world = world;
+        }
 
         ZComparator(World world, float isometricRangePerYValue) {
             this.world = world;
@@ -207,9 +199,17 @@ public class RenderingSystem extends BaseEntitySystem {
         public int compare(Integer e1, Integer e2) {
 
             //TODO Need to take into account the offset variable in layer.
+            //TODO Need to change what we use to get position. Otherwise the physics bodies we use won't ever get sorted properly.
+
             return (int) Math.signum(
                     (-world.getMapper(Position.class).create(e1).y * isometricRangePerYValue)
                             + (world.getMapper(Position.class).create(e2).y * isometricRangePerYValue));
         }
+    }
+
+    @Override
+    public void dispose() {
+        box2DDebugRenderer.dispose();
+        batch.dispose();
     }
 }

@@ -10,7 +10,6 @@ import com.sad.function.components.PhysicsBody;
 
 public class CameraSystem extends IteratingSystem {
     private ComponentMapper<PhysicsBody> mPhysicsBody;
-    private ComponentMapper<Dimension> mDimension;
 
     private Camera camera;
 
@@ -23,10 +22,9 @@ public class CameraSystem extends IteratingSystem {
     @Override
     protected void process(int entityId) {
         PhysicsBody pos = mPhysicsBody.create(entityId);
-        Dimension dimension = mDimension.create(entityId);
 
-        camera.position.set(pos.body.getPosition().x + dimension.width / 32f / 2f,
-                pos.body.getPosition().y + dimension.height / 2 / 32f,
+        camera.position.set(pos.body.getPosition().x,
+                pos.body.getPosition().y,
                 0);
     }
 }
