@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.sad.function.components.*;
 
-@SuppressWarnings("Duplicates")
 public class PlayerFactory extends Factory {
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
@@ -40,11 +39,21 @@ public class PlayerFactory extends Factory {
         float spriteSize = 32f / 32f;
         float bodyRadius = 20f / 32f;
         float offsetY = -(spriteSize - bodyRadius)/2 ;
-        //Add a physics body to the player ar
+
         PhysicsBody pBody = world.getMapper(PhysicsBody.class).create(playerId);
-        pBody.body = createPBody(x, y, bodyRadius / 2);
+        pBody.body = new BodyCreator().hasFixedRotation(true)
+                .setBodyType(BodyDef.BodyType.DynamicBody)
+                .setPosition(x, y)
+                .buildBody(pWorld)
+                .createCircleFixture(bodyRadius/2, 1.0f)
+                .getBody();
+
         pBody.shape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
         pBody.setWidth(bodyRadius);
+
+
+        //Currently only storing the id's of the objects in the user data section.
+        pBody.body.setUserData(playerId);
 
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
@@ -55,52 +64,6 @@ public class PlayerFactory extends Factory {
                         offsetY));
 
         return playerId;
-    }
-
-    private Body createPBody(float x, float y, float radius) {
-        Body pBody;
-
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody; //Value that is willing and able to move!
-        def.position.set(x, y);
-        def.fixedRotation = true; //Don't rotate.
-
-        pBody = pWorld.createBody(def);
-
-        Shape shape = createCircle(radius);
-        pBody.createFixture(shape, 1.0f);
-        shape.dispose();
-
-        return pBody;
-    }
-
-    private Body createPBody(float x, float y, float width, float height) {
-        Body pBody;
-
-        BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody; //Value that is willing and able to move!
-        def.position.set(x, y);
-        def.fixedRotation = true; //Don't rotate.
-
-        pBody = pWorld.createBody(def);
-
-        Shape shape = createBox(height, width);
-        pBody.createFixture(shape, 1.0f);
-        shape.dispose();
-
-        return pBody;
-    }
-
-    private PolygonShape createBox(float height, float width) {
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(height, width);
-        return shape;
-    }
-
-    private CircleShape createCircle(float radius) {
-        CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(radius);
-        return circleShape;
     }
 
 }
