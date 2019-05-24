@@ -1,6 +1,7 @@
 package com.sad.function.components;
 
 import com.artemis.Component;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 /**
@@ -13,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 public class PhysicsBody extends Component {
     public Body body;
 
+    private Vector2 position;
     private float width = 0f;
     private float height = 0f;
     public float density = 1.0f;
