@@ -2,12 +2,19 @@ package com.sad.function.system.headbutt.twod;
 
 import com.badlogic.gdx.math.Vector2;
 
-public interface Shape {
+public abstract class Shape {
+    protected Vector2 _origin;
+
     /**
      The origin / centre of the shape.
      */
-    Vector2 getOrigin();
-    Vector2 setOrigin();
+    public Vector2 getOrigin() {
+        return _origin;
+    }
+
+    public void setOrigin(Vector2 newOrigin) {
+        this._origin = newOrigin;
+    }
 
     /**
      Given a direction in global coordinates, return the vertex (in global coordinates)
@@ -15,5 +22,5 @@ public interface Shape {
      @param direction
      @return Vec2
      */
-    Vector2 support(Vector2 direction);
+    public abstract Vector2 support(Vector2 direction);
 }
