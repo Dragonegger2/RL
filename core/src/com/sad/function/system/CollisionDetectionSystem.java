@@ -7,6 +7,7 @@ import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.Position;
+import com.sad.function.system.headbutt.twod.Headbutt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,9 +25,11 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
 
+    private Headbutt headbutt;
     public CollisionDetectionSystem() {
         super(Aspect.all(Collidable.class, Position.class));
 
+        headbutt = new Headbutt();
         narrowSpacialManager = new NarrowSpacialManager();
 
         collidables = new IntBag();
