@@ -206,8 +206,8 @@ public class RenderingSystem extends BaseEntitySystem {
             float xOffset = dimension.renderOffset.x;
             float yOffset = dimension.renderOffset.y;
 
-            float renderX = pBody.body.getPosition().x - sWidth / 2 - xOffset;
-            float renderY = pBody.body.getPosition().y - sHeight / 2 - yOffset;
+            float renderX = pBody.position.x - sWidth / 2 - xOffset;
+            float renderY = pBody.position.y - sHeight / 2 - yOffset;
 
             return new Vector3(renderX, renderY, 0.0f);
         }

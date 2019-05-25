@@ -22,7 +22,7 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private Vector2 penetration = new Vector2();
 
     public CollisionDetectionSystem() {
-        super(Aspect.all(Collidable.class, Position.class));
+        super(Aspect.all(Position.class));
 
         collidables = new IntBag();
     }

@@ -14,12 +14,16 @@ import com.badlogic.gdx.physics.box2d.Body;
 public class PhysicsBody extends Component {
     public Body body;
 
-    private Vector2 position;
+    public Vector2 position;
     private float width = 0f;
     private float height = 0f;
     public float density = 1.0f;
 
     public BodyShape shape = BodyShape.RECTANGLE;
+
+    public PhysicsBody() {
+        position = new Vector2();
+    }
 
     /**
      * If the shape is a circle, return the width as that is an alias for radius.

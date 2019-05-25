@@ -13,7 +13,7 @@ import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
-import com.sad.function.system.collision.Box2DSystem;
+import com.sad.function.system.collision.CollisionDetectionSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,10 +44,10 @@ public class ApocalypticGame extends BaseGame {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new InputSystem(),
-                        new PhysicsSystem(),
-                        new Box2DSystem(pWorld),
-
+//                        new InputSystem(),
+//                        new PhysicsSystem(),
+//                        new Box2DSystem(pWorld),
+                        new CollisionDetectionSystem(),
                         //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),
@@ -63,12 +63,12 @@ public class ApocalypticGame extends BaseGame {
         boxFactory = new BoxFactory(world, pWorld);
 
         playerFactory.create(0, 0);
-        wallFactory.createWall(2, 2, 1, 1);
-        wallFactory.createWall(3, 3, 1, 1);
+//        wallFactory.createWall(2, 2, 1, 1);
+//        wallFactory.createWall(3, 3, 1, 1);
 
         createTiles(100, 100);
-        boxFactory.create(0, 2, 1, 1);
-        boxFactory.create(0, 3, 1, 1);
+//        boxFactory.create(0, 2, 1, 1);
+//        boxFactory.create(0, 3, 1, 1);
     }
 
     private void setupCamera() {
