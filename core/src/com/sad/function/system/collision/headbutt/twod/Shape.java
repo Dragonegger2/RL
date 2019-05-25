@@ -6,7 +6,7 @@ public abstract class Shape {
     protected Vector2 _origin;
 
     /**
-     The origin / centre of the shape.
+     The origin / centre of the bodyShape.
      */
     public Vector2 getOrigin() {
         return _origin;

@@ -68,7 +68,8 @@ public class Headbutt {
         Vector3 B = new Vector3(b.x, b.y, 0);
         Vector3 C = new Vector3(c.x, c.y, 0);
 
-        Vector3 calc = A.crs(B).crs(C);
+        Vector3 calc = new Vector3(A).crs(B);
+        calc.crs(C);
 
         return new Vector2(calc.x, calc.y);
     }

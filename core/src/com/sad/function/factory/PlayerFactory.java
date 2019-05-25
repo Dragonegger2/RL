@@ -4,8 +4,8 @@ import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
 import com.sad.function.components.*;
+import com.sad.function.system.collision.headbutt.twod.shape.Circle;
 
 public class PlayerFactory extends Factory {
     private World world;
@@ -41,19 +41,20 @@ public class PlayerFactory extends Factory {
         float offsetY = -(spriteSize - bodyRadius)/2 ;
 
         PhysicsBody pBody = world.getMapper(PhysicsBody.class).create(playerId);
-        pBody.body = new BodyCreator().hasFixedRotation(true)
-                .setBodyType(BodyDef.BodyType.DynamicBody)
-                .setPosition(x, y)
-                .buildBody(pWorld)
-                .createCircleFixture(bodyRadius/2, 1.0f)
-                .getBody();
+//        pBody.body = new BodyCreator().hasFixedRotation(true)
+//                .setBodyType(BodyDef.BodyType.DynamicBody)
+//                .setPosition(x, y)
+//                .buildBody(pWorld)
+//                .createCircleFixture(bodyRadius/2, 1.0f)
+//                .getBody();
 
-        pBody.shape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
+        pBody.bodyShape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
         pBody.setWidth(bodyRadius);
+        pBody.hitBox = new Circle(new Vector2(x,y), bodyRadius);
 
 
         //Currently only storing the id's of the objects in the user data section.
-        pBody.body.setUserData(playerId);
+//        pBody.body.setUserData(playerId);
 
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 

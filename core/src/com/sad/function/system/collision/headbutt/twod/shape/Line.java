@@ -1,7 +1,7 @@
 package com.sad.function.system.collision.headbutt.twod.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.system.headbutt.twod.Shape;
+import com.sad.function.system.collision.headbutt.twod.Shape;
 
 public class Line extends Shape {
     private Vector2 start;

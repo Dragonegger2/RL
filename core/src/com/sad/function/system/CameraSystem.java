@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.sad.function.components.CameraComponent;
-import com.sad.function.components.Dimension;
 import com.sad.function.components.PhysicsBody;
 
 public class CameraSystem extends IteratingSystem {
@@ -23,8 +22,8 @@ public class CameraSystem extends IteratingSystem {
     protected void process(int entityId) {
         PhysicsBody pos = mPhysicsBody.create(entityId);
 
-        camera.position.set(pos.body.getPosition().x,
-                pos.body.getPosition().y,
+        camera.position.set(pos.position.x,
+                pos.position.y,
                 0);
     }
 }

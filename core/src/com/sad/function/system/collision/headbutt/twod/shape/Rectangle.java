@@ -1,13 +1,13 @@
 package com.sad.function.system.collision.headbutt.twod.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.system.headbutt.twod.Shape;
+import com.sad.function.system.collision.headbutt.twod.Shape;
 
 public class Rectangle extends Shape {
     private Vector2[] vertices;
 
     public Rectangle(Vector2 origin, Vector2 halfsize) {
-        this._origin = getOrigin();
+        this._origin = origin;
         this.vertices = new Vector2[4];
         this.vertices[0] = new Vector2();
         this.vertices[1] = new Vector2();

@@ -13,4 +13,7 @@ public class GameInfo {
     public static final boolean DEBUG = true;
 
     public static final float VIRTUAL_HEIGHT = 6f;
+
+    public static boolean RENDER_SPRITE_OUTLINES = true;
+    public static boolean RENDER_HITBOX_OUTLINES = true;
 }

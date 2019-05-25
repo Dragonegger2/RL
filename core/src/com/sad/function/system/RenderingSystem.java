@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
 import com.sad.function.components.*;
 import com.sad.function.global.GameInfo;
@@ -28,7 +27,7 @@ public class RenderingSystem extends BaseEntitySystem {
     //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
     private IsometricRangeYValueComparator isometricRangeYValueComparator;
 
-    private Box2DDebugRenderer box2DDebugRenderer;
+//    private Box2DDebugRenderer box2DDebugRenderer;
 
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Position> mPosition;
@@ -68,7 +67,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        box2DDebugRenderer = new Box2DDebugRenderer();
+//        box2DDebugRenderer = new Box2DDebugRenderer();
 
         for (Layer.RENDERABLE_LAYER layer : layers) {
             layerCollections.put(layer, new ArrayList<>());
@@ -131,7 +130,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
             shapeRenderer.end();
 
-            box2DDebugRenderer.render(pWorld, camera.combined);
+//            box2DDebugRenderer.render(pWorld, camera.combined);
         }
 
     }
@@ -206,8 +205,8 @@ public class RenderingSystem extends BaseEntitySystem {
             float xOffset = dimension.renderOffset.x;
             float yOffset = dimension.renderOffset.y;
 
-            float renderX = pBody.body.getPosition().x - sWidth / 2 - xOffset;
-            float renderY = pBody.body.getPosition().y - sHeight / 2 - yOffset;
+            float renderX = pBody.position.x - sWidth / 2 - xOffset;
+            float renderY = pBody.position.y - sHeight / 2 - yOffset;
 
             return new Vector3(renderX, renderY, 0.0f);
         }
@@ -217,7 +216,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
     @Override
     public void dispose() {
-        box2DDebugRenderer.dispose();
+//        box2DDebugRenderer.dispose();
         batch.dispose();
     }
 }

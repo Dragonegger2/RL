@@ -3,10 +3,12 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
+import com.sad.function.system.collision.headbutt.twod.shape.Rectangle;
 
 @SuppressWarnings("Duplicates")
 public class WallEntityFactory extends Factory {
@@ -44,8 +46,9 @@ public class WallEntityFactory extends Factory {
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
 
+        world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(new Vector2(x,y), new Vector2(width/2,height/2));
 
-        world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
+//        world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
         world.getMapper(PhysicsBody.class).create(wall).setWidth(width).setHeight(height);
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
@@ -63,6 +66,7 @@ public class WallEntityFactory extends Factory {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
+
 
         pBody.createFixture(shape, 1.0f);
         shape.dispose();
