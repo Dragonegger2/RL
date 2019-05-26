@@ -67,8 +67,8 @@ public class ApocalypticGame extends BaseGame {
         playerFactory = new PlayerFactory(world, pWorld);
 //        boxFactory = new BoxFactory(world, pWorld);
 
-//        playerFactory.create(1, 1);
-//        wallFactory.createWall(1, 1, 1,1);
+        playerFactory.create(0, 1);
+        wallFactory.createWall(0, 0, 2,4);
 //        wallFactory.createWall(2, 2, 1, 1);
 //        wallFactory.createWall(3, 3, 1, 1);
 //
@@ -78,20 +78,21 @@ public class ApocalypticGame extends BaseGame {
 
 //        int shapeA = world.create();
 //        int shapeB = world.create();
-//
+////
 //        ArrayList<Vector2> shapeAVertices = new ArrayList<>();
 //        shapeAVertices.add(new Vector2(1,3));
 //        shapeAVertices.add(new Vector2(3,3));
 //        shapeAVertices.add(new Vector2(1,2));
-//
+////
 //        ArrayList<Vector2> shapeBVertices = new ArrayList<>();
 //        shapeBVertices.add(new Vector2(4,2));
 //        shapeBVertices.add(new Vector2(2,2));
 //        shapeBVertices.add(new Vector2(4,4));
 //        shapeBVertices.add(new Vector2(2,4));
-
-//        shapeA.
-
+//
+////        shapeA.
+//        world.getMapper(PhysicsBody.class).create(shapeA).hitBox = new Polygon(new Vector2(0,0), shapeAVertices);
+//        world.getMapper(PhysicsBody.class).create(shapeB).hitBox = new Polygon(new Vector2(0,0), shapeBVertices);
     }
 
     private void setupCamera() {

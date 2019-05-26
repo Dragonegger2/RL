@@ -48,9 +48,10 @@ public class PlayerFactory extends Factory {
 //                .createCircleFixture(bodyRadius/2, 1.0f)
 //                .getBody();
 
-        pBody.bodyShape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
-        pBody.setWidth(bodyRadius/2);
-        pBody.hitBox = new Rectangle(new Vector2(x,y), new Vector2(bodyRadius/2, bodyRadius/2));//new Circle(new Vector2(x,y), bodyRadius/2);
+        pBody.bodyShape = PhysicsBody.BodyShape.RECTANGLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
+        pBody.setWidth(.5f);
+        pBody.setHeight(.5f);
+        pBody.hitBox = new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
 
 
         //Currently only storing the id's of the objects in the user data section.

@@ -140,7 +140,8 @@ public class RenderingSystem extends BaseEntitySystem {
                     if(mPhysicsBody.create(entity).bodyShape == PhysicsBody.BodyShape.CIRCLE) {
                         shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x,
                                 mPhysicsBody.create(entity).hitBox.getOrigin().y,
-                                mPhysicsBody.create(entity).getWidth());
+                                mPhysicsBody.create(entity).getWidth(),
+                                10);
                     } else {
                         shapeRenderer.rect(mPhysicsBody.create(entity).position.x,
                                 mPhysicsBody.create(entity).position.y,

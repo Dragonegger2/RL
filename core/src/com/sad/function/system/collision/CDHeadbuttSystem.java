@@ -8,11 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Position;
+import com.sad.function.system.collision.headbutt.twod.GJK;
 import com.sad.function.system.collision.headbutt.twod.Headbutt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static java.lang.Math.abs;
 
 public class CDHeadbuttSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(CDHeadbuttSystem.class);
@@ -24,10 +23,13 @@ public class CDHeadbuttSystem extends BaseEntitySystem {
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
     private Headbutt headbutt;
+    private GJK gjk;
+
     public CDHeadbuttSystem() {
         super(Aspect.all(PhysicsBody.class));
         headbutt = new Headbutt();
         collidables = new IntBag();
+        gjk = new GJK();
     }
 
     @SuppressWarnings("Duplicates")
@@ -39,9 +41,11 @@ public class CDHeadbuttSystem extends BaseEntitySystem {
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
 
+                //TODO Will need to update the origins of the shapes assuming this works.
 //                boolean val = headbutt.test(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
-                boolean val = headbutt.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
-                if(val) {
+//                boolean val = headbutt.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
+                boolean val = gjk.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
+                if (val) {
                     logger.info("COLLISION!");
                 }
                 //Ignore static elements.
@@ -68,57 +72,6 @@ public class CDHeadbuttSystem extends BaseEntitySystem {
             }
         }
 
-    }
-
-    private boolean boxesAreColliding(int a, int b, Vector2 penetration) {
-
-        float minkowskiTop = top(a) - bottom(b);
-        float minkowskiBottom = bottom(a) - top(b);
-        float minkowskiLeft = left(a) - right(b);
-        float minkowskiRight = right(a) - left(b);
-
-        //If colliding calculate the penetration vector.
-        if (minkowskiRight >= 0 && minkowskiLeft <= 0 && minkowskiTop >= 0 && minkowskiBottom <= 0) {
-            float min = Float.MAX_VALUE;
-
-            if (abs(minkowskiLeft) < min) {
-                min = abs(minkowskiLeft);
-                penetration.set(minkowskiLeft, 0.0f);
-            }
-            if (abs(minkowskiRight) < min) {
-                min = abs(minkowskiRight);
-                penetration.set(minkowskiRight, 0.0f);
-            }
-            if (abs(minkowskiTop) < min) {
-                min = abs(minkowskiTop);
-                penetration.set(0.0f, minkowskiTop);
-            }
-            if (abs(minkowskiBottom) < min) {
-                penetration.set(0.0f, minkowskiBottom);
-            }
-
-            return true;
-        }
-
-        penetration.set(0f, 0f);
-
-        return false;
-    }
-
-    private float bottom(int entity) {
-        return mPosition.create(entity).y + mCollidable.create(entity).yOffset;
-    }
-
-    private float top(int entity) {
-        return mPosition.create(entity).y + mCollidable.create(entity).yOffset + mCollidable.create(entity).height;
-    }
-
-    private float left(int entity) {
-        return mPosition.create(entity).x + mCollidable.create(entity).xOffset;
-    }
-
-    private float right(int entity) {
-        return mPosition.create(entity).x + mCollidable.create(entity).xOffset + mCollidable.create(entity).width;
     }
 
     @Override

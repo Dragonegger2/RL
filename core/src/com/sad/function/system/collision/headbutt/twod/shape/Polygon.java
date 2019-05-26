@@ -23,7 +23,7 @@ public class Polygon extends Shape {
 
         Vector2 vo = new Vector2();
         for(Vector2 v : vertices) {
-            vo.set(v).add(_origin);
+            vo.set(v);//.add(_origin); we're not going to offset by origin, fuck that.
             float distance = vo.dot(direction);
             if(distance > furthestDistance) {
                 furthestDistance = distance;
