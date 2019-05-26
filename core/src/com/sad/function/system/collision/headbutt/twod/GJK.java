@@ -99,65 +99,66 @@ public class GJK {
         return false;
     }
 
-
-    boolean process(List<Vector2> simplex, Vector2 direction) {
-        if(simplex.size() == 2 ) {              //Line segment.
-            //     ->
-            // if  AB
-            //      [1] [ A , B ]   AB * AC * AB
-
-
-        }
-        return false;
-    }
-
     //a is the point that was most recently added to the simplex.
     //Updates the simplex and the direction. This is wehre the magic happens!
-    //All of my assumptions are wrong.
-
+    // a = last index
     boolean processSimplex(List<Vector2> simplex, Vector2 direction) {
-        if (simplex.size() == 3) {//1 -simple
+        if (simplex.size() == 2) {
+            // Line Segment.
 
-            Vector2 AB = simplex.get(1).cpy().sub(simplex.get(0));
-            Vector2 AC = simplex.get(2).cpy().sub(simplex.get(0));
-            Vector2 A0 = simplex.get(0).cpy().scl(-1);                  //Origin - A = -A
+            //isSameDirection(-a, b.sub(a)_
+            if (isSameDirection(simplex.get(1).cpy().scl(-1), simplex.get(0).cpy().sub(simplex.get(1)))) {
+                //perpendicular(b-a)
+                direction = perpendicular(simplex.get(0).cpy().sub(simplex.get(1)));
+                direction.scl(-simplex.get(1).cpy().dot(direction));
+            } else {
+                direction = simplex.get(1).scl(-1);
+                //Remove b simple ie 1.
+                simplex.remove(0);
+            }
+
+            return true;
+        } else {
+            int a = 2;
+            int b = 1;
+            int c = 0;
+            Vector2 AB = simplex.get(b).cpy().sub(simplex.get(a));
+            Vector2 AC = simplex.get(c).cpy().sub(simplex.get(a));
+            Vector2 A0 = simplex.get(a).cpy().scl(-1);
 
             Vector2 ACB = perpendicular(AB);
             ACB = ACB.scl(ACB.dot(AC.cpy().scl(-1)));
+            Vector2 ABC = perpendicular(AC);
+            ABC = ABC.scl(ABC.dot(AB.cpy().scl(-1)));
 
             if (isSameDirection(ACB, A0)) {
                 if (isSameDirection(AB, A0)) { //REGION 4
-                    direction.set(A0);
+                    direction.set(ACB);
+                    simplex.remove(c);
 
-                    simplex.remove(1);
-                    simplex.remove(2);
                     return false;
-                } else {            //REGION 6
+                } else {            //REGION 5
                     direction.set(A0);
                     //Remove the b simplex. IE 1.
-                    simplex.remove(1);
+                    simplex.remove(0);//Remove c;
+                    simplex.remove(0);//Remove a;
                     return false;
                 }
-            }
-            return true;
-        } else { // Line Segment.
-            //We are getting somewhere if this proves true, since this means we are still chasing down the direction of the origin.
-            if (isSameDirection(simplex.get(0).cpy().scl(-1), simplex.get(1).cpy().sub(simplex.get(0)))) {
-                direction = perpendicular(simplex.get(1).cpy().sub(simplex.get(0)));
-                direction.scl(-simplex.get(0).cpy().dot(direction));
+            } else if(isSameDirection(ABC, A0)) {
+                if(isSameDirection(AC, A0)) { //Region 6
+                    direction.set(ABC);
+                    simplex.remove(b);
+                    return false;
+                } else { //Region 5 again
+                    direction.set(A0);
+                    simplex.remove(0);
+                    simplex.remove(0);
+                    return false;
+                }
             } else {
-                //TODO This is where my bug is.
-                /*
-                This is supposed to always use A as the most recent value.
-                 */
-                //B is not the valid case, remove it.
-                simplex.remove(1);
-                direction = simplex.get(0).scl(-1);
-                //Remove b simple ie 1.
+                return true;
             }
         }
-
-        return false;
     }
 
     /**
@@ -171,31 +172,7 @@ public class GJK {
         return new Vector2(-v.y, v.x);
     }
 
-    private boolean  isSameDirection(Vector2 v1, Vector2 v2) {
+    private boolean isSameDirection(Vector2 v1, Vector2 v2) {
         return v1.dot(v2) > 0;
     }
-
-//    /**
-//     * This class represents a simplex in 2D, as such it only has 3 points.
-//     * A -> the most recently added point.
-//     * B -> the second most recently added point.
-//     * C -> The Last added point.
-//     */
-//    private class Simplex {
-//        private
-//        private Vector2 a;
-//        private Vector2 b;
-//        private Vector2 c;
-//
-//        public Vector2 A() {
-//            return a;
-//        }
-//        public Vector2 B() {
-//            return b;
-//        }
-//
-//        public Vector2 C() {
-//            return c;
-//        }
-//    }
 }
