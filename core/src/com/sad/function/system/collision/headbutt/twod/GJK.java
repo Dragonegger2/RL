@@ -1,6 +1,7 @@
 package com.sad.function.system.collision.headbutt.twod;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,80 +24,96 @@ public class GJK {
         Vector2 newDirection = new Vector2(direction).scl(-1);
         Vector2 second = b.support(newDirection);
 
-        return a.support(direction).sub(b.support(newDirection));
+        return first.sub(second);
     }
 
     public boolean intersects(Shape a, Shape b) {
+        Simplex simplex = new Simplex();
         Vector2 direction = new Vector2(1, 0);
-        List<Vector2> simplex = new ArrayList<>();
-        simplex.add(support(a, b, direction));                      //Add the initial point to the array.
+        simplex.add(support(a,b, direction));
 
-        direction = simplex.get(0).cpy().scl(-1);
+//        direction.scl(-1);
+        direction.set(simplex.getLast().cpy().scl(-1));
 
-        int accumulator = 0;
-        while (accumulator < maxIterations) {
-            //I think the support function should invert the direction for me?
-            simplex.add(support(a, b, direction)); //Use the inverted direction to check the otherway.
-            if (!isSameDirection(direction, simplex.get(0))) {
+        while(true) {
+            simplex.add(support(a,b, direction));
+            if(simplex.getLast().dot(direction) < 0) {
                 return false;
+            } else {
+                if(containsOrigin(simplex, direction)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    public boolean containsOrigin(Simplex simplex, Vector2 d) {
+        // get the last point added to the simplex
+        Vector2 a = simplex.getLast();
+
+        // compute AO (same thing as -A)
+        Vector2 ao = a.cpy().scl(-1);
+
+        if (simplex.size() == 3) {
+            // then its the triangle case
+            // get b and c
+            Vector2 b = simplex.getB();
+            Vector2 c = simplex.getC();
+
+            // compute the edges
+            Vector2 ab = b.cpy().sub(a);
+            Vector2 ac = c.cpy().sub(a);
+
+            // compute the normals
+            Vector2 abPerp = tripleProduct(ac, ab, ab);
+            Vector2 acPerp = tripleProduct(ab, ac, ac);
+            // is the origin in R4
+            if (isSameDirection(abPerp, ao)) {
+                // remove point c
+                simplex.remove(c);
+                // set the new direction to abPerp
+                d.set(abPerp);
+            } else {
+                // is the origin in R3
+                if (acPerp.dot(ao) > 0) {
+                    // remove point b
+                    simplex.remove(b);
+                    // set the new direction to acPerp
+                    d.set(acPerp);
+                } else{
+                    // otherwise we know its in R5 so we can return true
+                    return true;
+                }
+            }
+        } else {        //TODO CORRECT SO FAR. this is the line segment case. NOT
+            // then its the line segment case
+            Vector2 b = simplex.getB();
+            // compute AB
+            Vector2 ab = b.cpy().sub(a); //ab = b - a
+
+            if(isSameDirection(ab, ao)) {
+
+                Vector2 abPerp = tripleProduct(ab, ao, ab); // get the perp to AB in the direction of the origin
+                d.set(abPerp); // set the direction to abPerp
+            } else {
+                simplex.remove(b);
+                d.set(ao);
             }
 
-            if (processSimplex(simplex, direction)) {
-                return true;
-            }
-
-            accumulator++;
         }
         return false;
     }
 
-    boolean containsOrigin(List<Vector2> simplex, Vector2 direction) {
-        Vector2 first = simplex.get(2).cpy();
-        Vector2 firstFromOrigin = first.cpy().scl(-1);
-        Vector2 second,
-                third,
-                firstSecond,
-                firstThird;
 
-        //We've got our 3 vertices.
-        if (simplex.size() == 3) {
-            second = simplex.get(1).cpy();
-            third = simplex.get(0).cpy();
-            firstSecond = second.cpy().sub(first);
-            firstThird = third.cpy().sub(first);
+    public Vector2 tripleProduct(Vector2 a, Vector2 b, Vector2 c) {
+        Vector3 A = new Vector3(a.x, a.y, 0);
+        Vector3 B = new Vector3(b.x, b.y, 0);
+        Vector3 C = new Vector3(c.x, c.y, 0);
 
-            direction = new Vector2(firstSecond.y, -1 * firstSecond.x);
+        Vector3 calc = new Vector3(A).crs(B);
+        calc.crs(C);
 
-            if (direction.dot(third) > 0) {
-                direction = direction.scl(-1);
-            }
-
-            if (direction.dot(firstFromOrigin) > 0) {
-                simplex.remove(0);
-                return false;
-            }
-
-            direction = new Vector2(firstThird.y, -1 * firstThird.x);
-
-            if (direction.dot(firstFromOrigin) > 0) {
-                simplex.remove(1);
-                return false;
-            }
-
-            return true;
-        } else { //Line segment
-            second = simplex.get(0).cpy();
-            firstSecond = second.cpy().sub(first);
-
-            direction = new Vector2(firstSecond.y, -1 * firstSecond.x);
-
-            if (direction.dot(firstFromOrigin) < 0) {
-                direction = direction.scl(-1);
-            }
-
-        }
-
-        return false;
+        return new Vector2(calc.x, calc.y);
     }
 
     //a is the point that was most recently added to the simplex.
@@ -105,6 +122,8 @@ public class GJK {
     boolean processSimplex(List<Vector2> simplex, Vector2 direction) {
         if (simplex.size() == 2) {
             // Line Segment.
+            Vector2 a = simplex.get(simplex.size() - 1);
+            Vector2 b = simplex.get(simplex.size() - 2);
 
             //isSameDirection(-a, b.sub(a)_
             if (isSameDirection(simplex.get(1).cpy().scl(-1), simplex.get(0).cpy().sub(simplex.get(1)))) {
@@ -112,7 +131,7 @@ public class GJK {
                 direction = perpendicular(simplex.get(0).cpy().sub(simplex.get(1)));
                 direction.scl(-simplex.get(1).cpy().dot(direction));
             } else {
-                direction = simplex.get(1).scl(-1);
+                direction = simplex.get(1).cpy().scl(-1);
                 //Remove b simple ie 1.
                 simplex.remove(0);
             }
@@ -144,8 +163,8 @@ public class GJK {
                     simplex.remove(0);//Remove a;
                     return false;
                 }
-            } else if(isSameDirection(ABC, A0)) {
-                if(isSameDirection(AC, A0)) { //Region 6
+            } else if (isSameDirection(ABC, A0)) {
+                if (isSameDirection(AC, A0)) { //Region 6
                     direction.set(ABC);
                     simplex.remove(b);
                     return false;
@@ -174,5 +193,37 @@ public class GJK {
 
     private boolean isSameDirection(Vector2 v1, Vector2 v2) {
         return v1.dot(v2) > 0;
+    }
+
+    class Simplex  {
+        ArrayList<Vector2> simplex;
+
+        public Simplex() {
+            simplex = new ArrayList<>();
+        }
+
+        public Vector2 getA() {
+            return simplex.get(simplex.size() - 1);
+        }
+
+        public Vector2 getB() {
+            return simplex.get(simplex.size() - 2);
+        }
+
+        public Vector2 getC() {
+            return simplex.get(simplex.size() - 3);
+        }
+
+        public void remove(Vector2 removeTarget){
+            simplex.remove(removeTarget);
+        }
+
+        public void add(Vector2 v) {
+            simplex.add(v);
+        }
+
+        public Vector2 getLast() { return simplex.get(simplex.size() - 1); }
+
+        public int size() { return simplex.size();}
     }
 }

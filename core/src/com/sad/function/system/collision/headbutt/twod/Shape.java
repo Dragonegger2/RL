@@ -2,9 +2,11 @@ package com.sad.function.system.collision.headbutt.twod;
 
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.List;
+
 public abstract class Shape {
     protected Vector2 _origin;
-
+    protected List<Vector2> vertices;
     /**
      The origin / centre of the bodyShape.
      */
@@ -22,5 +24,18 @@ public abstract class Shape {
      @param direction
      @return Vec2
      */
-    public abstract Vector2 support(Vector2 direction);
+    public Vector2 support(Vector2 direction) {
+        Vector2 farthestPoint = vertices.get(0);
+
+        for (Vector2 vertex : vertices) {
+            float a = direction.dot(vertex);
+            float b = direction.dot(farthestPoint);
+
+            if (a > b) {
+                farthestPoint = vertex;
+            }
+        }
+
+        return farthestPoint;
+    }
 }

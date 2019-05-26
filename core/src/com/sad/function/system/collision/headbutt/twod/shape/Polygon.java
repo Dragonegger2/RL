@@ -4,33 +4,27 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.system.collision.headbutt.twod.Shape;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Polygon extends Shape {
-    private List<Vector2> vertices;
 
-    public Polygon(Vector2 origin, ArrayList<Vector2> vertices) {
-        this._origin = origin;
+    public Polygon(ArrayList<Vector2> vertices) {
         this.vertices = vertices;
     }
 
-
-    @SuppressWarnings("Duplicates")
     @Override
-    public Vector2 support(Vector2 direction) {
-        float furthestDistance = Float.MIN_VALUE;
-        Vector2 furthestVertex = new Vector2();
+    public Vector2 getOrigin() {
+        _origin = centerOfPolygon();
 
-        Vector2 vo = new Vector2();
-        for(Vector2 v : vertices) {
-            vo.set(v);//.add(_origin); we're not going to offset by origin, fuck that.
-            float distance = vo.dot(direction);
-            if(distance > furthestDistance) {
-                furthestDistance = distance;
-                furthestVertex.set(vo);
-            }
+        return _origin;
+    }
+
+    public Vector2 centerOfPolygon() {
+        Vector2 center = new Vector2();
+        for (Vector2 vertex : vertices) {
+            center.add(vertex);
         }
 
-        return furthestVertex;
+        center = center.scl(1/(float)(vertices.size()));
+        return center;
     }
 }

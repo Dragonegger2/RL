@@ -32,15 +32,16 @@ public class Rectangle extends Shape {
 
     @Override
     public Vector2 support(Vector2 direction) {
-        float furthestDistance = Float.MIN_VALUE;
-        Vector2 furthestVertex = new Vector2();
+        Vector2 furthestVertex = vertices[0].cpy().add(_origin);
 
         Vector2 vo = new Vector2();
         for(Vector2 v : vertices) {
+
             vo.set(v).add(_origin);
-            float distance = vo.dot(direction);
-            if(distance > furthestDistance) {
-                furthestDistance = distance;
+            float a = direction.dot(vo);
+            float b = direction.dot(furthestVertex);
+
+            if(a > b) {
                 furthestVertex.set(vo);
             }
         }
