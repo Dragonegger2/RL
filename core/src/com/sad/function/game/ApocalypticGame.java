@@ -4,6 +4,7 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
@@ -11,8 +12,12 @@ import com.sad.function.factory.BoxFactory;
 import com.sad.function.factory.PlayerFactory;
 import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
+import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
-import com.sad.function.system.*;
+import com.sad.function.system.AnimationSystem;
+import com.sad.function.system.CameraSystem;
+import com.sad.function.system.InputSystem;
+import com.sad.function.system.RenderingSystem;
 import com.sad.function.system.collision.CDHeadbuttSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,14 +67,31 @@ public class ApocalypticGame extends BaseGame {
         playerFactory = new PlayerFactory(world, pWorld);
 //        boxFactory = new BoxFactory(world, pWorld);
 
-        playerFactory.create(3, 3);
-        wallFactory.createWall(100f, 100f, 2,2);
+//        playerFactory.create(1, 1);
+//        wallFactory.createWall(1, 1, 1,1);
 //        wallFactory.createWall(2, 2, 1, 1);
 //        wallFactory.createWall(3, 3, 1, 1);
 //
 //        createTiles(100, 100);
 //        boxFactory.create(0, 2, 1, 1);
 //        boxFactory.create(0, 3, 1, 1);
+
+//        int shapeA = world.create();
+//        int shapeB = world.create();
+//
+//        ArrayList<Vector2> shapeAVertices = new ArrayList<>();
+//        shapeAVertices.add(new Vector2(1,3));
+//        shapeAVertices.add(new Vector2(3,3));
+//        shapeAVertices.add(new Vector2(1,2));
+//
+//        ArrayList<Vector2> shapeBVertices = new ArrayList<>();
+//        shapeBVertices.add(new Vector2(4,2));
+//        shapeBVertices.add(new Vector2(2,2));
+//        shapeBVertices.add(new Vector2(4,4));
+//        shapeBVertices.add(new Vector2(2,4));
+
+//        shapeA.
+
     }
 
     private void setupCamera() {
@@ -92,6 +114,16 @@ public class ApocalypticGame extends BaseGame {
 
     @Override
     public void render() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            GameInfo.RENDER_SPRITES = !GameInfo.RENDER_SPRITES;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            GameInfo.RENDER_SPRITE_OUTLINES= !GameInfo.RENDER_SPRITE_OUTLINES;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            GameInfo.RENDER_HITBOX_OUTLINES = !GameInfo.RENDER_HITBOX_OUTLINES;
+        }
+
         world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
 

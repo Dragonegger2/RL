@@ -19,10 +19,13 @@ public class Rectangle extends Shape {
     public void resize(Vector2 halfsize) {
         this.vertices[0].x = -1 * halfsize.x;
         this.vertices[0].y = -1 * halfsize.y;
+
         this.vertices[1].x =  1 * halfsize.x;
         this.vertices[1].y = -1 * halfsize.y;
+
         this.vertices[2].x =  1 * halfsize.x;
         this.vertices[2].y =  1 * halfsize.y;
+
         this.vertices[3].x = -1 * halfsize.x;
         this.vertices[3].y =  1 * halfsize.y;
     }

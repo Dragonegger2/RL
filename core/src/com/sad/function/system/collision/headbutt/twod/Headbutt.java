@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 enum EvolveResult {
     NoIntersection,
@@ -74,7 +75,7 @@ public class Headbutt {
         return new Vector2(calc.x, calc.y);
     }
 
-    private EvolveResult evolveSimplex() {
+    private boolean evolveSimplex() {
         switch (vertices.size()) {
             case 0: {
                 direction = new Vector2(shapeB.getOrigin()).sub(shapeA.getOrigin());
@@ -102,41 +103,170 @@ public class Headbutt {
                 /*var a:Vec2 = vertices[2];
                 var b:Vec2 = vertices[1];
                 var c:Vec2 = vertices[0];*/
+//
+//                Vector2 c0 = new Vector2(vertices.get(2)).scl(-1);
+//                Vector2 bc = new Vector2(vertices.get(1)).sub(vertices.get(2));
+//                Vector2 ca = new Vector2(vertices.get(0)).sub(vertices.get(2));
+//
+//                Vector2 bcNorm = tripleProduct(ca, bc, bc);
+//                Vector2 caNorm = tripleProduct(bc, ca, ca);
+//
+//                if (bcNorm.dot(c0) > 0) {
+//                    // the origin is outside line bc
+//                    // get rid of a and add a new support in the direction of bcNorm
+////                    vertices.remove(vertices[0]);
+//                    vertices.remove(0);
+//                    direction = bcNorm;
+//                } else if (caNorm.dot(c0) > 0) {
+//                    // the origin is outside line ca
+//                    // get rid of b and add a new support in the direction of caNorm
+////                    vertices.remove(vertices[1]);
+//                    vertices.remove(1);
+//                    direction = caNorm;
+//                } else {
+//                    // the origin is inside both ab and ac,
+//                    // so it must be inside the triangle!
+//                    return EvolveResult.FoundIntersection;
+//                }
+                Vector2 first = new Vector2(vertices.get(2));
+                Vector2 firstFromOrigin = new Vector2(first).scl(-1);
+                Vector2 second = new Vector2(vertices.get(1));
+                Vector2 third = new Vector2(vertices.get(0));
 
-                Vector2 c0 = new Vector2(vertices.get(2)).scl(-1);
-                Vector2 bc = new Vector2(vertices.get(1)).sub(vertices.get(2));
-                Vector2 ca = new Vector2(vertices.get(0)).sub(vertices.get(2));
+                Vector2 firstSecond = new Vector2(second).sub(first);
+                Vector2 firstThird = new Vector2(third).sub(first);
 
-                Vector2 bcNorm = tripleProduct(ca, bc, bc);
-                Vector2 caNorm = tripleProduct(bc, ca, ca);
-
-                if (bcNorm.dot(c0) > 0) {
-                    // the origin is outside line bc
-                    // get rid of a and add a new support in the direction of bcNorm
-//                    vertices.remove(vertices[0]);
-                    vertices.remove(0);
-                    direction = bcNorm;
-                } else if (caNorm.dot(c0) > 0) {
-                    // the origin is outside line ca
-                    // get rid of b and add a new support in the direction of caNorm
-//                    vertices.remove(vertices[1]);
-                    vertices.remove(1);
-                    direction = caNorm;
-                } else {
-                    // the origin is inside both ab and ac,
-                    // so it must be inside the triangle!
-                    return EvolveResult.FoundIntersection;
+                Vector2 direction = new Vector2(first.y, -1 * firstSecond.x);
+                if(third.dot(direction) > 0) {
+                    direction.scl(-1);
                 }
 
-                break;
+                if(direction.dot(firstFromOrigin) > 0) {
+                    vertices.remove(0);
+                    return false;
+                }
+
+                direction = new Vector2(firstThird.y, -1 * firstThird.x);
+
+                if(direction.dot(firstFromOrigin) > 0){
+                    vertices.remove(1);
+                    return false;
+                }
+                return true;
             }
             default:
                 throw new RuntimeException("Can\'t have simplex with ${vertices.length} verts!");
         }
 
-        return addSupport(direction)
-                ? EvolveResult.StillEvolving
-                : EvolveResult.NoIntersection;
+        return addSupport(direction);
+    }
+
+    //Calculates a single point in the MinkowskiDifference.
+    private Vector2 support(Shape a, Shape b, Vector2 direction) {
+        Vector2 first = a.support(direction);
+        Vector2 newDirection = new Vector2(direction).scl(-1);
+        Vector2 second = b.support(newDirection);
+
+        return first.sub(second);
+    }
+
+//    public boolean GJK(Shape a, Shape b) {
+//        Vector2 direction = new Vector2(1, 0);
+//        ArrayList<Vector2> simplex = new ArrayList<>();
+//        simplex.add(support(a, b, direction));
+//
+//        Vector2 newDirection = new Vector2(direction).scl(-1);
+//
+//        int accumulator = 0;
+//        while (accumulator < maxIterations) {
+//            simplex.add(support(a, b, newDirection));
+//
+//            Vector2 calc = new Vector2(simplex.get(simplex.size()-1));
+//
+//            if (calc.dot(newDirection) <= 0) {
+//                return false;
+//            } else {
+////                if(checkContainsOrigin(newDirection, simplex)) {
+////                    return true;
+////                }
+//            }
+//
+//        }
+//
+//    }
+
+    public boolean intersects(Shape a, Shape b) {
+        Vector2 direction = new Vector2(1,0);
+        List<Vector2> simplex = new ArrayList<>();
+        simplex.add(support(a, b, direction));
+
+        direction = direction.set(simplex.get(0)).scl(-1);
+
+        int accumulator = 0;
+        while(accumulator < maxIterations) {
+            simplex.add(support(a, b, direction));
+            if(!isSameDirection(direction, simplex.get(0))) {
+                return false;
+            }
+
+            if(processSimplex(simplex, direction)) {
+                return true;
+            }
+
+            accumulator++;
+        }
+        return false;
+    }
+
+    boolean processSimplex(List<Vector2> simplex, Vector2 direction) {
+        if(simplex.size() == 2) //1 -simple
+            if(isSameDirection(simplex.get(0).cpy().scl(-1), simplex.get(1).cpy().sub(simplex.get(0)) )) {
+                direction = perpendicular(simplex.get(1).cpy().sub(simplex.get(0)));
+                direction.scl(-simplex.get(0).cpy().dot(direction));
+            } else {
+                direction = simplex.get(0).scl(-1);
+                //Remove b simple ie 1.
+                simplex.remove(1);
+            }
+        else { //2-simplex
+            Vector2 AB = simplex.get(1).cpy().sub(simplex.get(0));
+            Vector2 AC = simplex.get(2).cpy().sub(simplex.get(0));
+            Vector2 A0 = simplex.get(0).cpy().scl(-1);
+
+            Vector2 ACB = perpendicular(AB);
+            ACB = ACB.scl(ACB.dot(AC.cpy().scl(-1)));
+
+            if(isSameDirection(ACB, A0)) {
+                if(isSameDirection(AB, A0)) { //REGION 4
+                    direction.set(A0);
+                    //TODO: Double check this. Remove the b & c simplexs?
+                    simplex.remove(1);
+                    simplex.remove(2);
+                    return false;
+                } else {            //REGION 6
+                    direction.set(A0);
+                    //Remove the b simplex. IE 1.
+                    simplex.remove(1);
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Creates a vector that is perpendicular to the provided vector.
+     * @param v
+     * @return the perpendicular vector.
+     */
+    private Vector2 perpendicular(Vector2 v) {
+        return new Vector2(-v.y, v.x);
+    }
+    private boolean isSameDirection(Vector2 v1, Vector2 v2) {
+        return v1.dot(v2) > 0;
     }
 
     /**
@@ -153,13 +283,13 @@ public class Headbutt {
         this.shapeB = shapeB;
 
         // do the actual test
-        EvolveResult result = EvolveResult.StillEvolving;
+        boolean result = false;
         int iterations = 0;
-        while (iterations < maxIterations && result == EvolveResult.StillEvolving) {
+        while (iterations < maxIterations && !result) {
             result = evolveSimplex();
             iterations++;
         }
-        return result == EvolveResult.FoundIntersection;
+        return result;
     }
 
     private Edge findClosestEdge(PolygonWinding winding) {
@@ -182,7 +312,6 @@ public class Headbutt {
             }
 
             norm.nor();
-
 
             // calculate how far away the edge is from the origin
             float dist = norm.dot(vertices.get(i));

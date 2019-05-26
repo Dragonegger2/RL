@@ -48,8 +48,8 @@ public class WallEntityFactory extends Factory {
 
         world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(new Vector2(x,y), new Vector2(width/2,height/2));
 
-//        world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
-        world.getMapper(PhysicsBody.class).create(wall).setWidth(width).setHeight(height);
+        world.getMapper(PhysicsBody.class).create(wall).setWidth(width/2).setHeight(height/2);
+        world.getMapper(PhysicsBody.class).create(wall).position.set(x,y);
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
     }

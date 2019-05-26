@@ -11,6 +11,11 @@ public class Circle extends Shape {
         this.radius = radius;
     }
 
+    /**
+     * The support mapping for a sphere C of radius r and center O is given by SC(d) = O + r * ||d||.
+     * @param direction
+     * @return
+     */
     @Override
     public Vector2 support(Vector2 direction) {
         Vector2 c = new Vector2(_origin);

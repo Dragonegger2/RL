@@ -19,8 +19,8 @@ public class PhysicsBody extends Component {
     public float density = 1.0f;
     public BodyShape bodyShape = BodyShape.RECTANGLE;
     public Shape hitBox;
-    private float width = 0f;
-    private float height = 0f;
+    public float width = 0f;
+    public float height = 0f;
 
     public PhysicsBody() {
         position = new Vector2();

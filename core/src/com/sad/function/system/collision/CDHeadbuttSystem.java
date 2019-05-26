@@ -39,7 +39,8 @@ public class CDHeadbuttSystem extends BaseEntitySystem {
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
 
-                boolean val = headbutt.test(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
+//                boolean val = headbutt.test(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
+                boolean val = headbutt.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
                 if(val) {
                     logger.info("COLLISION!");
                 }

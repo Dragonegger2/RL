@@ -6,6 +6,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
+import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Position;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -97,16 +98,18 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
         return false;
     }
 
+    ComponentMapper<PhysicsBody> mPhyiscs;
+
     private float bottom(int entity) {
-        return mPosition.create(entity).y + mCollidable.create(entity).yOffset;
+        return mPhyiscs.create(entity).position.y + mCollidable.create(entity).yOffset;
     }
 
     private float top(int entity) {
-        return mPosition.create(entity).y + mCollidable.create(entity).yOffset + mCollidable.create(entity).height;
+        return mPhyiscs.create(entity).position.y + mCollidable.create(entity).yOffset + mPhyiscs.create(entity).height;
     }
 
     private float left(int entity) {
-        return mPosition.create(entity).x + mCollidable.create(entity).xOffset;
+        return mPhyiscs.create(entity).position.x + mCollidable.create(entity).xOffset;
     }
 
     private float right(int entity) {

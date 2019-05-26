@@ -109,14 +109,15 @@ public class RenderingSystem extends BaseEntitySystem {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
-        batch.begin();
-        for (Layer.RENDERABLE_LAYER layer : layers) {
-            for (Integer integer : layerCollections.get(layer)) {
-                renderEntity(integer);
+        if(GameInfo.RENDER_SPRITES) {
+            batch.begin();
+            for (Layer.RENDERABLE_LAYER layer : layers) {
+                for (Integer integer : layerCollections.get(layer)) {
+                    renderEntity(integer);
+                }
             }
+            batch.end();
         }
-        batch.end();
 
         if (GameInfo.DEBUG) {
             shapeRenderer.setColor(Color.FIREBRICK);
@@ -124,14 +125,37 @@ public class RenderingSystem extends BaseEntitySystem {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
             //Render only the default layer, for now.
-            for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
-                renderOutline(integer);
+            if(GameInfo.RENDER_SPRITE_OUTLINES) {
+                for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+                    renderOutline(integer);
+                }
+            }
+
+            if(GameInfo.RENDER_HITBOX_OUTLINES) {
+                shapeRenderer.setColor(Color.GREEN);
+                shapeRenderer.setProjectionMatrix(camera.combined);
+//                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+
+                for(Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+                    if(mPhysicsBody.create(entity).bodyShape == PhysicsBody.BodyShape.CIRCLE) {
+                        shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x,
+                                mPhysicsBody.create(entity).hitBox.getOrigin().y,
+                                mPhysicsBody.create(entity).getWidth());
+                    } else {
+                        shapeRenderer.rect(mPhysicsBody.create(entity).position.x,
+                                mPhysicsBody.create(entity).position.y,
+                                mPhysicsBody.create(entity).width * 2,
+                                mPhysicsBody.create(entity).height * 2);
+                    }
+                }
             }
 
             shapeRenderer.end();
 
 //            box2DDebugRenderer.render(pWorld, camera.combined);
         }
+
+
 
     }
 
