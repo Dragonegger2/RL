@@ -51,7 +51,7 @@ public class PlayerFactory extends Factory {
         pBody.bodyShape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
         pBody.setWidth(.5f);
         pBody.setHeight(.5f);
-        pBody.hitBox = new Circle(new Vector2(x,y), bodyRadius/2);//new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
+        pBody.hitBox = new Circle(new Vector2(x,y), .5f);//new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
 
 
         //Currently only storing the id's of the objects in the user data section.
@@ -62,8 +62,6 @@ public class PlayerFactory extends Factory {
         world.getMapper(Dimension.class).create(playerId)
                 .setWidth(spriteSize)
                 .setHeight(spriteSize);
-//                .setRenderOffset(new Vector2(0f,
-//                        offsetY));
 
         return playerId;
     }

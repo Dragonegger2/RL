@@ -249,7 +249,7 @@ public class GJK {
         Vector2 intersection = new Vector2();
 
         for (int i = 0; i <= 32; i++) {
-            Edge edge = findClosestEdge(winding);
+            Edge edge = findClosestEdge(PolygonWinding.CounterClockwise);
             Vector2 support = support(a, b, edge.normal);
             float distance = support.dot(edge.normal);
 
