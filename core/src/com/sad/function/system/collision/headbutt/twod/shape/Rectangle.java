@@ -38,7 +38,7 @@ public class Rectangle extends Shape {
         for(Vector2 v : vertices) {
 
             vo.set(v).add(_origin);
-            float a = direction.dot(vo);
+             float a = direction.dot(vo);
             float b = direction.dot(furthestVertex);
 
             if(a > b) {

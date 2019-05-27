@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.components.PhysicsBody;
 import com.sad.function.factory.BoxFactory;
 import com.sad.function.factory.PlayerFactory;
 import com.sad.function.factory.TileFactory;
@@ -20,12 +19,8 @@ import com.sad.function.system.CameraSystem;
 import com.sad.function.system.InputSystem;
 import com.sad.function.system.RenderingSystem;
 import com.sad.function.system.collision.CDHeadbuttSystem;
-import com.sad.function.system.collision.headbutt.twod.shape.Polygon;
-import com.sad.function.system.collision.headbutt.twod.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
@@ -67,40 +62,11 @@ public class ApocalypticGame extends BaseGame {
 
         world = new World(config);
 
-//        tileFactory = new TileFactory(world);
         wallFactory = new WallEntityFactory(world, pWorld);
         playerFactory = new PlayerFactory(world, pWorld);
-//        boxFactory = new BoxFactory(world, pWorld);
 
-//        playerFactory.create(0, 1);
-//        wallFactory.createWall(0, 0, 2,4);
-//        wallFactory.createWall(2, 2, 1, 1);
-//        wallFactory.createWall(3, 3, 1, 1);
-//
-//        createTiles(100, 100);
-//        boxFactory.create(0, 2, 1, 1);
-//        boxFactory.create(0, 3, 1, 1);
-
-        int shapeA = world.create();
-        int shapeB = world.create();
-//
-//        ArrayList<Vector2> shapeAVertices = new ArrayList<>();
-//        shapeAVertices.add(new Vector2(1,3));
-//        shapeAVertices.add(new Vector2(3,3));
-//        shapeAVertices.add(new Vector2(1,2));
-
-        ArrayList<Vector2> shapeBVertices = new ArrayList<>();
-        shapeBVertices.add(new Vector2(4,2));
-        shapeBVertices.add(new Vector2(2,2));
-        shapeBVertices.add(new Vector2(4,4));
-        shapeBVertices.add(new Vector2(2,4));
-
-        Polygon p = new Polygon(shapeBVertices);
-        Vector2 origin = p.centerOfPolygon();
-
-//        shapeA.
-        world.getMapper(PhysicsBody.class).create(shapeA).hitBox = new Rectangle(new Vector2(100,3), new Vector2(1,1));
-        world.getMapper(PhysicsBody.class).create(shapeB).hitBox = new Rectangle(new Vector2(3,3), new Vector2(1,1));
+        playerFactory.create(0f, 0);
+        wallFactory.createWall(0f, 0, 1f,1f);
     }
 
     private void setupCamera() {

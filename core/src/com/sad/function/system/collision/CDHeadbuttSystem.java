@@ -41,34 +41,10 @@ public class CDHeadbuttSystem extends BaseEntitySystem {
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
 
-                //TODO Will need to update the origins of the shapes assuming this works.
-//                boolean val = headbutt.test(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
-//                boolean val = headbutt.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
-                boolean val = gjk.intersects(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
-                if (val) {
-                    logger.info("COLLISION!");
+                Vector2 penetration = gjk.intersect(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
+                if (penetration != null) {
+                    logger.info("COLLISION! {}", penetration);
                 }
-                //Ignore static elements.
-//                if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
-//                    break;
-//                }
-//
-//                //Are we colliding?
-//                if (boxesAreColliding(e1, e2, penetration)) {
-//                    //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
-//                    //Both are dynamic
-//                    if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
-//                        mCollidable.create(e1).getHandler().handleCollision(world, e2, penetration);
-//                        mCollidable.create(e2).getHandler().handleCollision(world, e1, penetration);
-//                    } else { //Only one is dynamic.
-//                        //Figure out which one is dynamic.
-//                        int dynamicEntity = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
-//                        int staticEntity = mCollidable.create(e1).isStatic ? e1 : e2;
-//
-//                        mCollidable.create(dynamicEntity).getHandler().handleCollision(world, staticEntity, penetration);
-//                    }
-//                }
-
             }
         }
 

@@ -3,11 +3,12 @@ package com.sad.function.system.collision.headbutt.twod;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
 public class GJK {
+    private static Simplex simplex;
+
     /**
      * The maximum number of simplex evolution iterations before we accept the
      * given simplex. For non-curvy shapes, this can be low. Curvy shapes potentially
@@ -27,24 +28,28 @@ public class GJK {
         return first.sub(second);
     }
 
-    public boolean intersects(Shape a, Shape b) {
-        Simplex simplex = new Simplex();
+    public boolean gjk(Shape a, Shape b) {
+        simplex = new Simplex();
         Vector2 direction = new Vector2(1, 0);
-        simplex.add(support(a,b, direction));
+        simplex.add(support(a, b, direction));
 
-//        direction.scl(-1);
         direction.set(simplex.getLast().cpy().scl(-1));
 
-        while(true) {
-            simplex.add(support(a,b, direction));
-            if(simplex.getLast().dot(direction) < 0) {
+        int accumulator = 0;
+        while (accumulator < maxIterations) {            //Prevent infinite problems.
+            simplex.add(support(a, b, direction));
+            if (simplex.getLast().dot(direction) < 0) {
                 return false;
             } else {
-                if(containsOrigin(simplex, direction)) {
+                if (containsOrigin(simplex, direction)) {
                     return true;
                 }
             }
+            accumulator++;
         }
+
+        //No intersections could be found in the alloted iterations.
+        return false;
     }
 
     public boolean containsOrigin(Simplex simplex, Vector2 d) {
@@ -80,18 +85,18 @@ public class GJK {
                     simplex.remove(b);
                     // set the new direction to acPerp
                     d.set(acPerp);
-                } else{
+                } else {
                     // otherwise we know its in R5 so we can return true
                     return true;
                 }
             }
-        } else {        //TODO CORRECT SO FAR. this is the line segment case. NOT
+        } else {
             // then its the line segment case
             Vector2 b = simplex.getB();
             // compute AB
             Vector2 ab = b.cpy().sub(a); //ab = b - a
 
-            if(isSameDirection(ab, ao)) {
+            if (isSameDirection(ab, ao)) {
 
                 Vector2 abPerp = tripleProduct(ab, ao, ab); // get the perp to AB in the direction of the origin
                 d.set(abPerp); // set the direction to abPerp
@@ -195,35 +200,103 @@ public class GJK {
         return v1.dot(v2) > 0;
     }
 
-    class Simplex  {
-        ArrayList<Vector2> simplex;
+    private Edge findClosestEdge(Simplex s) {
+        Edge closest = new Edge();
+        closest.distance = Float.MAX_VALUE;
 
-        public Simplex() {
-            simplex = new ArrayList<>();
+        for (int i = 0; i < s.get().size() - 1; i++) {
+            int j;
+
+            if (i + 1 == simplex.get().size()) {
+                j = 0;
+            } else {
+                j = i + 1;
+            }
+
+            Vector2 a = s.get(i).cpy();
+            Vector2 b = s.get(j).cpy();
+
+            Vector2 e = b.cpy().sub(a);
+
+            Vector2 oa = a.cpy();
+
+            Vector2 n = tripleProduct(e, oa, e);
+
+            n.nor();
+
+            float d = n.dot(a);
+
+            if (d < closest.distance) {
+                closest.distance = d;
+                closest.normal = n;
+                closest.index = j;
+            }
         }
-
-        public Vector2 getA() {
-            return simplex.get(simplex.size() - 1);
-        }
-
-        public Vector2 getB() {
-            return simplex.get(simplex.size() - 2);
-        }
-
-        public Vector2 getC() {
-            return simplex.get(simplex.size() - 3);
-        }
-
-        public void remove(Vector2 removeTarget){
-            simplex.remove(removeTarget);
-        }
-
-        public void add(Vector2 v) {
-            simplex.add(v);
-        }
-
-        public Vector2 getLast() { return simplex.get(simplex.size() - 1); }
-
-        public int size() { return simplex.size();}
+        return closest;
     }
+
+    public Vector2 intersect(Shape a, Shape b) {
+        if (!gjk(a, b)) {
+            return null;
+        }
+
+        float e0 = (simplex.get(1).x - simplex.get(0).x) * (simplex.get(1).y + simplex.get(0).y);
+        float e1 = (simplex.get(2).x - simplex.get(1).x) * (simplex.get(2).y + simplex.get(1).y);
+        float e2 = (simplex.get(0).x - simplex.get(2).x) * (simplex.get(0).y + simplex.get(2).y);
+
+        PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
+
+        Vector2 intersection = new Vector2();
+
+        for (int i = 0; i <= 32; i++) {
+            Edge edge = findClosestEdge(winding);
+            Vector2 support = support(a, b, edge.normal);
+            float distance = support.dot(edge.normal);
+
+            intersection = edge.normal.cpy();
+            intersection = intersection.scl(distance);
+
+            if (Math.abs(distance - edge.distance) <= 0.000001) {
+                return intersection;
+            } else {
+                simplex.get().add(edge.index, support);
+            }
+        }
+
+        return intersection;
+    }
+
+    private Edge findClosestEdge(PolygonWinding winding) {
+        double closestDistance = Double.MAX_VALUE;
+        Vector2 closestNormal = new Vector2();
+        int closestIndex = 0;
+        Vector2 line = new Vector2();
+        for (int i = 0; i < simplex.get().size(); i++) {
+            int j = i + 1;
+            if (j >= simplex.size() - 1) j = 0;
+
+            line = simplex.get(j);
+            line.sub(simplex.get(i));
+
+            Vector2 norm;
+            if (winding == PolygonWinding.Clockwise) {
+                norm = new Vector2(line.y, -line.x);
+            } else {
+                norm = new Vector2(-line.y, line.x);
+            }
+
+            norm = norm.nor();
+
+            // calculate how far away the edge is from the origin
+            double dist = norm.dot(simplex.get(i));
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                closestNormal = norm;
+                closestIndex = j;
+            }
+        }
+
+        return new Edge(closestDistance, closestNormal, closestIndex);
+    }
+
 }

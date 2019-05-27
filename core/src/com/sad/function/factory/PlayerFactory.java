@@ -5,7 +5,7 @@ import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.*;
-import com.sad.function.system.collision.headbutt.twod.shape.Rectangle;
+import com.sad.function.system.collision.headbutt.twod.shape.Circle;
 
 public class PlayerFactory extends Factory {
     private World world;
@@ -48,10 +48,10 @@ public class PlayerFactory extends Factory {
 //                .createCircleFixture(bodyRadius/2, 1.0f)
 //                .getBody();
 
-        pBody.bodyShape = PhysicsBody.BodyShape.RECTANGLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
+        pBody.bodyShape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
         pBody.setWidth(.5f);
         pBody.setHeight(.5f);
-        pBody.hitBox = new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
+        pBody.hitBox = new Circle(new Vector2(x,y), bodyRadius/2);//new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
 
 
         //Currently only storing the id's of the objects in the user data section.
