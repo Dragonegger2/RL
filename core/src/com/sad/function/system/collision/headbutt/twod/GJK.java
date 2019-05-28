@@ -109,7 +109,6 @@ public class GJK {
         return false;
     }
 
-
     public Vector2 tripleProduct(Vector2 a, Vector2 b, Vector2 c) {
         Vector3 A = new Vector3(a.x, a.y, 0);
         Vector3 B = new Vector3(b.x, b.y, 0);
@@ -248,19 +247,19 @@ public class GJK {
 
         Vector2 intersection = new Vector2();
 
-        for (int i = 0; i <= 32; i++) {
-            Edge edge = findClosestEdge(PolygonWinding.CounterClockwise);
-            Vector2 support = support(a, b, edge.normal);
+        for (int i = 0; i <= maxIterations; i++) {
+            Edge edge = findClosestEdge(winding);               //Get closest edge
+            Vector2 support = support(a, b, edge.normal);       //Get support in the direction of the edge that is closest to the origin
             float distance = support.dot(edge.normal);
-
-            intersection = edge.normal.cpy();
-            intersection = intersection.scl(distance);
 
             if (Math.abs(distance - edge.distance) <= 0.000001) {
                 return intersection;
             } else {
                 simplex.get().add(edge.index, support);
             }
+
+            intersection = edge.normal.cpy();
+            intersection = intersection.scl(distance);
         }
 
         return intersection;
@@ -272,8 +271,13 @@ public class GJK {
         int closestIndex = 0;
         Vector2 line = new Vector2();
         for (int i = 0; i < simplex.get().size(); i++) {
-            int j = i + 1;
-            if (j >= simplex.size() - 1) j = 0;
+            int j;
+
+            if (i + 1 == simplex.get().size()) {
+                j = 0;
+            } else {
+                j = i + 1;
+            }
 
             line = simplex.get(j);
             line.sub(simplex.get(i));

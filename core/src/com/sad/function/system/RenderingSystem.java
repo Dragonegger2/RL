@@ -137,14 +137,18 @@ public class RenderingSystem extends BaseEntitySystem {
 //                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 
                 for(Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+
+                    //Shapes are center aligned, the renderers are lower-left aligned.
                     if(mPhysicsBody.create(entity).bodyShape == PhysicsBody.BodyShape.CIRCLE) {
-                        shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x,
-                                mPhysicsBody.create(entity).hitBox.getOrigin().y,
-                                mPhysicsBody.create(entity).getWidth(),
+                        float radius = mPhysicsBody.create(entity).getWidth();
+                        shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x - radius,
+                                mPhysicsBody.create(entity).hitBox.getOrigin().y - radius,
+                                mPhysicsBody.create(entity).getWidth() * 2,
                                 10);
                     } else {
-                        shapeRenderer.rect(mPhysicsBody.create(entity).position.x,
-                                mPhysicsBody.create(entity).position.y,
+                        //We're a rectangle. Offset by width and by height.
+                        shapeRenderer.rect(mPhysicsBody.create(entity).position.x - mPhysicsBody.create(entity).getWidth(),
+                                mPhysicsBody.create(entity).position.y - mPhysicsBody.create(entity).getHeight(),
                                 mPhysicsBody.create(entity).width * 2,
                                 mPhysicsBody.create(entity).height * 2);
                     }

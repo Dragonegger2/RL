@@ -37,8 +37,8 @@ public class PlayerFactory extends Factory {
         int playerId = world.create(playerArchetype);
 
         float spriteSize = 32f / 32f;
-        float bodyRadius = 20f / 32f;
-        float offsetY = -(spriteSize - bodyRadius)/2 ;
+//        float bodyRadius = 20f / 32f;
+//        float offsetY = -(spriteSize - bodyRadius)/2 ;
 
         PhysicsBody pBody = world.getMapper(PhysicsBody.class).create(playerId);
 //        pBody.body = new BodyCreator().hasFixedRotation(true)
@@ -49,8 +49,10 @@ public class PlayerFactory extends Factory {
 //                .getBody();
 
         pBody.bodyShape = PhysicsBody.BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
+
         pBody.setWidth(.5f);
         pBody.setHeight(.5f);
+
         pBody.hitBox = new Circle(new Vector2(x,y), .5f);//new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
 
 
