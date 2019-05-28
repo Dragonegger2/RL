@@ -48,16 +48,16 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
                 int e2 = collidables.get(b);
 
                 //Try casting a ray.
-                if(dynamics.contains(e1)) {
+                if (dynamics.contains(e1)) {
                     Velocity v = mVelocity.create(e1);
 
                     Vector2 start = mPhysics.create(e1).hitBox.getOrigin();
-                    Vector2 sup = mPhysics.create(e1).hitBox.support(new Vector2(v.x, v.y)); //Add the furthest point in the direction we're traveling.
+                    Vector2 sup = mPhysics.create(e1).hitBox.support(new Vector2(v.x, v.y).nor()).scl(10); //Add the furthest point in the direction we're traveling.
                     Vector2 end = start.cpy().add(v.x, v.y).scl(world.delta).add(sup); //Need to add the radius in the case of
 
                     Line l = new Line(start, end);
                     Vector2 rayPenetration = gjk.intersect(l, mPhysics.create(e2).hitBox);
-                    if(rayPenetration != null) {
+                    if (rayPenetration != null) {
                         logger.info("Something {}", rayPenetration);
                     }
                 }

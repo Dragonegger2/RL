@@ -60,8 +60,8 @@ public class ApocalypticGame extends BaseGame {
         wallFactory = new WallEntityFactory(world, pWorld);
         playerFactory = new PlayerFactory(world);
 
-        playerFactory.create(1f, 1);
-        wallFactory.createWall(1f, 1, 1f,1f);
+        playerFactory.create(0.0f, 0);
+        wallFactory.createWall(1f, 0, 1f,1f);
     }
 
     private void setupCamera() {

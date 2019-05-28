@@ -142,7 +142,6 @@ public class RenderingSystem extends BaseEntitySystem {
                     //Shapes are center aligned, the renderers are lower-left aligned.
                     switch (mPhysicsBody.create(entity).bodyShape) {
                         case CIRCLE:
-                            float radius = mPhysicsBody.create(entity).getWidth();
                             shapeRenderer.circle(
                                     mTranslation.create(entity).x,
                                     mTranslation.create(entity).y,
