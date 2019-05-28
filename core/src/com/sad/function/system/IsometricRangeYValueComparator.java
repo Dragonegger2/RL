@@ -2,7 +2,7 @@ package com.sad.function.system;
 
 import com.artemis.World;
 import com.sad.function.components.Layer;
-import com.sad.function.components.Position;
+import com.sad.function.components.Translation;
 
 import java.util.Comparator;
 
@@ -26,7 +26,7 @@ class IsometricRangeYValueComparator implements Comparator<Integer> {
         //TODO Need to change what we use to get position. Otherwise the physics bodies we use won't ever get sorted properly.
 
         return (int) Math.signum(
-                (-(world.getMapper(Position.class).create(e1).y * isometricRangePerYValue - world.getMapper(Layer.class).create(e1).yLayerOffset))
-                        + (world.getMapper(Position.class).create(e2).y * isometricRangePerYValue - world.getMapper(Layer.class).create(e1).yLayerOffset));
+                (-(world.getMapper(Translation.class).create(e1).y * isometricRangePerYValue - world.getMapper(Layer.class).create(e1).yLayerOffset))
+                        + (world.getMapper(Translation.class).create(e2).y * isometricRangePerYValue - world.getMapper(Layer.class).create(e1).yLayerOffset));
     }
 }

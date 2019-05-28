@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.sad.function.components.*;
@@ -30,12 +31,13 @@ public class RenderingSystem extends BaseEntitySystem {
 //    private Box2DDebugRenderer box2DDebugRenderer;
 
     private ComponentMapper<Layer> mLayer;
-    private ComponentMapper<Position> mPosition;
+    private ComponentMapper<Translation> mPosition;
     private ComponentMapper<TextureComponent> mTexture;
     private ComponentMapper<Dimension> mDimension;
     private ComponentMapper<Animation> mAnimation;
     private ComponentMapper<PhysicsBody> mPhysicsBody;
-    private ComponentMapper<Collidable> mCollidable;
+    private ComponentMapper<Velocity> mVelocity;
+    private ComponentMapper<Translation> mTranslation;
 
     private com.badlogic.gdx.physics.box2d.World pWorld;
 
@@ -56,7 +58,7 @@ public class RenderingSystem extends BaseEntitySystem {
     };
 
     public RenderingSystem(ResourceManager resourceManager, com.badlogic.gdx.physics.box2d.World pWorld, Camera camera) {
-        super(Aspect.all(Layer.class).one(Position.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
+        super(Aspect.all(Layer.class).one(Translation.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
@@ -134,23 +136,42 @@ public class RenderingSystem extends BaseEntitySystem {
             if(GameInfo.RENDER_HITBOX_OUTLINES) {
                 shapeRenderer.setColor(Color.GREEN);
                 shapeRenderer.setProjectionMatrix(camera.combined);
-//                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
 
                 for(Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
 
                     //Shapes are center aligned, the renderers are lower-left aligned.
-                    if(mPhysicsBody.create(entity).bodyShape == BodyShape.CIRCLE) {
-                        float radius = mPhysicsBody.create(entity).getWidth();
-                        shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x - radius,
-                                mPhysicsBody.create(entity).hitBox.getOrigin().y - radius,
-                                mPhysicsBody.create(entity).getWidth() * 2,
-                                10);
-                    } else {
-                        //We're a rectangle. Offset by width and by height.
-                        shapeRenderer.rect(mPhysicsBody.create(entity).position.x - mPhysicsBody.create(entity).getWidth(),
-                                mPhysicsBody.create(entity).position.y - mPhysicsBody.create(entity).getHeight(),
-                                mPhysicsBody.create(entity).width * 2,
-                                mPhysicsBody.create(entity).height * 2);
+                    switch (mPhysicsBody.create(entity).bodyShape) {
+                        case CIRCLE:
+                            float radius = mPhysicsBody.create(entity).getWidth();
+                            shapeRenderer.circle(
+                                    mTranslation.create(entity).x,
+                                    mTranslation.create(entity).y,
+                                    mPhysicsBody.create(entity).getWidth(),
+                                    15);
+                            break;
+                        case RECTANGLE:
+                            //We're a rectangle. Offset by width and by height.
+                            shapeRenderer.rect(
+                                    mPhysicsBody.create(entity).position.x - mPhysicsBody.create(entity).getWidth(),
+                                    mPhysicsBody.create(entity).position.y - mPhysicsBody.create(entity).getHeight(),
+                                    mPhysicsBody.create(entity).width * 2,
+                                    mPhysicsBody.create(entity).height * 2);
+                    }
+
+                    shapeRenderer.setColor(Color.LIME);
+                    //Draw origin
+                    shapeRenderer.circle(mTranslation.create(entity).x,
+                            mTranslation.create(entity).y,
+                            0.1f,
+                            15);
+
+                    //Draw the velocity vector too.
+                    shapeRenderer.setColor(Color.GREEN);
+                    if(mVelocity.has(entity)) {
+                        Vector2 origin = mPhysicsBody.create(entity).hitBox.getOrigin().sub(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
+                        origin = origin.cpy().add(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
+                        Velocity v = mVelocity.create(entity);
+                        shapeRenderer.line(origin, origin.cpy().add(v.x, v.y));
                     }
                 }
             }
@@ -227,6 +248,7 @@ public class RenderingSystem extends BaseEntitySystem {
         if (mPhysicsBody.has(entity)) {
             PhysicsBody pBody = mPhysicsBody.create(entity);
             Dimension dimension = mDimension.create(entity);
+            Translation translation = mTranslation.create(entity);
 
             float sWidth = dimension.width;
             float sHeight = dimension.height;
@@ -234,8 +256,8 @@ public class RenderingSystem extends BaseEntitySystem {
             float xOffset = dimension.renderOffset.x;
             float yOffset = dimension.renderOffset.y;
 
-            float renderX = pBody.position.x - sWidth / 2 - xOffset;
-            float renderY = pBody.position.y - sHeight / 2 - yOffset;
+            float renderX = translation.x - sWidth / 2 - xOffset;
+            float renderY = translation.y - sHeight / 2 - yOffset;
 
             return new Vector3(renderX, renderY, 0.0f);
         }

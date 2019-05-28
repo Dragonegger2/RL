@@ -32,7 +32,7 @@ public class InputSystem extends BaseEntitySystem {
         entitiesWithInputHandlers = new IntArray();
         actions = new DefaultMap<>(new NullGameCommand());
 
-        float velocity = 8f;
+        float velocity = 2f;
         actions.put(Action.MOVE_LEFT, new MoveLeft(velocity));
         actions.put(Action.MOVE_RIGHT, new MoveRight(velocity));
         actions.put(Action.MOVE_UP, new MoveUp(velocity));
@@ -54,12 +54,16 @@ public class InputSystem extends BaseEntitySystem {
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
             actions.get(Action.MOVE_LEFT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
+            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.LEFT;
+
             moving = true;
         }
 
         if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
             actions.get(Action.MOVE_RIGHT).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
+            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.RIGHT;
+
             moving = true;
 
         }
@@ -67,12 +71,15 @@ public class InputSystem extends BaseEntitySystem {
         if (Gdx.input.isKeyPressed(Keys.UP)) {
             actions.get(Action.MOVE_UP).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-back-walk";
+            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.UP;
+
             moving = true;
         }
 
         if (Gdx.input.isKeyPressed(Keys.DOWN)) {
             actions.get(Action.MOVE_DOWN).execute(world, entity);
             world.getMapper(Animation.class).create(entity).animationName = "hero-male-front-walk";
+            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.DOWN;
             moving = true;
         }
 

@@ -18,14 +18,14 @@ public class PlayerCollisionHandler extends CollisionHandler {
         switch (world.getMapper(Collidable.class).create(other).collisionCategory) {
             case BOX:
                 logger.info("You touched a box!");
-                world.getMapper(Position.class).create(id).x -= penetrationVector.x;
-                world.getMapper(Position.class).create(id).y -= penetrationVector.y;
+                world.getMapper(Translation.class).create(id).x -= penetrationVector.x;
+                world.getMapper(Translation.class).create(id).y -= penetrationVector.y;
 
                 break;
             case WALL:
                 logger.info("You hit a wall!");
-                world.getMapper(Position.class).create(id).x -= penetrationVector.x;
-                world.getMapper(Position.class).create(id).y -= penetrationVector.y;
+                world.getMapper(Translation.class).create(id).x -= penetrationVector.x;
+                world.getMapper(Translation.class).create(id).y -= penetrationVector.y;
 
                 break;
             default:

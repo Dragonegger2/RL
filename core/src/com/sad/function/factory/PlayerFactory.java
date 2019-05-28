@@ -3,19 +3,16 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
-import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.*;
 import com.sad.function.system.collision.shapes.Circle;
 
 public class PlayerFactory extends Factory {
     private World world;
-    private com.badlogic.gdx.physics.box2d.World pWorld;
 
     private Archetype playerArchetype;
 
-    public PlayerFactory(World world, com.badlogic.gdx.physics.box2d.World pWorld) {
+    public PlayerFactory(World world) {
         this.world = world;
-        this.pWorld = pWorld;
 
         playerArchetype = new ArchetypeBuilder()
                 .add(Animation.class)
@@ -39,12 +36,15 @@ public class PlayerFactory extends Factory {
         float spriteSize = 32f / 32f;
         PhysicsBody pBody = world.getMapper(PhysicsBody.class).create(playerId);
 
-        pBody.bodyShape = BodyShape.CIRCLE; //Let's us use some logic elsewhere to calculate where we should be rendering.
+        pBody.bodyShape = BodyShape.CIRCLE; //We know what it's going to be, just store it here for convenience.
 
         pBody.setWidth(.5f);
-        pBody.setHeight(.5f);
 
-        pBody.hitBox = new Circle(new Vector2(x, y), .5f);//new Rectangle(new Vector2(x,y), new Vector2(.5f, .5f));//new Circle(new Vector2(x,y), bodyRadius/2);
+        Translation translation = world.getMapper(Translation.class).create(playerId);
+            translation.x = x;
+            translation.y = y;
+
+        pBody.hitBox = new Circle(translation, .5f);
         pBody.dynamic = true;
 
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
@@ -55,5 +55,4 @@ public class PlayerFactory extends Factory {
 
         return playerId;
     }
-
 }

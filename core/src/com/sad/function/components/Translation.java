@@ -1,27 +1,29 @@
 package com.sad.function.components;
 
-import com.badlogic.ashley.core.Component;
+import com.artemis.Component;
 
 /**
  * Contains the coordinates of an entity in world space based on the origin of the object.
+ *
+ * This is specific
  */
-public class Position extends com.artemis.Component implements Component {
+public class Translation extends Component {
 
     public float x = 0.0f;
     public float y = 0.0f;
     public float z = 0.0f;
 
-    public Position setX(float x) {
+    public Translation setX(float x) {
         this.x = x;
         return this;
     }
 
-    public Position setY(float y) {
+    public Translation setY(float y) {
         this.y = y;
         return this;
     }
 
-    public Position setZ(float z) {
+    public Translation setZ(float z) {
         this.z = z;
         return this;
     }

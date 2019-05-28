@@ -22,7 +22,7 @@ public class WallEntityFactory extends Factory {
         this.pWorld = pWorld;
 
         wallArchetype = new ArchetypeBuilder()
-                .add(Position.class)
+                .add(Translation.class)
                 .add(Layer.class)
                 .add(Dimension.class)
                 .add(TextureComponent.class)
@@ -32,6 +32,7 @@ public class WallEntityFactory extends Factory {
 
     /**
      * Register the creation of a new wall with the world use to create this factory.
+     *
      * @param x position
      * @param y position
      * @return entity int.
@@ -39,20 +40,24 @@ public class WallEntityFactory extends Factory {
     public int createWall(float x, float y, float width, float height) {
         int wall = world.create(wallArchetype);
 
-        world.getMapper(Position.class).create(wall).x = x;
-        world.getMapper(Position.class).create(wall).y = y;
+        world.getMapper(Translation.class).create(wall).x = x;
+        world.getMapper(Translation.class).create(wall).y = y;
 
         world.getMapper(Layer.class).create(wall).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         world.getMapper(Dimension.class).create(wall).setDimensions(width, height);
 
-        world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(new Vector2(x,y), new Vector2(width/2,height/2));
+        Translation translation = world.getMapper(Translation.class).create(wall);
+        translation.x = x;
+        translation.y = y;
+
+        world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(translation, new Vector2(width / 2, height / 2));
 
         world.getMapper(PhysicsBody.class).create(wall)
-                .setWidth(width/2)
-                .setHeight(height/2);
+                .setWidth(width / 2)
+                .setHeight(height / 2);
 
-        world.getMapper(PhysicsBody.class).create(wall).position.set(x,y);
+        world.getMapper(PhysicsBody.class).create(wall).position.set(x, y);
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";
         return wall;
     }
@@ -62,7 +67,7 @@ public class WallEntityFactory extends Factory {
 
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(x,y);
+        def.position.set(x, y);
         def.fixedRotation = true;
 
         pBody = pWorld.createBody(def);

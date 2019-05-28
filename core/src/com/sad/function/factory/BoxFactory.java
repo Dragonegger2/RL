@@ -16,7 +16,7 @@ public class BoxFactory extends Factory {
         this.pWorld = pWorld;
 
         boxArchetype = new ArchetypeBuilder()
-                .add(Position.class)
+                .add(Translation.class)
                 .add(TextureComponent.class)
                 .add(Dimension.class)
                 .add(PhysicsBody.class)

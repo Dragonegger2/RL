@@ -3,7 +3,7 @@ package com.sad.function.system;
 import com.artemis.World;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
-import com.sad.function.components.Position;
+import com.sad.function.components.Translation;
 
 import java.util.*;
 
@@ -78,12 +78,12 @@ public class BroadSpacialManager {
         ArrayList<Integer> bucketsObjIsIn = new ArrayList<>();
 
         Vector2 min = new Vector2(
-                world.getMapper(Position.class).create(entity).x,
-                world.getMapper(Position.class).create(entity).y);
+                world.getMapper(Translation.class).create(entity).x,
+                world.getMapper(Translation.class).create(entity).y);
 
         Vector2 max = new Vector2(
-                world.getMapper(Position.class).create(entity).x + world.getMapper(Collidable.class).create(entity).width,
-                world.getMapper(Position.class).create(entity).y + world.getMapper(Collidable.class).create(entity).height);
+                world.getMapper(Translation.class).create(entity).x + world.getMapper(Collidable.class).create(entity).width,
+                world.getMapper(Translation.class).create(entity).y + world.getMapper(Collidable.class).create(entity).height);
 
         float width = sceneWidth / cellSize;
 

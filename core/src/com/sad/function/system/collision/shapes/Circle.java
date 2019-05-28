@@ -1,12 +1,13 @@
 package com.sad.function.system.collision.shapes;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.components.Translation;
 
 public class Circle extends Shape {
     private float radius;
 
-    public Circle(Vector2 origin, float radius) {
-        this._origin = origin;
+    public Circle(Translation translation, float radius) {
+        super(translation);
         this.radius = radius;
     }
 
@@ -17,7 +18,7 @@ public class Circle extends Shape {
      */
     @Override
     public Vector2 support(Vector2 direction) {
-        Vector2 c = new Vector2(_origin);
+        Vector2 c = new Vector2(translation.x, translation.y);
         Vector2 d = new Vector2(direction).nor();
         d.scl(radius);
         c.add(d);

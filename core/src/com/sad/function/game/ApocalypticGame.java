@@ -58,7 +58,7 @@ public class ApocalypticGame extends BaseGame {
         world = new World(config);
 
         wallFactory = new WallEntityFactory(world, pWorld);
-        playerFactory = new PlayerFactory(world, pWorld);
+        playerFactory = new PlayerFactory(world);
 
         playerFactory.create(1f, 1);
         wallFactory.createWall(1f, 1, 1f,1f);

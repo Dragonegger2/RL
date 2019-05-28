@@ -27,7 +27,7 @@ public class TileFactory extends Factory{
     public int create(float x, float y, String resourceName) {
         int tile = world.create(tileArchetype);
 
-        world.getMapper(Position.class).create(tile).setX(x).setY(y);
+        world.getMapper(Translation.class).create(tile).setX(x).setY(y);
         world.getMapper(Layer.class).create(tile).layer = Layer.RENDERABLE_LAYER.GROUND;
         world.getMapper(TextureComponent.class).create(tile).resourceName = resourceName;
 

@@ -22,16 +22,16 @@ public class BoxCollisionHandler extends CollisionHandler {
                 break;
 
             case WALL:
-                world.getMapper(Position.class).create(id).x -= penetrationVector.x / 2;
-                world.getMapper(Position.class).create(id).y -= penetrationVector.y / 2;
+                world.getMapper(Translation.class).create(id).x -= penetrationVector.x / 2;
+                world.getMapper(Translation.class).create(id).y -= penetrationVector.y / 2;
 
                 break;
             case BOX:
-                world.getMapper(Position.class).create(id).x -= penetrationVector.x / 4;
-                world.getMapper(Position.class).create(id).y -= penetrationVector.y / 4;
+                world.getMapper(Translation.class).create(id).x -= penetrationVector.x / 4;
+                world.getMapper(Translation.class).create(id).y -= penetrationVector.y / 4;
 
-                world.getMapper(Position.class).create(other).x += penetrationVector.x / 4;
-                world.getMapper(Position.class).create(other).y += penetrationVector.y / 4;
+                world.getMapper(Translation.class).create(other).x += penetrationVector.x / 4;
+                world.getMapper(Translation.class).create(other).y += penetrationVector.y / 4;
                 break;
 
             case NULL:

@@ -7,7 +7,7 @@ import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.PhysicsBody;
-import com.sad.function.components.Position;
+import com.sad.function.components.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,13 +18,13 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem.class);
 
     private ComponentMapper<Collidable> mCollidable;
-    private ComponentMapper<Position> mPosition;
+    private ComponentMapper<Translation> mPosition;
 
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
 
     public CollisionDetectionSystem() {
-        super(Aspect.all(Collidable.class, Position.class));
+        super(Aspect.all(Collidable.class, Translation.class));
 
         collidables = new IntBag();
     }

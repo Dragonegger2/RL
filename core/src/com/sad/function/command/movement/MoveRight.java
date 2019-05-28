@@ -1,7 +1,9 @@
 package com.sad.function.command.movement;
 
 import com.artemis.World;
+import com.badlogic.gdx.math.MathUtils;
 import com.sad.function.command.GameCommand;
+import com.sad.function.components.Velocity;
 
 public class MoveRight implements GameCommand {
 
@@ -13,6 +15,6 @@ public class MoveRight implements GameCommand {
 
     @Override
     public void execute(World world, int entity) {
-//        world.getMapper(PhysicsBody.class).create(entity).body.setLinearVelocity(acceleration, 0);
-    }
+        Velocity v = world.getMapper(Velocity.class).create(entity);
+        v.x = MathUtils.clamp(v.x += acceleration * world.delta, -acceleration, acceleration);    }
 }

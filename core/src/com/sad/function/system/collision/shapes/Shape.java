@@ -1,21 +1,25 @@
 package com.sad.function.system.collision.shapes;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.components.Translation;
 
 import java.util.List;
 
 public abstract class Shape {
-    protected Vector2 _origin;
     protected List<Vector2> vertices;
+
+    protected Translation translation;
+
+    public Shape() {}
+    public Shape(Translation translation) {
+        this.translation = translation;
+    }
+
     /**
      The origin / centre of the bodyShape.
      */
     public Vector2 getOrigin() {
-        return _origin;
-    }
-
-    public void setOrigin(Vector2 newOrigin) {
-        this._origin = newOrigin;
+        return new Vector2(translation.x, translation.y);
     }
 
     /**
@@ -38,4 +42,5 @@ public abstract class Shape {
 
         return farthestPoint;
     }
+
 }
