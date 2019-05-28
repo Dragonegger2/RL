@@ -17,8 +17,8 @@ public class BoxCollisionHandler extends CollisionHandler {
     public void handleCollision(World world, int other, Vector2 penetrationVector) {
         switch (world.getMapper(Collidable.class).create(other).collisionCategory) {
             case PLAYER:
-                world.getMapper(VelocityComponent.class).create(id).x += penetrationVector.x;
-                world.getMapper(VelocityComponent.class).create(id).y += penetrationVector.y;
+                world.getMapper(Velocity.class).create(id).x += penetrationVector.x;
+                world.getMapper(Velocity.class).create(id).y += penetrationVector.y;
                 break;
 
             case WALL:

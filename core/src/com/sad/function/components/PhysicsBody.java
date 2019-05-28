@@ -2,23 +2,24 @@ package com.sad.function.components;
 
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.sad.function.system.collision.shapes.Shape;
 
 /**
- * Holds the data for my box2d collision detection.
+ * Holds the data for my collision detection.
  * <p>
  * The height and width are the size of the body in extant form (halfsize).
  * <p>
  * If you are a circle, store the radius in width.
  */
 public class PhysicsBody extends Component {
-    public Body body;
-
     public Vector2 position;
     public float density = 1.0f;
     public BodyShape bodyShape = BodyShape.RECTANGLE;
     public Shape hitBox;
+
+    //Walls are static, the player isn't.
+    public boolean dynamic = false;
+
     public float width = 0f;
     public float height = 0f;
 
@@ -67,11 +68,5 @@ public class PhysicsBody extends Component {
     public PhysicsBody setWidth(float width) {
         this.width = width;
         return this;
-    }
-
-    public enum BodyShape {
-        CIRCLE,
-        RECTANGLE,
-        POLYGON
     }
 }

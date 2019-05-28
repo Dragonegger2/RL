@@ -2,6 +2,7 @@ package com.sad.function.command.movement;
 
 import com.artemis.World;
 import com.sad.function.command.GameCommand;
+import com.sad.function.components.Velocity;
 
 public class MoveDown implements GameCommand {
     private float acceleration;
@@ -12,6 +13,6 @@ public class MoveDown implements GameCommand {
 
     @Override
     public void execute(World world, int entity) {
-//        world.getMapper(PhysicsBody.class).create(entity).body.setLinearVelocity(0, -acceleration);
+        world.getMapper(Velocity.class).create(entity).y -= acceleration * world.delta;
     }
 }

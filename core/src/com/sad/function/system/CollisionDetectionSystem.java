@@ -5,6 +5,7 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.IntSet;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Position;
@@ -20,11 +21,19 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     private ComponentMapper<PhysicsBody> mPhysics;
 
     private IntBag collidables;
+
+    private IntSet statics;
+    private IntSet dynamics;
+
     private CollisionDetectionAlgorithms gjk;
 
     public CollisionDetectionSystem() {
         super(Aspect.all(PhysicsBody.class));
         collidables = new IntBag();
+
+        statics = new IntSet();
+        dynamics = new IntSet();
+
         gjk = new CollisionDetectionAlgorithms();
     }
 
@@ -40,15 +49,22 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
                 Vector2 penetration = gjk.intersect(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
                 if (penetration != null) {
                     logger.info("COLLISION! {}", penetration);
+                    mPhysics.create(e1).hitBox.getOrigin().sub(penetration);
                 }
+
             }
         }
-
     }
 
     @Override
     public void inserted(int entity) {
         collidables.add(entity);
+
+        if (mPhysics.create(entity).dynamic) {
+            dynamics.add(entity);
+        } else {
+            statics.add(entity);
+        }
     }
 
     @Override
@@ -57,5 +73,4 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
             collidables.remove(collidables.indexOf(entity));
         }
     }
-
 }

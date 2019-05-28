@@ -14,11 +14,7 @@ import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
-import com.sad.function.system.AnimationSystem;
-import com.sad.function.system.CameraSystem;
-import com.sad.function.system.InputSystem;
-import com.sad.function.system.RenderingSystem;
-import com.sad.function.system.CollisionDetectionSystem;
+import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,8 +46,7 @@ public class ApocalypticGame extends BaseGame {
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
                         new InputSystem(),
-//                        new PhysicsSystem(),
-//                        new Box2DSystem(pWorld),
+                        new MovementSystem(),
                         new CollisionDetectionSystem(),
                         //Animation based systems
                         new CameraSystem(camera),

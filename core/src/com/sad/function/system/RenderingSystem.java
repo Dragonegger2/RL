@@ -139,7 +139,7 @@ public class RenderingSystem extends BaseEntitySystem {
                 for(Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
 
                     //Shapes are center aligned, the renderers are lower-left aligned.
-                    if(mPhysicsBody.create(entity).bodyShape == PhysicsBody.BodyShape.CIRCLE) {
+                    if(mPhysicsBody.create(entity).bodyShape == BodyShape.CIRCLE) {
                         float radius = mPhysicsBody.create(entity).getWidth();
                         shapeRenderer.circle(mPhysicsBody.create(entity).hitBox.getOrigin().x - radius,
                                 mPhysicsBody.create(entity).hitBox.getOrigin().y - radius,

@@ -2,7 +2,7 @@ package com.sad.function.command.movement;
 
 import com.artemis.World;
 import com.sad.function.command.GameCommand;
-import com.sad.function.components.VelocityComponent;
+import com.sad.function.components.Velocity;
 
 public class MoveHorizontally implements GameCommand {
 
@@ -14,6 +14,6 @@ public class MoveHorizontally implements GameCommand {
 
     @Override
     public void execute(World world, int entity) {
-        world.getMapper(VelocityComponent.class).create(entity).x += acceleration * world.delta;
+        world.getMapper(Velocity.class).create(entity).x += acceleration * world.delta;
     }
 }

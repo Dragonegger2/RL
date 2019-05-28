@@ -6,7 +6,7 @@ import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.Position;
-import com.sad.function.components.VelocityComponent;
+import com.sad.function.components.Velocity;
 import com.sad.function.global.GameInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,22 +15,22 @@ public class MovementSystem extends IteratingSystem {
     private static final Logger logger = LogManager.getLogger(MovementSystem.class);
 
     private ComponentMapper<Position> mPosition;
-    private ComponentMapper<VelocityComponent> mVelocity;
+    private ComponentMapper<Velocity> mVelocity;
     private ComponentMapper<Collidable> mCollidable;
 
     public MovementSystem() {
-        super(Aspect.all(Position.class, VelocityComponent.class));
+        super(Aspect.all(Position.class, Velocity.class));
     }
 
     @Override
     protected void process(int entityId) {
         Position position = mPosition.create(entityId);
-        VelocityComponent velocityComponent = mVelocity.create(entityId);
+        Velocity velocity = mVelocity.create(entityId);
 
-        velocityComponent.x = MathUtils.clamp(velocityComponent.x, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
-        velocityComponent.y = MathUtils.clamp(velocityComponent.y, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
+        velocity.x = MathUtils.clamp(velocity.x, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
+        velocity.y = MathUtils.clamp(velocity.y, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
 
-        position.x += velocityComponent.x * world.delta;
-        position.y += velocityComponent.y * world.delta;
+        position.x += velocity.x * world.delta;
+        position.y += velocity.y * world.delta;
     }
 }

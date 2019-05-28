@@ -3,7 +3,6 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.sad.function.components.*;
 
 public class BoxFactory extends Factory {
@@ -36,21 +35,21 @@ public class BoxFactory extends Factory {
         int id = world.create(boxArchetype);
 
         world.getMapper(TextureComponent.class).create(id).resourceName = "box";
-        world.getMapper(PhysicsBody.class).create(id).body = new BodyCreator()
-                .hasFixedRotation(true)
-                .setPosition(x, y)
-                .setBodyType(BodyDef.BodyType.DynamicBody)
-                .buildBody(pWorld)
-                .createBoxFixture(width / 2f, height / 2f, 200.0f, 20f)
-                .getBody();
+//        world.getMapper(PhysicsBody.class).create(id).body = new BodyCreator()
+//                .hasFixedRotation(true)
+//                .setPosition(x, y)
+//                .setBodyType(BodyDef.BodyType.DynamicBody)
+//                .buildBody(pWorld)
+//                .createBoxFixture(width / 2f, height / 2f, 200.0f, 20f)
+//                .getBody();
 
-        world.getMapper(PhysicsBody.class).create(id).bodyShape = PhysicsBody.BodyShape.RECTANGLE;
+        world.getMapper(PhysicsBody.class).create(id).bodyShape = BodyShape.RECTANGLE;
         world.getMapper(PhysicsBody.class).create(id)
                 .setWidth(width / 2)
                 .setHeight(height / 2);
 
 
-        world.getMapper(PhysicsBody.class).create(id).body.setUserData(id);
+//        world.getMapper(PhysicsBody.class).create(id).body.setUserData(id);
         world.getMapper(PhysicsBody.class).create(id).density = 200.0f;
         world.getEntity(id).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
