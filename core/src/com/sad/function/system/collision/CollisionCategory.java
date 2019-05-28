@@ -1,4 +1,4 @@
-package com.sad.function.system;
+package com.sad.function.system.collision;
 
 
 public enum CollisionCategory {

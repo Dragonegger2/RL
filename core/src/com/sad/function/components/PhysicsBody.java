@@ -3,7 +3,7 @@ package com.sad.function.components;
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.sad.function.system.collision.headbutt.twod.Shape;
+import com.sad.function.system.collision.shapes.Shape;
 
 /**
  * Holds the data for my box2d collision detection.

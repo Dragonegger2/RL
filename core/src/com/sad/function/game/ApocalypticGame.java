@@ -18,7 +18,7 @@ import com.sad.function.system.AnimationSystem;
 import com.sad.function.system.CameraSystem;
 import com.sad.function.system.InputSystem;
 import com.sad.function.system.RenderingSystem;
-import com.sad.function.system.collision.CDHeadbuttSystem;
+import com.sad.function.system.CollisionDetectionSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +52,7 @@ public class ApocalypticGame extends BaseGame {
                         new InputSystem(),
 //                        new PhysicsSystem(),
 //                        new Box2DSystem(pWorld),
-                        new CDHeadbuttSystem(),
+                        new CollisionDetectionSystem(),
                         //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),

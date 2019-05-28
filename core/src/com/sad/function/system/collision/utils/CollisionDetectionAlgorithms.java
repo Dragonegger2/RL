@@ -1,12 +1,13 @@
-package com.sad.function.system.collision.headbutt.twod;
+package com.sad.function.system.collision.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.sad.function.system.collision.shapes.Shape;
 
 import java.util.List;
 
 @SuppressWarnings("ALL")
-public class GJK2 {
+public class CollisionDetectionAlgorithms {
     private static Simplex simplex;
 
     /**
@@ -246,19 +247,20 @@ public class GJK2 {
         PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
 
         Vector2 intersection = new Vector2();
-        for (int i = 0; i <= 32; i++) {
-            Edge edge = findClosestEdge(winding);
-            Vector2 support = support(a, b, edge.normal);
-            float distance = support.dot(edge.normal);
 
-            intersection = edge.normal.cpy();
-            intersection = intersection.scl(distance);
+        for (int i = 0; i <= maxIterations; i++) {
+            Edge edge = findClosestEdge(winding);               //Get closest edge
+            Vector2 support = support(a, b, edge.normal);       //Get support in the direction of the edge that is closest to the origin
+            float distance = support.dot(edge.normal);
 
             if (Math.abs(distance - edge.distance) <= 0.000001) {
                 return intersection;
             } else {
                 simplex.get().add(edge.index, support);
             }
+
+            intersection = edge.normal.cpy();
+            intersection = intersection.scl(distance);
         }
 
         return intersection;

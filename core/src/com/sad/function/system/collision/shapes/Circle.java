@@ -1,7 +1,6 @@
-package com.sad.function.system.collision.headbutt.twod.shape;
+package com.sad.function.system.collision.shapes;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.system.collision.headbutt.twod.Shape;
 
 public class Circle extends Shape {
     private float radius;

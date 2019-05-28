@@ -5,7 +5,7 @@ import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.*;
-import com.sad.function.system.collision.headbutt.twod.shape.Circle;
+import com.sad.function.system.collision.shapes.Circle;
 
 public class PlayerFactory extends Factory {
     private World world;

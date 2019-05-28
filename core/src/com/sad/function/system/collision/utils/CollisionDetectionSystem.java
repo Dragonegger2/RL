@@ -1,4 +1,4 @@
-package com.sad.function.system.collision;
+package com.sad.function.system.collision.utils;
 
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import static java.lang.Math.abs;
 
+@Deprecated
 public class CollisionDetectionSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem.class);
 

@@ -1,4 +1,4 @@
-package com.sad.function.system.collision;
+package com.sad.function.system;
 
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
@@ -8,28 +8,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Collidable;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Position;
-import com.sad.function.system.collision.headbutt.twod.GJK;
-import com.sad.function.system.collision.headbutt.twod.Headbutt;
+import com.sad.function.system.collision.utils.CollisionDetectionAlgorithms;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CDHeadbuttSystem extends BaseEntitySystem {
-    private static final Logger logger = LogManager.getLogger(CDHeadbuttSystem.class);
+public class CollisionDetectionSystem extends BaseEntitySystem {
+    private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem.class);
 
     private ComponentMapper<Collidable> mCollidable;
     private ComponentMapper<Position> mPosition;
     private ComponentMapper<PhysicsBody> mPhysics;
 
     private IntBag collidables;
-    private Vector2 penetration = new Vector2();
-    private Headbutt headbutt;
-    private GJK gjk;
+    private CollisionDetectionAlgorithms gjk;
 
-    public CDHeadbuttSystem() {
+    public CollisionDetectionSystem() {
         super(Aspect.all(PhysicsBody.class));
-        headbutt = new Headbutt();
         collidables = new IntBag();
-        gjk = new GJK();
+        gjk = new CollisionDetectionAlgorithms();
     }
 
     @SuppressWarnings("Duplicates")

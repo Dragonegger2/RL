@@ -1,4 +1,4 @@
-package com.sad.function.system.collision.headbutt.twod;
+package com.sad.function.system.collision.shapes;
 
 import com.badlogic.gdx.math.Vector2;
 

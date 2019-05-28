@@ -1,7 +1,7 @@
 package com.sad.function.components;
 
 import com.artemis.Component;
-import com.sad.function.system.CollisionCategory;
+import com.sad.function.system.collision.CollisionCategory;
 
 /**
  * collision detection component.
