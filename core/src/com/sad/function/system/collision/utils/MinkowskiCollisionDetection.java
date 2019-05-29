@@ -5,7 +5,6 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.components.Collidable;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Translation;
 import org.apache.logging.log4j.LogManager;
@@ -13,18 +12,17 @@ import org.apache.logging.log4j.Logger;
 
 import static java.lang.Math.abs;
 
-@Deprecated
-public class CollisionDetectionSystem extends BaseEntitySystem {
-    private static final Logger logger = LogManager.getLogger(CollisionDetectionSystem.class);
+public class MinkowskiCollisionDetection extends BaseEntitySystem {
+    private static final Logger logger = LogManager.getLogger(MinkowskiCollisionDetection.class);
 
-    private ComponentMapper<Collidable> mCollidable;
+    private ComponentMapper<PhysicsBody> mPhysics;
     private ComponentMapper<Translation> mPosition;
 
     private IntBag collidables;
     private Vector2 penetration = new Vector2();
 
-    public CollisionDetectionSystem() {
-        super(Aspect.all(Collidable.class, Translation.class));
+    public MinkowskiCollisionDetection() {
+        super(Aspect.all( Translation.class));
 
         collidables = new IntBag();
     }
@@ -38,24 +36,23 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
 
-                //Ignore static elements.
-                if (mCollidable.create(e1).isStatic && mCollidable.create(e2).isStatic) {
-                    break;
-                }
+                //WE only act on the dynamic elements.
+                if(!mPhyiscs.create(e1).dynamic) { break; }
 
                 //Are we colliding?
                 if (boxesAreColliding(e1, e2, penetration)) {
                     //TODO Only two cases: 1. A single entity is non-static. 2. Both entities are non-static.
                     //Both are dynamic
-                    if (!mCollidable.create(e1).isStatic && !mCollidable.create(e2).isStatic) {
-                        mCollidable.create(e1).getHandler().handleCollision(world, e2, penetration);
-                        mCollidable.create(e2).getHandler().handleCollision(world, e1, penetration);
+                    if (mPhysics.create(e1).dynamic && mPhysics.create(e2).dynamic) {
+//                        mPhysics.create(e1).getHandler().handleCollision(world, e2, penetration);
+//                        mPhysics.create(e2).getHandler().handleCollision(world, e1, penetration);
                     } else { //Only one is dynamic.
                         //Figure out which one is dynamic.
-                        int dynamicEntity = mCollidable.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
-                        int staticEntity = mCollidable.create(e1).isStatic ? e1 : e2;
+//                        int dynamicEntity = mPhysics.create(e1).isStatic ? e2 : e1; //if a is static use b, otherwise just use a.
+//                        int staticEntity = mPhysics.create(e1).isStatic ? e1 : e2;
 
-                        mCollidable.create(dynamicEntity).getHandler().handleCollision(world, staticEntity, penetration);
+//                        mPhysics.create(e1).getHandler().handleCollision(world, e2, penetration);
+                        logger.info("{} collided with {}.", e1, e2);
                     }
                 }
 
@@ -102,19 +99,19 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
     ComponentMapper<PhysicsBody> mPhyiscs;
 
     private float bottom(int entity) {
-        return mPhyiscs.create(entity).position.y + mCollidable.create(entity).yOffset;
+        return mPhyiscs.create(entity).position.y;// + mPhysics.create(entity).yOffset;
     }
 
     private float top(int entity) {
-        return mPhyiscs.create(entity).position.y + mCollidable.create(entity).yOffset + mPhyiscs.create(entity).height;
+        return mPhyiscs.create(entity).position.y + mPhyiscs.create(entity).getHeight();// + mPhysics.create(entity).yOffset + ;
     }
 
     private float left(int entity) {
-        return mPhyiscs.create(entity).position.x + mCollidable.create(entity).xOffset;
+        return mPhyiscs.create(entity).position.x + mPhyiscs.create(entity).getWidth() * 2;// + mPhysics.create(entity).xOffset;
     }
 
     private float right(int entity) {
-        return mPosition.create(entity).x + mCollidable.create(entity).xOffset + mCollidable.create(entity).width;
+        return mPosition.create(entity).x - mPhyiscs.create(entity).getWidth() * 2; // + mPhysics.create(entity).xOffset + mPhysics.create(entity).width;
     }
 
     @Override

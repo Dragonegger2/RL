@@ -3,8 +3,10 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
+import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.*;
 import com.sad.function.system.collision.shapes.Circle;
+import com.sad.function.system.collision.shapes.Rectangle;
 
 public class PlayerFactory extends Factory {
     private World world;
@@ -36,7 +38,7 @@ public class PlayerFactory extends Factory {
         float spriteSize = 32f / 32f;
         PhysicsBody pBody = world.getMapper(PhysicsBody.class).create(playerId);
 
-        pBody.bodyShape = BodyShape.CIRCLE; //We know what it's going to be, just store it here for convenience.
+        pBody.bodyShape = BodyShape.RECTANGLE; //We know what it's going to be, just store it here for convenience.
 
         pBody.setWidth(.5f);
 
@@ -45,7 +47,10 @@ public class PlayerFactory extends Factory {
             translation.y = y;
 
         pBody.hitBox = new Circle(translation, .5f);
+        pBody.hitBox = new Rectangle(translation, new Vector2(0.5f, 0.5f));
         pBody.dynamic = true;
+
+        pBody.hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
 
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 

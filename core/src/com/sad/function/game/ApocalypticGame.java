@@ -47,7 +47,9 @@ public class ApocalypticGame extends BaseGame {
                 .with(
                         new InputSystem(),
                         new MovementSystem(),
-                        new CollisionDetectionSystem(),
+//                        new MinkowskiCollisionDetection(),
+//                        new CollisionDetectionSystem(),
+                        new CDSystem(),
                         //Animation based systems
                         new CameraSystem(camera),
                         new AnimationSystem(),

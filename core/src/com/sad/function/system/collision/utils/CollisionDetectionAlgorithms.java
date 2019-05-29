@@ -19,9 +19,9 @@ public class CollisionDetectionAlgorithms {
     public int maxIterations = 20;
 
     /**
-     * Calculates a single point in the Minkowski Difference.
+     * Calculates a single point in the Minkowski Difference in a given direction
      */
-    private Vector2 support(Shape a, Shape b, Vector2 direction) {
+    private Vector2 minkowskiPoint(Shape a, Shape b, Vector2 direction) {
         Vector2 first = a.support(direction);
         Vector2 newDirection = new Vector2(direction).scl(-1);
         Vector2 second = b.support(newDirection);
@@ -29,16 +29,21 @@ public class CollisionDetectionAlgorithms {
         return first.sub(second);
     }
 
+    public boolean gjk(Shape a, Shape b, Object ret) {
+        return false;
+    }
+
     public boolean gjk(Shape a, Shape b) {
         simplex = new Simplex();
         Vector2 direction = new Vector2(1, 0);
-        simplex.add(support(a, b, direction));
+        simplex.add(minkowskiPoint(a, b, direction));
 
+        //TODO Instead of being arbitrary, i could look up the collision if I stored them and use the witness points to create a suitable direction angle to save time. I think...?
         direction.set(simplex.getLast().cpy().scl(-1));
 
         int accumulator = 0;
         while (accumulator < maxIterations) {            //Prevent infinite problems.
-            simplex.add(support(a, b, direction));
+            simplex.add(minkowskiPoint(a, b, direction));
             if (simplex.getLast().dot(direction) < 0) {
                 return false;
             } else {
@@ -200,11 +205,13 @@ public class CollisionDetectionAlgorithms {
         return v1.dot(v2) > 0;
     }
 
-    private Edge findClosestEdge(Simplex s) {
-        Edge closest = new Edge();
+
+    public Edge findClosestEdge() {
+        Edge closest;
+        closest = new Edge();
         closest.distance = Float.MAX_VALUE;
 
-        for (int i = 0; i < s.get().size() - 1; i++) {
+        for (int i = 0; i < simplex.get().size() - 1; i++) {
             int j;
 
             if (i + 1 == simplex.get().size()) {
@@ -213,8 +220,8 @@ public class CollisionDetectionAlgorithms {
                 j = i + 1;
             }
 
-            Vector2 a = s.get(i).cpy();
-            Vector2 b = s.get(j).cpy();
+            Vector2 a = simplex.get(i).cpy();
+            Vector2 b = simplex.get(j).cpy();
 
             Vector2 e = b.cpy().sub(a);
 
@@ -250,7 +257,7 @@ public class CollisionDetectionAlgorithms {
 
         for (int i = 0; i <= maxIterations; i++) {
             Edge edge = findClosestEdge(winding);               //Get closest edge
-            Vector2 support = support(a, b, edge.normal);       //Get support in the direction of the edge that is closest to the origin
+            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
             float distance = support.dot(edge.normal);
 
             if (Math.abs(distance - edge.distance) <= 0.000001) {

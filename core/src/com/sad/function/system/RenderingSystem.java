@@ -158,6 +158,7 @@ public class RenderingSystem extends BaseEntitySystem {
                     }
 
                     shapeRenderer.setColor(Color.LIME);
+
                     //Draw origin
                     shapeRenderer.circle(mTranslation.create(entity).x,
                             mTranslation.create(entity).y,
@@ -170,7 +171,7 @@ public class RenderingSystem extends BaseEntitySystem {
                         Vector2 origin = mPhysicsBody.create(entity).hitBox.getOrigin().sub(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
                         origin = origin.cpy().add(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
                         Velocity v = mVelocity.create(entity);
-                        shapeRenderer.line(origin, origin.cpy().add(v.x, v.y));
+                        shapeRenderer.line(origin, origin.cpy().add(v.x, v.y).scl(world.delta));
                     }
                 }
             }

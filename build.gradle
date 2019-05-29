@@ -1,5 +1,5 @@
 buildscript {
-    
+
 
     repositories {
         mavenLocal()
@@ -34,8 +34,8 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
+        mavenLocal()
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -43,6 +43,8 @@ allprojects {
 
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+        compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
+
     }
 }
 
@@ -57,12 +59,13 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
-
     }
 }
 
 project(":core") {
     apply plugin: "java"
+    apply plugin: "eclipse"
+    apply plugin: "idea"
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -81,7 +84,9 @@ project(":core") {
         compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
 
         //Collision Detection
-        compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
+
+        //compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
+        compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
     }
 }
 

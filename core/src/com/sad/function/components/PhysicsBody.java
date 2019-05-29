@@ -3,6 +3,7 @@ package com.sad.function.components;
 import com.artemis.Component;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.system.collision.shapes.Shape;
+import org.dyn4j.geometry.Convex;
 
 /**
  * Holds the data for my collision detection.
@@ -15,7 +16,9 @@ public class PhysicsBody extends Component {
     public Vector2 position;
     public float density = 1.0f;
     public BodyShape bodyShape = BodyShape.RECTANGLE;
+
     public Shape hitBox;
+    public Convex hitbox;
 
     //Walls are static, the player isn't.
     public boolean dynamic = false;

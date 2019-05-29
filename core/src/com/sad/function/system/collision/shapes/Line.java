@@ -13,10 +13,6 @@ public class Line extends Shape {
 
     @Override
     public Vector2 support(Vector2 direction) {
-        if (start.dot(direction) > end.dot(direction)) {
-            return start;
-        }
-
-        return end;
+        return start.dot(direction) > end.dot(direction) ? start : end;
     }
 }
