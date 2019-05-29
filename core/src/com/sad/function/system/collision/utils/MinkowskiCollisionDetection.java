@@ -62,7 +62,6 @@ public class MinkowskiCollisionDetection extends BaseEntitySystem {
     }
 
     private boolean boxesAreColliding(int a, int b, Vector2 penetration) {
-
         float minkowskiTop = top(a) - bottom(b);
         float minkowskiBottom = bottom(a) - top(b);
         float minkowskiLeft = left(a) - right(b);
