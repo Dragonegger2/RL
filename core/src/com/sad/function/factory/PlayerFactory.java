@@ -64,6 +64,8 @@ public class PlayerFactory extends Factory {
                         0.7f)
                 .getBody();
 
+        pBody.body.setLinearDamping(10f);
+
         return playerId;
     }
 }
