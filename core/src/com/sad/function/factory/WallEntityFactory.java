@@ -37,7 +37,7 @@ public class WallEntityFactory extends Factory {
      * @param y position
      * @return entity int.
      */
-    public int createWall(float x, float y, float width, float height) {
+    public int create(float x, float y, float width, float height) {
         int wall = world.create(wallArchetype);
 
         world.getMapper(Translation.class).create(wall).x = x;

@@ -62,10 +62,10 @@ public class ApocalypticGame extends BaseGame {
         world = new World(config);
 
         wallFactory = new WallEntityFactory(world, pWorld);
-        playerFactory = new PlayerFactory(world);
+        playerFactory = new PlayerFactory(world, pWorld);
 
         playerFactory.create(0.0f, 0);
-        wallFactory.createWall(1f, 0, 1f,1f);
+        wallFactory.create(1f, 0, 1f, 1f);
     }
 
     private void setupCamera() {
@@ -88,13 +88,13 @@ public class ApocalypticGame extends BaseGame {
 
     @Override
     public void render() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             GameInfo.RENDER_SPRITES = !GameInfo.RENDER_SPRITES;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            GameInfo.RENDER_SPRITE_OUTLINES= !GameInfo.RENDER_SPRITE_OUTLINES;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            GameInfo.RENDER_SPRITE_OUTLINES = !GameInfo.RENDER_SPRITE_OUTLINES;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             GameInfo.RENDER_HITBOX_OUTLINES = !GameInfo.RENDER_HITBOX_OUTLINES;
         }
 

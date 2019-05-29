@@ -85,7 +85,7 @@ project(":core") {
 
         //Collision Detection
 
-        //compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
+        compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
 
     }
 }

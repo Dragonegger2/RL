@@ -5,6 +5,7 @@ import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.utils.IntSet;
+import com.badlogic.gdx.utils.IntSet.IntSetIterator;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Translation;
 import com.sad.function.components.Velocity;
@@ -42,35 +43,20 @@ public class CDSystem extends BaseEntitySystem {
     @SuppressWarnings("Duplicates")
     @Override
     protected void processSystem() {
-        for (int a = 0; a < collidables.size(); a++) {
-            for (int b = a + 1; b < collidables.size(); b++) {
-                int e1 = collidables.get(a);
-                int e2 = collidables.get(b);
+        IntSetIterator d = dynamics.iterator();
 
-                Transform t1 = new Transform();
-                t1.setTranslation(mTranslation.create(e1).x, mTranslation.create(e1).y);
+        while(d.hasNext) {
+            int dId = d.next();
 
-                Transform t2 = new Transform();
-                t2.setTranslation(mTranslation.create(e2).x, mTranslation.create(e2).y);
-
-                Convex s1 = mPhysics.create(e1).hitbox;
-                Convex s2 = mPhysics.create(e2).hitbox;
-
-                Ray ray = new Ray(new Vector2(t1.getTranslationX(), t1.getTranslationY()), new Vector2(100, 0));
-                Raycast raycast = new Raycast();
-
-                gjk.raycast(ray, 10, s2, t2, raycast);
+            IntSetIterator s = statics.iterator();
+            while(s.hasNext) {
+                int sId = s.next();
 
 
-                boolean doMove = false;
-                float t = 1;
-                //Your velocity is 0, you are not moving. We don't need to check for this.
-                if(mVelocity.create(e1).y != 0 && mVelocity.create(e1).x != 0) {
-                    Separation distance = new Separation();
-
-                }
             }
         }
+
+
     }
 
     @Override

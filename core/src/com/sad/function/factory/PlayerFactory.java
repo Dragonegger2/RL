@@ -10,11 +10,13 @@ import com.sad.function.system.collision.shapes.Rectangle;
 
 public class PlayerFactory extends Factory {
     private World world;
+    private com.badlogic.gdx.physics.box2d.World pWorld;
 
     private Archetype playerArchetype;
 
-    public PlayerFactory(World world) {
+    public PlayerFactory(World world, com.badlogic.gdx.physics.box2d.World pWorld) {
         this.world = world;
+        this.pWorld = pWorld;
 
         playerArchetype = new ArchetypeBuilder()
                 .add(Animation.class)
