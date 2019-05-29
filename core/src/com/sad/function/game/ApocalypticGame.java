@@ -46,9 +46,11 @@ public class ApocalypticGame extends BaseGame {
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
                         new InputSystem(),
-                        new MovementSystem(),
+//                        new MovementSystem(),
+
 //                        new MinkowskiCollisionDetection(),
 //                        new CollisionDetectionSystem(),
+
                         new CDSystem(),
                         //Animation based systems
                         new CameraSystem(camera),

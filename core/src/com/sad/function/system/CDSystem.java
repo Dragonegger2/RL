@@ -11,9 +11,9 @@ import com.sad.function.components.Velocity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.collision.narrowphase.Gjk;
+import org.dyn4j.collision.narrowphase.Raycast;
 import org.dyn4j.collision.narrowphase.Separation;
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Transform;
+import org.dyn4j.geometry.*;
 
 public class CDSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(CDSystem.class);
@@ -27,7 +27,7 @@ public class CDSystem extends BaseEntitySystem {
     private IntSet statics;
     private IntSet dynamics;
 
-    private org.dyn4j.collision.narrowphase.Gjk gjk;
+    private Gjk gjk;
 
     public CDSystem() {
         super(Aspect.all(PhysicsBody.class));
@@ -44,23 +44,34 @@ public class CDSystem extends BaseEntitySystem {
     protected void processSystem() {
         for (int a = 0; a < collidables.size(); a++) {
             for (int b = a + 1; b < collidables.size(); b++) {
-
                 int e1 = collidables.get(a);
                 int e2 = collidables.get(b);
 
-                if(mVelocity.has(e1)) {
-                    Transform t1 = new Transform();
-                        t1.setTranslation(mTranslation.create(e1).x, mTranslation.create(e1).y);
+                Transform t1 = new Transform();
+                t1.setTranslation(mTranslation.create(e1).x, mTranslation.create(e1).y);
 
-                    Transform t2 = new Transform();
-                        t2.setTranslation(mTranslation.create(e2).x, mTranslation.create(e2).y);
+                Transform t2 = new Transform();
+                t2.setTranslation(mTranslation.create(e2).x, mTranslation.create(e2).y);
 
-                    Convex s1 = mPhysics.create(e1).hitbox;
-                    Convex s2 = mPhysics.create(e2).hitbox;
+                Convex s1 = mPhysics.create(e1).hitbox;
+                Convex s2 = mPhysics.create(e2).hitbox;
 
-                    Separation separation = new Separation();
-                    gjk.distance(s1, t1, s2, t2, separation);
-                }
+                Ray ray = new Ray(new Vector2(t1.getTranslationX(), t1.getTranslationY()), new Vector2(100, 0));
+                Raycast raycast = new Raycast();
+
+                gjk.raycast(ray, 10, s2, t2, raycast);
+                Separation separation = new Separation();
+//                    gjk.distance(s1, t1, s2, t2, separation);
+                logger.info("Data: {}", separation);
+
+                //Fetch the central point of the dynamic entity.
+                Vector2 v = new Vector2(t1.getTranslationX(), t1.getTranslationY());
+                //TODO Remember, if velocity is 0,0 don't do this. It'll bitch.
+                Convex s3 = new Segment(v, v.copy().add(mVelocity.create(e1).x + 10, mVelocity.create(e1).y));
+
+                gjk.distance(s3, t1, s2, t2, separation);
+                logger.info("Data: {}", separation);
+
             }
         }
     }
@@ -82,17 +93,4 @@ public class CDSystem extends BaseEntitySystem {
             collidables.remove(collidables.indexOf(entity));
         }
     }
-
-//    public class Contact {
-//        public Vector2 position;
-//        public Vector2 normal;
-//        public float distance;
-//    }
-//
-//    public class Manifold {
-//        Shape a;
-//        Shape b;
-//        int contactCount;
-//        List<Contact> contacts;
-//    }
 }

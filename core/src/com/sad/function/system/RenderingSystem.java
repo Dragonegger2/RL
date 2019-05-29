@@ -111,7 +111,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-        if(GameInfo.RENDER_SPRITES) {
+        if (GameInfo.RENDER_SPRITES) {
             batch.begin();
             for (Layer.RENDERABLE_LAYER layer : layers) {
                 for (Integer integer : layerCollections.get(layer)) {
@@ -127,17 +127,17 @@ public class RenderingSystem extends BaseEntitySystem {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
             //Render only the default layer, for now.
-            if(GameInfo.RENDER_SPRITE_OUTLINES) {
+            if (GameInfo.RENDER_SPRITE_OUTLINES) {
                 for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
                     renderOutline(integer);
                 }
             }
 
-            if(GameInfo.RENDER_HITBOX_OUTLINES) {
+            if (GameInfo.RENDER_HITBOX_OUTLINES) {
                 shapeRenderer.setColor(Color.GREEN);
                 shapeRenderer.setProjectionMatrix(camera.combined);
 
-                for(Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+                for (Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
 
                     //Shapes are center aligned, the renderers are lower-left aligned.
                     switch (mPhysicsBody.create(entity).bodyShape) {
@@ -165,24 +165,20 @@ public class RenderingSystem extends BaseEntitySystem {
                             0.1f,
                             15);
 
-                    //Draw the velocity vector too.
-                    shapeRenderer.setColor(Color.GREEN);
-                    if(mVelocity.has(entity)) {
-                        Vector2 origin = mPhysicsBody.create(entity).hitBox.getOrigin().sub(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
-                        origin = origin.cpy().add(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
-                        Velocity v = mVelocity.create(entity);
-                        shapeRenderer.line(origin, origin.cpy().add(v.x, v.y).scl(world.delta));
-                    }
                 }
             }
-
             shapeRenderer.end();
-
-//            box2DDebugRenderer.render(pWorld, camera.combined);
         }
+    }
 
-
-
+    private void renderVelocity(int entity) {
+        shapeRenderer.setColor(Color.GREEN);
+        if (mVelocity.has(entity)) {
+            Vector2 origin = mPhysicsBody.create(entity).hitBox.getOrigin().sub(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
+            origin = origin.cpy().add(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
+            Velocity v = mVelocity.create(entity);
+            shapeRenderer.line(origin, origin.cpy().add(v.x, v.y).scl(world.delta));
+        }
     }
 
     private void renderOutline(int entity) {

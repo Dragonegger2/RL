@@ -74,16 +74,16 @@ public class CollisionDetectionSystem extends BaseEntitySystem {
 //                       PhysicsBody doMove = false;
                     }
 
-                    if (doMove) {
-                        Translation translation = mTranslation.create(e1);
-                        Velocity velocity = mVelocity.create(e1);
-
-                        velocity.x = MathUtils.clamp(velocity.x, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
-                        velocity.y = MathUtils.clamp(velocity.y, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
-
-                        translation.x += velocity.x * world.delta;
-                        translation.y += velocity.y * world.delta;
-                    }
+//                    if (doMove) {
+//                        Translation translation = mTranslation.create(e1);
+//                        Velocity velocity = mVelocity.create(e1);
+//
+//                        velocity.x = MathUtils.clamp(velocity.x, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
+//                        velocity.y = MathUtils.clamp(velocity.y, -GameInfo.MAX_MOVEMENT_SPEED, GameInfo.MAX_MOVEMENT_SPEED);
+//
+//                        translation.x += velocity.x * world.delta;
+//                        translation.y += velocity.y * world.delta;
+//                    }
 
 //                Vector2 penetration = gjk.intersect(mPhysics.create(e1).hitBox, mPhysics.create(e2).hitBox);
 //                if (penetration != null) {

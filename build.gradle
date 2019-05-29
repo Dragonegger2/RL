@@ -43,8 +43,8 @@ allprojects {
 
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+//        compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
         compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
-
     }
 }
 
@@ -86,7 +86,7 @@ project(":core") {
         //Collision Detection
 
         //compile group: 'com.badlogicgames.gdx', name: 'gdx-box2d', version: '1.9.9'
-        compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
+
     }
 }
 

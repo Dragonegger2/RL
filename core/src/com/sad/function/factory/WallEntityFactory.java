@@ -52,6 +52,7 @@ public class WallEntityFactory extends Factory {
         translation.y = y;
 
         world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(translation, new Vector2(width / 2, height / 2));
+        world.getMapper(PhysicsBody.class).create(wall).hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
 
         world.getMapper(PhysicsBody.class).create(wall)
                 .setWidth(width / 2)

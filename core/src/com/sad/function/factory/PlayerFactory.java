@@ -46,8 +46,8 @@ public class PlayerFactory extends Factory {
             translation.x = x;
             translation.y = y;
 
-        pBody.hitBox = new Circle(translation, .5f);
-        pBody.hitBox = new Rectangle(translation, new Vector2(0.5f, 0.5f));
+//        pBody.hitBox = new Circle(translation, .5f);
+//        pBody.hitBox = new Rectangle(translation, new Vector2(0.5f, 0.5f));
         pBody.dynamic = true;
 
         pBody.hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
