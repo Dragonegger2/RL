@@ -1,7 +1,7 @@
 package com.sad.function.system.collision.utils;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.sad.function.system.collision.shapes.Shape;
 
 import java.util.List;
@@ -18,6 +18,16 @@ public class CollisionDetectionAlgorithms {
      */
     public int maxIterations = 20;
 
+    public static Vector2 tripleProduct(Vector2 a, Vector2 b, Vector2 c) {
+        Vector2 r = new Vector2();
+
+        float dot = a.x * b.y - b.x * a.y;
+        r.x = -c.y * dot;
+        r.y = c.x * dot;
+
+        return r;
+    }
+
     /**
      * Calculates a single point in the Minkowski Difference in a given direction
      */
@@ -27,10 +37,6 @@ public class CollisionDetectionAlgorithms {
         Vector2 second = b.support(newDirection);
 
         return first.sub(second);
-    }
-
-    public boolean gjk(Shape a, Shape b, Object ret) {
-        return false;
     }
 
     public boolean gjk(Shape a, Shape b) {
@@ -115,17 +121,6 @@ public class CollisionDetectionAlgorithms {
         return false;
     }
 
-    public Vector2 tripleProduct(Vector2 a, Vector2 b, Vector2 c) {
-        Vector3 A = new Vector3(a.x, a.y, 0);
-        Vector3 B = new Vector3(b.x, b.y, 0);
-        Vector3 C = new Vector3(c.x, c.y, 0);
-
-        Vector3 calc = new Vector3(A).crs(B);
-        calc.crs(C);
-
-        return new Vector2(calc.x, calc.y);
-    }
-
     //a is the point that was most recently added to the simplex.
     //Updates the simplex and the direction. This is wehre the magic happens!
     // a = last index
@@ -190,6 +185,62 @@ public class CollisionDetectionAlgorithms {
         }
     }
 
+    public boolean checkSimplex(List<Vector2> s, Vector2 direction) {
+        Vector2 a = s.get(simplex.size() - 1).cpy();
+        Vector2 ao = a.cpy().scl(-1);   //origin - a = -a
+
+        if (s.size() == 3) {
+            Vector2 b = s.get(1).cpy();
+            Vector2 c = s.get(0).cpy();
+
+            Vector2 ab = b.cpy().sub(a); //b - a
+            Vector2 ac = c.cpy().sub(a); //c - a
+
+            Vector2 acPerp = new Vector2();
+            float dot = ab.x * ac.y - ac.x * ab.y;
+            acPerp.x = -ac.y * dot;
+            acPerp.y = ac.x * dot;
+
+            float acLocation = acPerp.dot(ao);
+            if (acLocation >= 0.0) {
+                s.remove(1);
+                direction.set(acPerp);
+            } else {
+                Vector2 abPerp = new Vector2();
+                abPerp.x = ab.y * dot;
+                abPerp.y = -ab.x * dot;
+
+                double abLocation = abPerp.dot(ao);
+
+                if (abLocation < 0.0f) {
+                    return true;
+                } else {
+                    s.remove(0);
+                    direction.set(abPerp);
+                }
+            }
+        } else {
+            Vector2 b = s.get(0);
+            Vector2 ab = b.cpy().sub(a);
+
+            direction.set(tripleProduct(ab, ao, ab));
+
+            if (direction.len2() <= 0.00001f) {
+                direction.set(left(ab));
+            }
+        }
+
+        return false;
+    }
+
+    public Vector2 left(Vector2 a) {
+        float temp = a.x;
+        a.x = a.y;
+        a.y = -temp;
+
+        return a;
+    }
+
     /**
      * Creates a vector that is perpendicular to the provided vector.
      * Rotate by 90 degrees such that you create a new vector of (-v.y, v.x)
@@ -205,6 +256,36 @@ public class CollisionDetectionAlgorithms {
         return v1.dot(v2) > 0;
     }
 
+    public boolean distance(Shape shape1, Shape shape2, Separation separation) {
+        MinkowskiSum ms = new MinkowskiSum(shape1, shape2);
+
+        Vector2 a = null;
+        Vector2 b = null;
+        Vector2 c = null;
+
+        //Choose a search direction from center to center.
+        Vector2 d = shape2.getOrigin().sub(shape1.getOrigin());
+
+        if (d.isZero()) return false;
+
+        a = ms.getSupportPoints(d);
+        d.scl(-1);
+        b = ms.getSupportPoints(d);
+
+        d = Segment.getPointOnSegementClosestToPoint(new Vector2(0, 0), b, a);
+        for (int i = 0; i < 20; i++) {
+            d.scl(-1);
+
+            if (d.len2() <= Epsilon.E) {
+                return false;
+            }
+
+            c = ms.getSupportPoints(d);
+
+//            if()
+        }
+        return false;
+    }
 
     public Edge findClosestEdge() {
         Edge closest;
@@ -311,4 +392,62 @@ public class CollisionDetectionAlgorithms {
         return new Edge(closestDistance, closestNormal, closestIndex);
     }
 
+    private static class Segment {
+        public static Vector2 getPointOnSegementClosestToPoint(Vector2 point, Vector2 linePoint1, Vector2 linePoint2) {
+            Vector2 p1ToP = point.cpy().sub(linePoint1);
+            Vector2 line = linePoint2.cpy().sub(linePoint1);
+
+            float ab2 = line.dot(line);
+            float ap_ab = p1ToP.dot(line);
+
+            if (ab2 <= Epsilon.E) return linePoint1.cpy();
+
+            float t = ap_ab / ab2;
+
+            t = MathUtils.clamp(t, 0.0f, 1.0f);
+
+            return line.cpy().mulAdd(linePoint1, t);
+        }
+    }
+
+    public static final class Epsilon {
+        public static final float E = Epsilon.compute();
+
+        private Epsilon() {
+        }
+
+        public static final float compute() {
+            float e = 0.5f;
+            while (1.0f + e > 1.0) {
+                e *= 0.5;
+            }
+            return e;
+
+        }
+    }
+
+    private class MinkowskiSum {
+        private Shape a;
+        private Shape b;
+
+        public MinkowskiSum(Shape a, Shape b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        public Vector2 getSupportPoints(Vector2 direction) {
+            Vector2 first = a.support(direction);
+            Vector2 second = b.support(direction.scl(-1));
+            direction.scl(-1);
+
+            return first.sub(second);
+        }
+    }
+
+    private class Separation {
+        public Vector2 normal;
+        public float distance;
+        public Vector2 point1;
+        public Vector2 point2;
+    }
 }

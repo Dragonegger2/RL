@@ -60,18 +60,15 @@ public class CDSystem extends BaseEntitySystem {
                 Raycast raycast = new Raycast();
 
                 gjk.raycast(ray, 10, s2, t2, raycast);
-                Separation separation = new Separation();
-//                    gjk.distance(s1, t1, s2, t2, separation);
-                logger.info("Data: {}", separation);
 
-                //Fetch the central point of the dynamic entity.
-                Vector2 v = new Vector2(t1.getTranslationX(), t1.getTranslationY());
-                //TODO Remember, if velocity is 0,0 don't do this. It'll bitch.
-                Convex s3 = new Segment(v, v.copy().add(mVelocity.create(e1).x + 10, mVelocity.create(e1).y));
 
-                gjk.distance(s3, t1, s2, t2, separation);
-                logger.info("Data: {}", separation);
+                boolean doMove = false;
+                float t = 1;
+                //Your velocity is 0, you are not moving. We don't need to check for this.
+                if(mVelocity.create(e1).y != 0 && mVelocity.create(e1).x != 0) {
+                    Separation distance = new Separation();
 
+                }
             }
         }
     }
