@@ -3,14 +3,11 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
-import com.sad.function.system.collision.shapes.Rectangle;
 
-@SuppressWarnings("Duplicates")
 public class WallEntityFactory extends Factory {
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
@@ -51,9 +48,10 @@ public class WallEntityFactory extends Factory {
         translation.x = x;
         translation.y = y;
 
-        world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(translation, new Vector2(width / 2, height / 2));
-        world.getMapper(PhysicsBody.class).create(wall).hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
+//        world.getMapper(PhysicsBody.class).create(wall).hitBox = new Rectangle(translation, new Vector2(width / 2, height / 2));
+//        world.getMapper(PhysicsBody.class).create(wall).hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
 
+        world.getMapper(PhysicsBody.class).create(wall).body = createPBody(x, y, width, height);
         world.getMapper(PhysicsBody.class).create(wall)
                 .setWidth(width / 2)
                 .setHeight(height / 2);
@@ -75,7 +73,6 @@ public class WallEntityFactory extends Factory {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
-
 
         pBody.createFixture(shape, 1.0f);
         shape.dispose();

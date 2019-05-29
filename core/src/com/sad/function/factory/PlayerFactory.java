@@ -3,10 +3,8 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.sad.function.components.*;
-import com.sad.function.system.collision.shapes.Circle;
-import com.sad.function.system.collision.shapes.Rectangle;
 
 public class PlayerFactory extends Factory {
     private World world;
@@ -48,17 +46,23 @@ public class PlayerFactory extends Factory {
             translation.x = x;
             translation.y = y;
 
-//        pBody.hitBox = new Circle(translation, .5f);
-//        pBody.hitBox = new Rectangle(translation, new Vector2(0.5f, 0.5f));
-        pBody.dynamic = true;
-
-        pBody.hitbox = new org.dyn4j.geometry.Rectangle(0.5f, 0.5f);
-
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
         world.getMapper(Dimension.class).create(playerId)
                 .setWidth(spriteSize)
                 .setHeight(spriteSize);
+
+        pBody.body = new BodyCreator()
+                .setBodyType(BodyDef.BodyType.DynamicBody)
+                .setPosition(x, y)
+                .hasFixedRotation(true)
+                .buildBody(pWorld)
+                .createBoxFixture(
+                        spriteSize/2f,
+                        spriteSize/2f,
+                        1,
+                        0.7f)
+                .getBody();
 
         return playerId;
     }

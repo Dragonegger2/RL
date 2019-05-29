@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
 import com.sad.function.components.*;
 import com.sad.function.global.GameInfo;
@@ -28,7 +28,7 @@ public class RenderingSystem extends BaseEntitySystem {
     //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
     private IsometricRangeYValueComparator isometricRangeYValueComparator;
 
-//    private Box2DDebugRenderer box2DDebugRenderer;
+    private Box2DDebugRenderer box2DDebugRenderer;
 
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Translation> mPosition;
@@ -69,7 +69,7 @@ public class RenderingSystem extends BaseEntitySystem {
 
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-//        box2DDebugRenderer = new Box2DDebugRenderer();
+        box2DDebugRenderer = new Box2DDebugRenderer();
 
         for (Layer.RENDERABLE_LAYER layer : layers) {
             layerCollections.put(layer, new ArrayList<>());
@@ -129,59 +129,16 @@ public class RenderingSystem extends BaseEntitySystem {
             //Render only the default layer, for now.
             if (GameInfo.RENDER_SPRITE_OUTLINES) {
                 for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
-                    renderOutline(integer);
-                }
-            }
-
-            if (GameInfo.RENDER_HITBOX_OUTLINES) {
-                shapeRenderer.setColor(Color.GREEN);
-                shapeRenderer.setProjectionMatrix(camera.combined);
-
-                for (Integer entity : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
-
-                    //Shapes are center aligned, the renderers are lower-left aligned.
-                    switch (mPhysicsBody.create(entity).bodyShape) {
-                        case CIRCLE:
-                            shapeRenderer.circle(
-                                    mTranslation.create(entity).x,
-                                    mTranslation.create(entity).y,
-                                    mPhysicsBody.create(entity).getWidth(),
-                                    15);
-                            break;
-                        case RECTANGLE:
-                            //We're a rectangle. Offset by width and by height.
-                            shapeRenderer.rect(
-                                    mPhysicsBody.create(entity).position.x - mPhysicsBody.create(entity).getWidth(),
-                                    mPhysicsBody.create(entity).position.y - mPhysicsBody.create(entity).getHeight(),
-                                    mPhysicsBody.create(entity).width * 2,
-                                    mPhysicsBody.create(entity).height * 2);
-                    }
-
-                    shapeRenderer.setColor(Color.LIME);
-
-                    //Draw origin
-                    shapeRenderer.circle(mTranslation.create(entity).x,
-                            mTranslation.create(entity).y,
-                            0.1f,
-                            15);
-
+                    renderSpriteOutline(integer);
                 }
             }
             shapeRenderer.end();
+
+            box2DDebugRenderer.render(pWorld, camera.combined);
         }
     }
 
-    private void renderVelocity(int entity) {
-        shapeRenderer.setColor(Color.GREEN);
-        if (mVelocity.has(entity)) {
-            Vector2 origin = mPhysicsBody.create(entity).hitBox.getOrigin().sub(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
-            origin = origin.cpy().add(mPhysicsBody.create(entity).getWidth(), mPhysicsBody.create(entity).getHeight());
-            Velocity v = mVelocity.create(entity);
-            shapeRenderer.line(origin, origin.cpy().add(v.x, v.y).scl(world.delta));
-        }
-    }
-
-    private void renderOutline(int entity) {
+    private void renderSpriteOutline(int entity) {
         Vector3 pos = getPosition(entity);
         Dimension dim = mDimension.create(entity);
 
