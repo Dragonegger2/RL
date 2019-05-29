@@ -4,12 +4,15 @@ import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.sad.function.components.*;
+import com.sad.function.system.cd.EntityCategory;
 
 public class PlayerFactory extends Factory {
+
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
-
     private Archetype playerArchetype;
 
     public PlayerFactory(World world, com.badlogic.gdx.physics.box2d.World pWorld) {
@@ -43,8 +46,8 @@ public class PlayerFactory extends Factory {
         pBody.setWidth(.5f);
 
         Translation translation = world.getMapper(Translation.class).create(playerId);
-            translation.x = x;
-            translation.y = y;
+        translation.x = x;
+        translation.y = y;
 
         world.getEntity(playerId).getComponent(Layer.class).layer = Layer.RENDERABLE_LAYER.DEFAULT;
 
@@ -58,13 +61,25 @@ public class PlayerFactory extends Factory {
                 .hasFixedRotation(true)
                 .buildBody(pWorld)
                 .createBoxFixture(
-                        spriteSize/2f,
-                        spriteSize/2f,
+                        spriteSize / 2f,
+                        spriteSize / 2f,
                         1,
                         0.7f)
                 .getBody();
 
         pBody.body.setLinearDamping(10f);
+
+        pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
+
+        CircleShape circleShape = new CircleShape();
+            circleShape.setRadius(1.5f);
+            FixtureDef myFixtureDef = new FixtureDef();
+            myFixtureDef.shape = circleShape;
+            myFixtureDef.isSensor = true;
+            myFixtureDef.filter.categoryBits = (short)EntityCategory.SENSOR.id;
+            myFixtureDef.filter.maskBits = (short)EntityCategory.GROUND.id;
+
+        pBody.body.createFixture(myFixtureDef);
 
         return playerId;
     }
