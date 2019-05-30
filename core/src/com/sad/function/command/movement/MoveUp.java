@@ -10,16 +10,10 @@ import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Velocity;
 
 public class MoveUp extends MovementCommand {
-    private float acceleration;
-
-    public MoveUp(float acceleration) {
-        this.acceleration = acceleration;
-    }
-
     @Override
     public void execute(World world, int entity) {
         Body body = world.getMapper(PhysicsBody.class).create(entity).body;
-        body.applyForce(new Vector2(0f, 1f), body.getWorldCenter(), true);
+        body.applyForce(new Vector2(0f, 5f), body.getWorldCenter(), true);
 
         clampSpeed(body, 10f);
     }

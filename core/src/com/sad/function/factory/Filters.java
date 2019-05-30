@@ -20,7 +20,6 @@ public class Filters extends Factory {
         return playerFilter;
     }
 
-
     public static final Filter tileFilter = tileFilter();
     private static Filter tileFilter() {
         Filter tileFilter = new Filter();

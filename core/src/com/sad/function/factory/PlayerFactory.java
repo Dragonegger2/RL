@@ -25,6 +25,7 @@ public class PlayerFactory extends Factory {
                 .add(CameraComponent.class)
                 .add(Input.class)
                 .add(PhysicsBody.class)
+                .add(PlayerComponent.class)
                 .build(world);
     }
 
@@ -64,10 +65,10 @@ public class PlayerFactory extends Factory {
                         spriteSize / 2f,
                         spriteSize / 2f,
                         1,
-                        0.7f)
+                        0.1f)
                 .getBody();
 
-        pBody.body.setLinearDamping(10f);
+//        pBody.body.setLinearDamping(10f);
 
         pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
 

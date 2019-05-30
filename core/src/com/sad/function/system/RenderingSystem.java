@@ -7,12 +7,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.IntMap;
+import com.sad.function.ProjectileEquation;
 import com.sad.function.components.*;
 import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
@@ -49,6 +53,8 @@ public class RenderingSystem extends BaseEntitySystem {
     private HashMap<Layer.RENDERABLE_LAYER, List<Integer>> layerCollections;            //Used for rendering.
     private IntMap<Layer.RENDERABLE_LAYER> idCollection;                                //Used for removed.
 
+    private BitmapFont font = new BitmapFont();
+
     private Layer.RENDERABLE_LAYER[] layers = new Layer.RENDERABLE_LAYER[]{
             Layer.RENDERABLE_LAYER.GROUND,
             Layer.RENDERABLE_LAYER.GROUND_DECALS,
@@ -74,6 +80,9 @@ public class RenderingSystem extends BaseEntitySystem {
         for (Layer.RENDERABLE_LAYER layer : layers) {
             layerCollections.put(layer, new ArrayList<>());
         }
+
+        font.setUseIntegerPositions(false); //Disables integer rounding that's problematic in box2d
+        font.getData().setScale(1f/16f);
     }
 
     @Override
@@ -84,8 +93,8 @@ public class RenderingSystem extends BaseEntitySystem {
         for (Layer.RENDERABLE_LAYER layer : layerCollections.keySet()) {
             //Going to sort the same way for all of the collections.
             //TODO Sort by y / ratio - yOffset of each entity.
-            layerCollections.get(layer).sort(isometricRangeYValueComparator);
         }
+
     }
 
     @Override
@@ -103,11 +112,14 @@ public class RenderingSystem extends BaseEntitySystem {
         layerCollections.get(idCollection.get(entity)).remove(entity);
     }
 
+    private Vector3 tmpCoordinates = new Vector3();
+
     @Override
     protected void processSystem() {
 
         Gdx.gl.glClearColor(100f / 255f, 149f / 255f, 237f / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -115,30 +127,39 @@ public class RenderingSystem extends BaseEntitySystem {
             batch.begin();
             for (Layer.RENDERABLE_LAYER layer : layers) {
                 for (Integer integer : layerCollections.get(layer)) {
-                    renderEntity(integer);
+                    renderSingleEntity(integer);
                 }
             }
+            font.draw(batch, "Hello World", 0,0);
+            tmpCoordinates.set(0f,0f,0f);
+            camera.unproject(tmpCoordinates);
+
+            font.draw(batch,"Hello World!", tmpCoordinates.x, tmpCoordinates.y);
             batch.end();
         }
 
-        if (GameInfo.DEBUG) {
+        if (GameInfo.RENDER_SPRITE_OUTLINES) {
+
             shapeRenderer.setColor(Color.FIREBRICK);
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
             //Render only the default layer, for now.
-            if (GameInfo.RENDER_SPRITE_OUTLINES) {
-                for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
-                    renderSpriteOutline(integer);
-                }
+            for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
+                renderEntitySpriteOutline(integer);
             }
+
+//            drawProjectile();
             shapeRenderer.end();
 
+        }
+
+        if (GameInfo.RENDER_HITBOX_OUTLINES) {
             box2DDebugRenderer.render(pWorld, camera.combined);
         }
     }
 
-    private void renderSpriteOutline(int entity) {
+    private void renderEntitySpriteOutline(int entity) {
         Vector3 pos = getPosition(entity);
         Dimension dim = mDimension.create(entity);
 
@@ -147,17 +168,17 @@ public class RenderingSystem extends BaseEntitySystem {
         }
     }
 
-    private void renderEntity(int entity) {
+    private void renderSingleEntity(int entity) {
         Vector3 pos = getPosition(entity);
         Dimension dim = mDimension.create(entity);
 
-        if (inView(camera, pos, dim.width, dim.height)) {   //Frustum Culling: Check if in view before bothering to render the entity.
+//        if (inView(camera, pos, dim.width, dim.height)) {   //Frustum Culling: Check if in view before bothering to render the entity.
             batch.draw(getEntityTexture(entity),
                     shouldFlip(entity) ? pos.x + dim.width : pos.x,
                     pos.y,
                     shouldFlip(entity) ? -dim.width : dim.width,
                     dim.height);
-        }
+//        }
     }
 
     /**
@@ -217,9 +238,31 @@ public class RenderingSystem extends BaseEntitySystem {
         return new Vector3(mPosition.create(entity).x, mPosition.create(entity).y, mPosition.create(entity).z);
     }
 
+    private void drawProjectile() {
+        Body p = mPhysicsBody.create(GameInfo.PLAYER).body;
+        ProjectileEquation pe = new ProjectileEquation();
+        pe.startPoint.set(p.getPosition());
+        pe.startVelocity.set(p.getLinearVelocity());
+
+        float timeSeparation = 1f;
+
+        float t = 0f;
+        Color previousColor = shapeRenderer.getColor();
+        shapeRenderer.setColor(Color.GRAY);
+        for(int i = 0; i < 30; i++) {
+            float x = pe.getX(t);
+            float y = pe.getY(t);
+
+            shapeRenderer.circle(x, y, 0.25f, 10);
+
+            t+= timeSeparation;
+        }
+
+        shapeRenderer.setColor(previousColor);
+    }
     @Override
     public void dispose() {
-//        box2DDebugRenderer.dispose();
+        box2DDebugRenderer.dispose();
         batch.dispose();
     }
 }

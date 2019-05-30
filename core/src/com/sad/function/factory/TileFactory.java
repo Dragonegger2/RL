@@ -6,10 +6,13 @@ import com.artemis.World;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.sad.function.components.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static com.sad.function.system.cd.EntityCategory.*;
 
 public class TileFactory extends Factory{
+    private static final Logger logger = LogManager.getLogger(TileFactory.class);
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
 
@@ -52,4 +55,19 @@ public class TileFactory extends Factory{
         //TODO Should this be a box2d static body with sensors attached? https://stackoverflow.com/questions/2569374/friction-in-box2d
         return tile;
     }
+
+    private void createTiles(int width, int height) {
+        double start = System.currentTimeMillis();
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                create(x, y, "tile-grass");
+            }
+        }
+
+        double end = System.currentTimeMillis();
+
+        logger.info("Generated {} entities in {} ms.", width * height, end - start);
+    }
+
 }

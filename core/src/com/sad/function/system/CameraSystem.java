@@ -22,8 +22,8 @@ public class CameraSystem extends IteratingSystem {
     protected void process(int entityId) {
         PhysicsBody pos = mPhysicsBody.create(entityId);
 
-        camera.position.set(pos.position.x,
-                pos.position.y,
+        camera.position.set(pos.body.getPosition().x,
+                pos.body.getPosition().y,
                 0);
     }
 }

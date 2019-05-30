@@ -8,20 +8,12 @@ import com.sad.function.command.GameCommand;
 import com.sad.function.command.MovementCommand;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.Velocity;
+import com.sad.function.global.GameInfo;
 
 public class MoveLeft extends MovementCommand {
-
-    private float acceleration;
-
-    public MoveLeft(float xVelocity) {
-        this.acceleration = xVelocity;
-    }
-
     @Override
     public void execute(World world, int entity) {
         Body body = world.getMapper(PhysicsBody.class).create(entity).body;
-        body.applyForce(new Vector2(-1f, 0f), body.getWorldCenter(), true);
-
-        clampSpeed(body, 10f);
+        body.applyForce(-GameInfo.XVelocity, 0f, body.getWorldCenter().x, body.getWorldCenter().y, true);
     }
 }

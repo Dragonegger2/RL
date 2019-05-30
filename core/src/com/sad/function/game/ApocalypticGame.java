@@ -6,11 +6,8 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.factory.BoxFactory;
 import com.sad.function.factory.PlayerFactory;
-import com.sad.function.factory.TileFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
@@ -28,60 +25,33 @@ public class ApocalypticGame extends BaseGame {
 
     private OrthographicCamera camera;
 
-    private TileFactory tileFactory;
-    private WallEntityFactory wallFactory;
-    private PlayerFactory playerFactory;
-    private BoxFactory boxFactory;
-
     private ResourceManager resourceManager;
-
 
     @Override
     public void create() {
         resourceManager = new ResourceManager();
 
-        setupCamera();
-        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0), true);
+        camera = new OrthographicCamera();
+        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.8f), true);
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new InputSystem(),
+                        new RenderingSystem(resourceManager, pWorld, camera),
+
+                        new PlayerInputSystem(),
                         new PhysicsSystem(pWorld),
-                        //Animation based systems
                         new CameraSystem(camera),
-                        new AnimationSystem(),
-                        new RenderingSystem(resourceManager, pWorld, camera)
+                        new AnimationSystem()
                 )
                 .build();
 
         world = new World(config);
 
-        wallFactory = new WallEntityFactory(world, pWorld);
-        playerFactory = new PlayerFactory(world, pWorld);
-        tileFactory = new TileFactory(world, pWorld);
+        WallEntityFactory wallFactory = new WallEntityFactory(world, pWorld);
+        PlayerFactory playerFactory = new PlayerFactory(world, pWorld);
 
-        playerFactory.create(0.0f, 0);
-        wallFactory.create(1f, 0, 1f, 1f);
-
-        createTiles(10,10);
-    }
-
-    private void setupCamera() {
-        camera = new OrthographicCamera();
-    }
-
-    private void createTiles(int width, int height) {
-        double start = System.currentTimeMillis();
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                tileFactory.create(x, y, "tile-grass");
-            }
-        }
-
-        double end = System.currentTimeMillis();
-
-        logger.info("Generated {} entities in {} ms.", width * height, end - start);
+        GameInfo.PLAYER = playerFactory.create(0.0f, 0.001f);
+        wallFactory.create(0f, 0, 10f, 1f);
     }
 
     @Override
@@ -100,20 +70,11 @@ public class ApocalypticGame extends BaseGame {
         world.process();
 
         Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
-
-        //TODO: Update the render method to render based on position
-        //TODO: Add values to the PhysicsBody for the body height and width.
     }
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
-
-
-        //TODO Revisit the potato pixels.
-        Matrix4 debugMatrix = new Matrix4(camera.combined);
-        debugMatrix.translate((-Gdx.graphics.getWidth() / 2f), (-Gdx.graphics.getHeight() / 2f), 0);
-        debugMatrix.scale(32f, 32f, 1f);
     }
 
     @Override
