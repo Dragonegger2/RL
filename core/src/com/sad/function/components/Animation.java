@@ -13,4 +13,8 @@ public class Animation extends Component {
         UP, DOWN, LEFT, RIGHT
     }
 
+    public enum State {
+        JUMPING, RUNNING, SHOOTING
+    }
+
 }

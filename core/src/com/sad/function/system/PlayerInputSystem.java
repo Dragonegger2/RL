@@ -6,6 +6,7 @@ import com.artemis.annotations.All;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.sad.function.components.Animation;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.PlayerComponent;
@@ -17,44 +18,59 @@ import org.apache.logging.log4j.Logger;
 @All
 public class PlayerInputSystem extends BaseSystem {
     private static final Logger logger = LogManager.getLogger(PlayerInputSystem.class);
-
+    private static final float IMPULSE = 2.5f;
+    private static final float VERTICAL_IMPULSE = 5.0f;
+    private static final float MAX_HORIZONTAL_VELOCITY = 5f;
+    private static final float HORIZONTAL_DRAG = .7f;           // .7 = 30% drag
     private ComponentMapper<Animation> mAnimation;
     private ComponentMapper<PhysicsBody> mPhysics;
     private ComponentMapper<PlayerComponent> mPlayer;
-
-    private static final float MAX_HORIZONTAL_VELOCITY = 5f;
-    private static final float HORIZONTAL_DRAG = .9f;
+    private Vector2 lVelocity;
 
     @Override
     protected void processSystem() {
         processEntity(GameInfo.PLAYER); //TODO Just combine these methods.
     }
 
-    private Vector2 linearVelocity;
-
     private void processEntity(int entity) {
+        lVelocity = mPhysics.create(entity).body.getLinearVelocity();
+        Body player = mPhysics.create(entity).body;
 
-        linearVelocity = mPhysics.create(entity).body.getLinearVelocity();
-
-        if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            KeyActionBindings.actions.get(Action.MOVE_LEFT).execute(world, entity);
-            world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
-            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.LEFT;
+        //CAP HORIZONTAL VELOCITY
+        if (Math.abs(lVelocity.x) > MAX_HORIZONTAL_VELOCITY) {
+            lVelocity.x = Math.signum(lVelocity.x) * MAX_HORIZONTAL_VELOCITY;
+            mPhysics.create(entity).body.setLinearVelocity(lVelocity.x, lVelocity.y);
         }
 
-        if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            KeyActionBindings.actions.get(Action.MOVE_RIGHT).execute(world, entity);
-            world.getMapper(Animation.class).create(entity).animationName = "hero-male-side-walk";
-            world.getMapper(Animation.class).create(entity).direction = Animation.Direction.RIGHT;
+        //Calculate stilltime and damp
+        if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)) {
+            //Dampen the linear lVelocity in the X-direction by 10%, kill speed if it no longer exceeds 50%
+            player.setLinearVelocity(lVelocity.x * HORIZONTAL_DRAG, lVelocity.y);
+
+            mAnimation.create(entity).animationName = "hero-male-side-idle";
         }
 
-        if(!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)) {
-            //Dampen the linear velocity in the X-direction by 10%, kill speed if it no longer exceeds 50%
-
+        //APPLY LEFT IMPULSE.
+        if (Gdx.input.isKeyPressed(Keys.LEFT) && lVelocity.x > -MAX_HORIZONTAL_VELOCITY) {
+//            KeyActionBindings.actions.get(Action.MOVE_LEFT).execute(world, entity);
+            player.applyLinearImpulse(-IMPULSE, 0.0f, player.getWorldCenter().x, player.getWorldCenter().y, true);
+            mAnimation.create(entity).animationName = "hero-male-side-walk";
+            mAnimation.create(entity).direction = Animation.Direction.LEFT;
         }
+
+        //APPLY RIGHT IMPULSE.
+        if (Gdx.input.isKeyPressed(Keys.RIGHT) && lVelocity.x < MAX_HORIZONTAL_VELOCITY) {
+//            KeyActionBindings.actions.get(Action.MOVE_RIGHT).execute(world, entity);
+            player.applyLinearImpulse(IMPULSE, 0.0f, player.getWorldCenter().x, player.getWorldCenter().y, true);
+
+            mAnimation.create(entity).animationName = "hero-male-side-walk";
+            mAnimation.create(entity).direction = Animation.Direction.RIGHT;
+        }
+
 
         if (Gdx.input.isKeyPressed(Keys.UP)) {
             KeyActionBindings.actions.get(Action.MOVE_UP).execute(world, entity);
+            player.applyForce(0f, 5f, player.getWorldCenter().x, player.getWorldCenter().y, true);
         }
 
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
