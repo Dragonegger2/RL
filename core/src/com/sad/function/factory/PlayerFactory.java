@@ -5,6 +5,7 @@ import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
@@ -70,8 +71,7 @@ public class PlayerFactory extends Factory {
                         0.1f)
                 .getBody();
 
-        pBody.body.getFixtureList().first().setUserData("PLAYER_BODY");
-//        pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
+//        pBody.body.getFixtureList().first().setUserData("PLAYER_BODY");
 
         PolygonShape feet = new PolygonShape();
         feet.setAsBox(.25f, .25f, new Vector2(0, -.5f), 0); //TODO the Y in the vector needs to be offset by the height.
@@ -82,12 +82,8 @@ public class PlayerFactory extends Factory {
         myFixtureDef.filter.categoryBits = (short) EntityCategory.SENSOR.id;
         myFixtureDef.filter.maskBits = (short) EntityCategory.GROUND.id;
 
-        pBody.body.createFixture(myFixtureDef).setUserData("FOOT");
-
-        UserData userData = new UserData();
-        userData.id = playerId;
-        userData.type = UserData.ObjectType.PLAYER;
-//        pBody.body.setUserData(userData);
+        Fixture f = pBody.body.createFixture(myFixtureDef);
+        f.setUserData("FOOT");
 
         feet.dispose();
 

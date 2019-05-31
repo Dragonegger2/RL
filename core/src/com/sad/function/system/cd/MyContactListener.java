@@ -48,14 +48,14 @@ public class MyContactListener implements ContactListener {
 
 
     private void handleBeginContact(String typeA, String typeB) {
-        if (typeA == "FOOT" || typeB == "FOOT") {
+        if ("FOOT".equals(typeA) || "FOOT".equals(typeB)) {
             GameInfo.FOOT_CONTACTS++;
         }
 
     }
 
     private void handleEndContact(String typeA, String typeB) {
-        if (typeA == "FOOT" || typeB == "FOOT") {
+        if ("FOOT".equals(typeA) || "FOOT".equals(typeB)) {
             GameInfo.FOOT_CONTACTS--;
         }
     }
