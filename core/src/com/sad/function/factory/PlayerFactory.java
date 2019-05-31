@@ -79,8 +79,6 @@ public class PlayerFactory extends Factory {
         FixtureDef myFixtureDef = new FixtureDef();
         myFixtureDef.shape = feet;
         myFixtureDef.isSensor = true;
-        myFixtureDef.filter.categoryBits = (short) EntityCategory.SENSOR.id;
-        myFixtureDef.filter.maskBits = (short) EntityCategory.GROUND.id;
 
         Fixture f = pBody.body.createFixture(myFixtureDef);
         f.setUserData("FOOT");
