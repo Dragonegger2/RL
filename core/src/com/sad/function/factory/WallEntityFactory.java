@@ -56,7 +56,7 @@ public class WallEntityFactory extends Factory {
         UserData userData = new UserData();
         userData.id = wall;
         userData.type = UserData.ObjectType.PLAYER;
-        world.getMapper(PhysicsBody.class).create(wall).body.setUserData(userData);
+//        world.getMapper(PhysicsBody.class).create(wall).body.setUserData(userData);
 
         world.getMapper(PhysicsBody.class).create(wall).position.set(x, y);
         world.getMapper(TextureComponent.class).create(wall).resourceName = "beaten_brick_tiled";

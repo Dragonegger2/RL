@@ -51,7 +51,6 @@ public class TileFactory extends Factory{
                 .createBoxFixture(1f, 1f, 0f, 0.75f)
                 .getBody();
 
-        world.getMapper(PhysicsBody.class).create(tile).body.getFixtureList().first().setFilterData(Filters.tileFilter);
         //TODO Should this be a box2d static body with sensors attached? https://stackoverflow.com/questions/2569374/friction-in-box2d
         return tile;
     }

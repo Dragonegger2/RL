@@ -8,8 +8,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
+import com.sad.function.global.GameInfo;
 import com.sad.function.system.cd.EntityCategory;
-import com.sad.function.system.cd.FootListener;
 
 public class PlayerFactory extends Factory {
 
@@ -70,7 +70,8 @@ public class PlayerFactory extends Factory {
                         0.1f)
                 .getBody();
 
-        pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
+        pBody.body.getFixtureList().first().setUserData("PLAYER_BODY");
+//        pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
 
         PolygonShape feet = new PolygonShape();
         feet.setAsBox(.25f, .25f, new Vector2(0, -.5f), 0); //TODO the Y in the vector needs to be offset by the height.
@@ -81,17 +82,15 @@ public class PlayerFactory extends Factory {
         myFixtureDef.filter.categoryBits = (short) EntityCategory.SENSOR.id;
         myFixtureDef.filter.maskBits = (short) EntityCategory.GROUND.id;
 
-        pBody.body.createFixture(myFixtureDef);
+        pBody.body.createFixture(myFixtureDef).setUserData("FOOT");
 
         UserData userData = new UserData();
         userData.id = playerId;
         userData.type = UserData.ObjectType.PLAYER;
-        pBody.body.setUserData(userData);
+//        pBody.body.setUserData(userData);
 
         feet.dispose();
 
-
-//        pWorld.setContactListener(new FootListener(world.getMapper(PlayerComponent.class).create(playerId)));
         return playerId;
     }
 }

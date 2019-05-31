@@ -18,4 +18,10 @@ public class GameInfo {
 
     public static int PLAYER;
     public static final float XVelocity = 2f;
+
+    public static int FOOT_CONTACTS = 0;
+
+    public enum FIXTURE_TYPE {
+        FOOT
+    }
 }

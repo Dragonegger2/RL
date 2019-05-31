@@ -130,11 +130,11 @@ public class RenderingSystem extends BaseEntitySystem {
                     renderSingleEntity(integer);
                 }
             }
-            font.draw(batch, "Hello World", 0,0);
+//            font.draw(batch, "Hello World", 0,0);
             tmpCoordinates.set(0f,0f,0f);
             camera.unproject(tmpCoordinates);
 
-            font.draw(batch,"Hello World!", tmpCoordinates.x, tmpCoordinates.y);
+            font.draw(batch,"Foot Contact Count: " + GameInfo.FOOT_CONTACTS, tmpCoordinates.x, tmpCoordinates.y);
             batch.end();
         }
 
