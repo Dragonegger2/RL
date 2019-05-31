@@ -27,6 +27,9 @@ public class PlayerInputSystem extends BaseSystem {
     private ComponentMapper<PlayerComponent> mPlayer;
     private Vector2 lVelocity;
 
+    private boolean jump;
+    private boolean doubleJump;
+
     @Override
     protected void processSystem() {
         processEntity(GameInfo.PLAYER); //TODO Just combine these methods.
