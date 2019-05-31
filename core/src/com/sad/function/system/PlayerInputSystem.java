@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class PlayerInputSystem extends BaseSystem {
     private static final Logger logger = LogManager.getLogger(PlayerInputSystem.class);
     private static final float IMPULSE = 2.5f;
-    private static final float VERTICAL_IMPULSE = 30.0f;
+    private static final float VERTICAL_IMPULSE = 60.0f;
     private static final float MAX_HORIZONTAL_VELOCITY = 5f;
     private static final float HORIZONTAL_DRAG = .7f;           // .7 = 30% drag
     private ComponentMapper<Animation> mAnimation;
@@ -60,7 +60,6 @@ public class PlayerInputSystem extends BaseSystem {
 
         //APPLY RIGHT IMPULSE.
         if (Gdx.input.isKeyPressed(Keys.RIGHT) && lVelocity.x < MAX_HORIZONTAL_VELOCITY) {
-//            KeyActionBindings.actions.get(Action.MOVE_RIGHT).execute(world, entity);
             player.applyLinearImpulse(IMPULSE, 0.0f, player.getWorldCenter().x, player.getWorldCenter().y, true);
 
             mAnimation.create(entity).animationName = "hero-male-side-walk";
@@ -68,9 +67,9 @@ public class PlayerInputSystem extends BaseSystem {
         }
 
 
-        if (Gdx.input.isKeyPressed(Keys.UP)) {
+        if (Gdx.input.isKeyPressed(Keys.UP) && GameInfo.FOOT_CONTACTS >= 1) { //Only allow jumping when they're on the ground.
             KeyActionBindings.actions.get(Action.MOVE_UP).execute(world, entity);
-            player.applyForce(0f, VERTICAL_IMPULSE, player.getWorldCenter().x, player.getWorldCenter().y, true);
+            player.applyForce(0f, player.getMass() * VERTICAL_IMPULSE, player.getWorldCenter().x, player.getWorldCenter().y, true);
         }
 
         if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {

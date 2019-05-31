@@ -82,7 +82,7 @@ public class RenderingSystem extends BaseEntitySystem {
         }
 
         font.setUseIntegerPositions(false); //Disables integer rounding that's problematic in box2d
-        font.getData().setScale(1f/16f);
+        font.getData().setScale(1f/64f);
     }
 
     @Override
