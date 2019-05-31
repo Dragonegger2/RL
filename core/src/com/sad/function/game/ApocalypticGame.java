@@ -12,6 +12,7 @@ import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
+import com.sad.function.system.cd.FootListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,6 +50,8 @@ public class ApocalypticGame extends BaseGame {
 
         WallEntityFactory wallFactory = new WallEntityFactory(world, pWorld);
         PlayerFactory playerFactory = new PlayerFactory(world, pWorld);
+
+        pWorld.setContactListener(new FootListener());
 
         GameInfo.PLAYER = playerFactory.create(0.0f, 0.001f);
         wallFactory.create(0f, 0, 10f, 1f);

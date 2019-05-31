@@ -3,11 +3,13 @@ package com.sad.function.factory;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.World;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.sad.function.components.*;
 import com.sad.function.system.cd.EntityCategory;
+import com.sad.function.system.cd.FootListener;
 
 public class PlayerFactory extends Factory {
 
@@ -68,20 +70,28 @@ public class PlayerFactory extends Factory {
                         0.1f)
                 .getBody();
 
-//        pBody.body.setLinearDamping(10f);
-
         pBody.body.getFixtureList().first().setFilterData(Filters.playerFilter);
 
-        CircleShape circleShape = new CircleShape();
-            circleShape.setRadius(1.5f);
-            FixtureDef myFixtureDef = new FixtureDef();
-            myFixtureDef.shape = circleShape;
-            myFixtureDef.isSensor = true;
-            myFixtureDef.filter.categoryBits = (short)EntityCategory.SENSOR.id;
-            myFixtureDef.filter.maskBits = (short)EntityCategory.GROUND.id;
+        PolygonShape feet = new PolygonShape();
+        feet.setAsBox(.25f, .25f, new Vector2(0, -.5f), 0); //TODO the Y in the vector needs to be offset by the height.
+
+        FixtureDef myFixtureDef = new FixtureDef();
+        myFixtureDef.shape = feet;
+        myFixtureDef.isSensor = true;
+        myFixtureDef.filter.categoryBits = (short) EntityCategory.SENSOR.id;
+        myFixtureDef.filter.maskBits = (short) EntityCategory.GROUND.id;
 
         pBody.body.createFixture(myFixtureDef);
 
+        UserData userData = new UserData();
+        userData.id = playerId;
+        userData.type = UserData.ObjectType.PLAYER;
+        pBody.body.setUserData(userData);
+
+        feet.dispose();
+
+
+//        pWorld.setContactListener(new FootListener(world.getMapper(PlayerComponent.class).create(playerId)));
         return playerId;
     }
 }
