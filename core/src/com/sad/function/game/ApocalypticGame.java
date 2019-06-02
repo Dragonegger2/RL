@@ -103,8 +103,8 @@ public class ApocalypticGame extends BaseGame {
 
         myTiledMapRenderer.setView(camera);
         myTiledMapRenderer.render();
-//        world.setDelta(Gdx.graphics.getDeltaTime());
-//        world.process();
+        world.setDelta(Gdx.graphics.getDeltaTime());
+        world.process();
 
 //        Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
         Gdx.graphics.setTitle(String.format("Camera Position: (%s, %s)", camera.position.x, camera.position.y));

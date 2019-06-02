@@ -191,7 +191,10 @@
   <object id="10" name="STARTING_POINT" type="CAMERA" x="256" y="384">
    <point/>
   </object>
-  <object id="12" name="COL1" type="collidable" x="145" y="465">
+  <object id="12" name="GROUND" type="COLLIDABLE" x="145" y="465">
+   <properties>
+    <property name="isCollidable" type="bool" value="true"/>
+   </properties>
    <polygon points="-1,0 31,13 35,18 157,16 159,16 159,-17 191,-17 191,-33 223,-33 223,-1 255,-1 255,15 287,31 351,31 383,15 398,15 399,15 415,-1 447,-33 479,-49 511,-49 511,96 -1,95"/>
   </object>
  </objectgroup>

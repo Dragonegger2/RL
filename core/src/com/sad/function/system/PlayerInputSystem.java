@@ -1,13 +1,14 @@
 package com.sad.function.system;
 
-import com.artemis.BaseSystem;
+import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.All;
+import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.sad.function.components.Animation;
+import com.sad.function.components.Input;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.PlayerComponent;
 import com.sad.function.global.GameInfo;
@@ -15,8 +16,7 @@ import com.sad.function.input.KeyActionBindings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@All
-public class PlayerInputSystem extends BaseSystem {
+public class PlayerInputSystem extends IteratingSystem {
     private static final Logger logger = LogManager.getLogger(PlayerInputSystem.class);
     private static final float IMPULSE = 2.5f;
     private static final float VERTICAL_IMPULSE = 60.0f;
@@ -25,17 +25,18 @@ public class PlayerInputSystem extends BaseSystem {
     private ComponentMapper<Animation> mAnimation;
     private ComponentMapper<PhysicsBody> mPhysics;
     private ComponentMapper<PlayerComponent> mPlayer;
+
     private Vector2 lVelocity;
 
     private boolean jump;
     private boolean doubleJump;
 
-    @Override
-    protected void processSystem() {
-        processEntity(GameInfo.PLAYER); //TODO Just combine these methods.
+    public PlayerInputSystem() {
+        super(Aspect.all(Input.class));
     }
 
-    private void processEntity(int entity) {
+    @Override
+    protected void process(int entity) {
         lVelocity = mPhysics.create(entity).body.getLinearVelocity();
         Body player = mPhysics.create(entity).body;
 
@@ -79,5 +80,4 @@ public class PlayerInputSystem extends BaseSystem {
             KeyActionBindings.actions.get(Action.QUIT_GAME).execute(world, entity);
         }
     }
-
 }
