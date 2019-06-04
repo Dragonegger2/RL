@@ -7,15 +7,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.sad.function.factory.PlayerFactory;
 import com.sad.function.factory.WallEntityFactory;
 import com.sad.function.global.GameInfo;
+import com.sad.function.manager.LevelManager;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.system.*;
 import com.sad.function.system.cd.MyContactListener;
@@ -29,23 +29,27 @@ public class ApocalypticGame extends BaseGame {
 
     private World world;
     private com.badlogic.gdx.physics.box2d.World pWorld;
-    private TiledMap tiledMap;
-    private TiledMapRenderer myTiledMapRenderer;
 
     private OrthographicCamera camera;
-
+    private PlayerFactory playerFactory;
     private ResourceManager resourceManager;
 
+    private LevelManager levelManager;
     @Override
     public void create() {
         resourceManager = new ResourceManager();
 
+
         camera = new OrthographicCamera();
+//        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0), true);
         pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.8f), true);
+
+        levelManager = new LevelManager(world, pWorld);
+        levelManager.loadLevel("levels/level1.tmx");
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new RenderingSystem(resourceManager, pWorld, camera),
+                        new RenderingSystem(resourceManager, pWorld, levelManager, camera),
 
                         new PlayerInputSystem(),
                         new PhysicsSystem(pWorld),
@@ -57,22 +61,30 @@ public class ApocalypticGame extends BaseGame {
         world = new World(config);
 
         WallEntityFactory wallFactory = new WallEntityFactory(world, pWorld);
-        PlayerFactory playerFactory = new PlayerFactory(world, pWorld);
+        playerFactory = new PlayerFactory(world, pWorld);
 
         pWorld.setContactListener(new MyContactListener());
-
-//        GameInfo.PLAYER = playerFactory.create(0.0f, 0.001f);
 //        wallFactory.create(0f, 0, 10f, 1f);
 
         //Just a reminder that infinite tile maps are never supported. It would be best for me to create one in infinite mode and then scale it down.
+        //Also a reminder, all methods having to do with the map object currently return their y-values normalized for the new direction of the origin.
 
-        tiledMap = new TmxMapLoader().load("levels/level1.tmx");
-         myTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1/32f);
-
+//        myTiledMapRenderer = new OrthogonalTiledMapRenderer(levelManager.getTiledMap(), 1/16f);
     }
 
+    private boolean pointOnce = true;
     @Override
     public void render() {
+        //Point the camera to the start position at least once.
+        if(pointOnce) {
+            Vector2 startPosition = new Vector2();
+            ((RectangleMapObject)levelManager.getMapObjects().get("STARTING_POINT")).getRectangle().getPosition(startPosition);
+            startPosition.scl(1/16f);
+//        camera.position.set(startPosition, 0f);
+            camera.translate(startPosition);
+            GameInfo.PLAYER = playerFactory.create(startPosition.x, startPosition.y);
+            pointOnce = false;
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             GameInfo.RENDER_SPRITES = !GameInfo.RENDER_SPRITES;
         }
@@ -83,31 +95,29 @@ public class ApocalypticGame extends BaseGame {
             GameInfo.RENDER_HITBOX_OUTLINES = !GameInfo.RENDER_HITBOX_OUTLINES;
         }
 
-        Vector3 pos = camera.position;
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            camera.position.set(pos.x - 1f, pos.y, pos.z);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            camera.position.set(pos.x + 1f, pos.y, pos.z);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            camera.position.set(pos.x, pos.y + 1, pos.z);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            camera.position.set(pos.x, pos.y - 1, pos.z);
-        }
+//        Vector3 pos = camera.position;
+//        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+//            camera.position.set(pos.x - 1f, pos.y, pos.z);
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            camera.position.set(pos.x + 1f, pos.y, pos.z);
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//            camera.position.set(pos.x, pos.y + 1, pos.z);
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+//            camera.position.set(pos.x, pos.y - 1, pos.z);
+//        }
+
         camera.update();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        myTiledMapRenderer.setView(camera);
-        myTiledMapRenderer.render();
         world.setDelta(Gdx.graphics.getDeltaTime());
         world.process();
 
-//        Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
-        Gdx.graphics.setTitle(String.format("Camera Position: (%s, %s)", camera.position.x, camera.position.y));
+        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y));
     }
 
     @Override

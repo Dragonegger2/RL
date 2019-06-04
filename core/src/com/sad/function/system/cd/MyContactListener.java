@@ -4,12 +4,9 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.sad.function.components.UserData;
 import com.sad.function.global.GameInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static com.sad.function.global.GameInfo.FIXTURE_TYPE.FOOT;
 
 public class MyContactListener implements ContactListener {
     private static final Logger logger = LogManager.getLogger(MyContactListener.class);

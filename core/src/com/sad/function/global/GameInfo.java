@@ -9,7 +9,7 @@ public class GameInfo {
     public static final float MAX_MOVEMENT_SPEED = 160f;
 
     //The best value seems to be somewhere between 6 & 12.
-    public static final float VIRTUAL_HEIGHT = 8f;
+    public static final float VIRTUAL_HEIGHT = 12f;
 
     public static InputEventPool inputEventPool = new InputEventPool(100);
 

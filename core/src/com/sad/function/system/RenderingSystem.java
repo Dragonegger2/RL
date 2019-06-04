@@ -7,10 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.utils.IntMap;
 import com.sad.function.ProjectileEquation;
 import com.sad.function.components.*;
 import com.sad.function.global.GameInfo;
+import com.sad.function.manager.LevelManager;
 import com.sad.function.manager.ResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,12 +30,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+//TODO: Need to fix this rendering system quite a bit. It was previously set up to render via a y scaling property for an isometric style game, not it's an orthogonal so it needs to change to sort by z-index and the like.
 public class RenderingSystem extends BaseEntitySystem {
     private static final Logger logger = LogManager.getLogger(RenderingSystem.class);
     //    private HashMap<Layer.RENDERABLE_LAYER, Boolean> layerNeedsSorting; TODO Future improvement?
     private IsometricRangeYValueComparator isometricRangeYValueComparator;
 
     private Box2DDebugRenderer box2DDebugRenderer;
+    private LevelManager levelManager;
 
     private ComponentMapper<Layer> mLayer;
     private ComponentMapper<Translation> mPosition;
@@ -49,9 +54,10 @@ public class RenderingSystem extends BaseEntitySystem {
     private ShapeRenderer shapeRenderer;
 
     private ResourceManager resourceManager;
-    private Camera camera;
+    private OrthographicCamera camera;
     private HashMap<Layer.RENDERABLE_LAYER, List<Integer>> layerCollections;            //Used for rendering.
     private IntMap<Layer.RENDERABLE_LAYER> idCollection;                                //Used for removed.
+
 
     private BitmapFont font = new BitmapFont();
 
@@ -63,12 +69,13 @@ public class RenderingSystem extends BaseEntitySystem {
             Layer.RENDERABLE_LAYER.UI
     };
 
-    public RenderingSystem(ResourceManager resourceManager, com.badlogic.gdx.physics.box2d.World pWorld, Camera camera) {
+    public RenderingSystem(ResourceManager resourceManager, com.badlogic.gdx.physics.box2d.World pWorld, LevelManager levelManager, OrthographicCamera camera) {
         super(Aspect.all(Layer.class).one(Translation.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
         this.pWorld = pWorld;
+        this.levelManager = levelManager;
 
         layerCollections = new HashMap<>();
         idCollection = new IntMap<>();
@@ -123,7 +130,13 @@ public class RenderingSystem extends BaseEntitySystem {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+
+
         if (GameInfo.RENDER_SPRITES) {
+
+            levelManager.getTiledMapRenderer().setView(camera);
+            levelManager.getTiledMapRenderer().render();
+
             batch.begin();
             for (Layer.RENDERABLE_LAYER layer : layers) {
                 for (Integer integer : layerCollections.get(layer)) {
@@ -148,8 +161,6 @@ public class RenderingSystem extends BaseEntitySystem {
             for (Integer integer : layerCollections.get(Layer.RENDERABLE_LAYER.DEFAULT)) {
                 renderEntitySpriteOutline(integer);
             }
-
-//            drawProjectile();
             shapeRenderer.end();
 
         }
