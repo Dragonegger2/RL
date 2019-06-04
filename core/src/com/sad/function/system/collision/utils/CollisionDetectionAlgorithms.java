@@ -3,12 +3,12 @@ package com.sad.function.system.collision.utils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.system.collision.shapes.Shape;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.List;
 
 @SuppressWarnings("ALL")
 public class CollisionDetectionAlgorithms {
-    private static Simplex simplex;
 
     /**
      * The maximum number of simplex evolution iterations before we accept the
@@ -40,7 +40,7 @@ public class CollisionDetectionAlgorithms {
     }
 
     public boolean gjk(Shape a, Shape b) {
-        simplex = new Simplex();
+        Simplex simplex = new Simplex();
         Vector2 direction = new Vector2(1, 0);
         simplex.add(minkowskiPoint(a, b, direction));
 
@@ -185,53 +185,53 @@ public class CollisionDetectionAlgorithms {
         }
     }
 
-    public boolean checkSimplex(List<Vector2> s, Vector2 direction) {
-        Vector2 a = s.get(simplex.size() - 1).cpy();
-        Vector2 ao = a.cpy().scl(-1);   //origin - a = -a
-
-        if (s.size() == 3) {
-            Vector2 b = s.get(1).cpy();
-            Vector2 c = s.get(0).cpy();
-
-            Vector2 ab = b.cpy().sub(a); //b - a
-            Vector2 ac = c.cpy().sub(a); //c - a
-
-            Vector2 acPerp = new Vector2();
-            float dot = ab.x * ac.y - ac.x * ab.y;
-            acPerp.x = -ac.y * dot;
-            acPerp.y = ac.x * dot;
-
-            float acLocation = acPerp.dot(ao);
-            if (acLocation >= 0.0) {
-                s.remove(1);
-                direction.set(acPerp);
-            } else {
-                Vector2 abPerp = new Vector2();
-                abPerp.x = ab.y * dot;
-                abPerp.y = -ab.x * dot;
-
-                double abLocation = abPerp.dot(ao);
-
-                if (abLocation < 0.0f) {
-                    return true;
-                } else {
-                    s.remove(0);
-                    direction.set(abPerp);
-                }
-            }
-        } else {
-            Vector2 b = s.get(0);
-            Vector2 ab = b.cpy().sub(a);
-
-            direction.set(tripleProduct(ab, ao, ab));
-
-            if (direction.len2() <= 0.00001f) {
-                direction.set(left(ab));
-            }
-        }
-
-        return false;
-    }
+//    public boolean checkSimplex(List<Vector2> s, Vector2 direction) {
+//        Vector2 a = s.get(simplex.size() - 1).cpy();
+//        Vector2 ao = a.cpy().scl(-1);   //origin - a = -a
+//
+//        if (s.size() == 3) {
+//            Vector2 b = s.get(1).cpy();
+//            Vector2 c = s.get(0).cpy();
+//
+//            Vector2 ab = b.cpy().sub(a); //b - a
+//            Vector2 ac = c.cpy().sub(a); //c - a
+//
+//            Vector2 acPerp = new Vector2();
+//            float dot = ab.x * ac.y - ac.x * ab.y;
+//            acPerp.x = -ac.y * dot;
+//            acPerp.y = ac.x * dot;
+//
+//            float acLocation = acPerp.dot(ao);
+//            if (acLocation >= 0.0) {
+//                s.remove(1);
+//                direction.set(acPerp);
+//            } else {
+//                Vector2 abPerp = new Vector2();
+//                abPerp.x = ab.y * dot;
+//                abPerp.y = -ab.x * dot;
+//
+//                double abLocation = abPerp.dot(ao);
+//
+//                if (abLocation < 0.0f) {
+//                    return true;
+//                } else {
+//                    s.remove(0);
+//                    direction.set(abPerp);
+//                }
+//            }
+//        } else {
+//            Vector2 b = s.get(0);
+//            Vector2 ab = b.cpy().sub(a);
+//
+//            direction.set(tripleProduct(ab, ao, ab));
+//
+//            if (direction.len2() <= 0.00001f) {
+//                direction.set(left(ab));
+//            }
+//        }
+//
+//        return false;
+//    }
 
     public Vector2 left(Vector2 a) {
         float temp = a.x;
@@ -256,38 +256,24 @@ public class CollisionDetectionAlgorithms {
         return v1.dot(v2) > 0;
     }
 
-    public boolean distance(Shape shape1, Shape shape2, Separation separation) {
-        MinkowskiSum ms = new MinkowskiSum(shape1, shape2);
+    public void getPenetration(Simplex simplex, MinkowskiSum minkowskiSum, Vector2 penetration) {
+        Edge edge = null;
+        Vector2 point = null;
+        for(int i = 0; i < this.maxIterations; i++) {
+            edge = findClosestEdge(simplex);
+            point = minkowskiSum.getSupportPoints(edge.normal);
 
-        Vector2 a = null;
-        Vector2 b = null;
-        Vector2 c = null;
-
-        //Choose a search direction from center to center.
-        Vector2 d = shape2.getOrigin().sub(shape1.getOrigin());
-
-        if (d.isZero()) return false;
-
-        a = ms.getSupportPoints(d);
-        d.scl(-1);
-        b = ms.getSupportPoints(d);
-
-        d = Segment.getPointOnSegementClosestToPoint(new Vector2(0, 0), b, a);
-        for (int i = 0; i < 20; i++) {
-            d.scl(-1);
-
-            if (d.len2() <= Epsilon.E) {
-                return false;
+            float project = point.dot(edge.normal);
+            if((project - edge.distance) < Epsilon.E) {
+                penetration.set(edge.normal).scl(project);
+                return;
             }
 
-            c = ms.getSupportPoints(d);
-
-//            if()
+//            simplex
         }
-        return false;
     }
 
-    public Edge findClosestEdge() {
+    public Edge findClosestEdge(Simplex simplex) {
         Edge closest;
         closest = new Edge();
         closest.distance = Float.MAX_VALUE;
@@ -323,74 +309,36 @@ public class CollisionDetectionAlgorithms {
         return closest;
     }
 
-    public Vector2 intersect(Shape a, Shape b) {
-        if (!gjk(a, b)) {
-            return null;
-        }
-
-        float e0 = (simplex.get(1).x - simplex.get(0).x) * (simplex.get(1).y + simplex.get(0).y);
-        float e1 = (simplex.get(2).x - simplex.get(1).x) * (simplex.get(2).y + simplex.get(1).y);
-        float e2 = (simplex.get(0).x - simplex.get(2).x) * (simplex.get(0).y + simplex.get(2).y);
-
-        PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
-
-        Vector2 intersection = new Vector2();
-
-        for (int i = 0; i <= maxIterations; i++) {
-            Edge edge = findClosestEdge(winding);               //Get closest edge
-            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
-            float distance = support.dot(edge.normal);
-
-            if (Math.abs(distance - edge.distance) <= 0.000001) {
-                return intersection;
-            } else {
-                simplex.get().add(edge.index, support);
-            }
-
-            intersection = edge.normal.cpy();
-            intersection = intersection.scl(distance);
-        }
-
-        return intersection;
-    }
-
-    private Edge findClosestEdge(PolygonWinding winding) {
-        double closestDistance = Double.MAX_VALUE;
-        Vector2 closestNormal = new Vector2();
-        int closestIndex = 0;
-        Vector2 line = new Vector2();
-        for (int i = 0; i < simplex.get().size(); i++) {
-            int j;
-
-            if (i + 1 == simplex.get().size()) {
-                j = 0;
-            } else {
-                j = i + 1;
-            }
-
-            line = simplex.get(j);
-            line.sub(simplex.get(i));
-
-            Vector2 norm;
-            if (winding == PolygonWinding.Clockwise) {
-                norm = new Vector2(line.y, -line.x);
-            } else {
-                norm = new Vector2(-line.y, line.x);
-            }
-
-            norm = norm.nor();
-
-            // calculate how far away the edge is from the origin
-            double dist = norm.dot(simplex.get(i));
-            if (dist < closestDistance) {
-                closestDistance = dist;
-                closestNormal = norm;
-                closestIndex = j;
-            }
-        }
-
-        return new Edge(closestDistance, closestNormal, closestIndex);
-    }
+//    public Vector2 intersect(Shape a, Shape b) {
+//        if (!gjk(a, b)) {
+//            return null;
+//        }
+//
+//        float e0 = (simplex.get(1).x - simplex.get(0).x) * (simplex.get(1).y + simplex.get(0).y);
+//        float e1 = (simplex.get(2).x - simplex.get(1).x) * (simplex.get(2).y + simplex.get(1).y);
+//        float e2 = (simplex.get(0).x - simplex.get(2).x) * (simplex.get(0).y + simplex.get(2).y);
+//
+//        PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
+//
+//        Vector2 intersection = new Vector2();
+//
+//        for (int i = 0; i <= maxIterations; i++) {
+//            Edge edge = findClosestEdge(simplex);               //Get closest edge
+//            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
+//            float distance = support.dot(edge.normal);
+//
+//            if (Math.abs(distance - edge.distance) <= 0.000001) {
+//                return intersection;
+//            } else {
+//                simplex.get().add(edge.index, support);
+//            }
+//
+//            intersection = edge.normal.cpy();
+//            intersection = intersection.scl(distance);
+//        }
+//
+//        return intersection;
+//    }
 
     private static class Segment {
         public static Vector2 getPointOnSegementClosestToPoint(Vector2 point, Vector2 linePoint1, Vector2 linePoint2) {

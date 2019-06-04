@@ -234,22 +234,53 @@ public class Distance2D {
         int simplexCount;
     }
 
-
-    public Output distance2D(Shape a, Shape b) {
-
-        //TODO Breakout for circle to circle since it's easier.
-
-        //TODO
+    public Output distance2D(Shape a, Shape b, Vector2 transform1, Vector2 transform2) {
 
         Simplex simplex = new Simplex();
         simplex.vertexA.index1 = 0;
         simplex.vertexA.index2 = 0;
+
+        Output output = new Output();
 
         //Calculate d = a.origin - b.origin
         Vector2 d = a.getOrigin().cpy().sub(b.getOrigin().cpy());
 
         Vector2 aSupp = a.support(d);
         Vector2 bSupp = b.support(d);
+
+
+        int iter = 0,
+            k_maxIters = 20;
+
+        while(iter < k_maxIters) {
+            switch (simplex.m_count) {
+                case 1:
+                    break;
+                case 2:
+                    simplex.solve2(new Vector2(0,0));
+                    break;
+                case 3:
+                    simplex.solve3(new Vector2(0,0));
+                    break;
+                default:
+                    assert(false);
+            }
+
+            //TODO not strictly needed, it's used in the example code for visualization.
+            output.simplices[output.simplexCount++] = simplex;
+
+            if(simplex.m_count == 3) {
+                return output;
+            }
+
+            d = simplex.getSearchDirection();
+
+            if(d.dot(d) == 0) {
+                return output;
+            }
+
+
+        }
 
         //TODO: Figure out how to make this sue the support functions from the shape classes.
         return null;
