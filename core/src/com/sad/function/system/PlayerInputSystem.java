@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class PlayerInputSystem extends IteratingSystem {
     private static final Logger logger = LogManager.getLogger(PlayerInputSystem.class);
     private static final float IMPULSE = 2.5f;
-    private static final float VERTICAL_IMPULSE = 60.0f;
+    private static final float VERTICAL_IMPULSE = 240f;
     private static final float MAX_HORIZONTAL_VELOCITY = 5f;
     private static final float HORIZONTAL_DRAG = .7f;           // .7 = 30% drag
     private ComponentMapper<Animation> mAnimation;
@@ -56,7 +56,6 @@ public class PlayerInputSystem extends IteratingSystem {
 
         //APPLY LEFT IMPULSE.
         if (Gdx.input.isKeyPressed(Keys.LEFT) && lVelocity.x > -MAX_HORIZONTAL_VELOCITY) {
-//            KeyActionBindings.actions.get(Action.MOVE_LEFT).execute(world, entity);
             player.applyLinearImpulse(-IMPULSE, 0.0f, player.getWorldCenter().x, player.getWorldCenter().y, true);
             mAnimation.create(entity).animationName = "hero-male-side-walk";
             mAnimation.create(entity).direction = Animation.Direction.LEFT;

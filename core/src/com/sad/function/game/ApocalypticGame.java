@@ -41,8 +41,7 @@ public class ApocalypticGame extends BaseGame {
 
 
         camera = new OrthographicCamera();
-//        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0), true);
-        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -9.8f), true);
+        pWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, -20), true);
 
         levelManager = new LevelManager(world, pWorld);
         levelManager.loadLevel("levels/level1.tmx");
@@ -60,7 +59,6 @@ public class ApocalypticGame extends BaseGame {
 
         world = new World(config);
 
-        WallEntityFactory wallFactory = new WallEntityFactory(world, pWorld);
         playerFactory = new PlayerFactory(world, pWorld);
 
         pWorld.setContactListener(new MyContactListener());
