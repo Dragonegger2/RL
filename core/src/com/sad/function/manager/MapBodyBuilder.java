@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
-
 public class MapBodyBuilder {
 
     // The pixels per tile. If your tiles are 16x16, this is set to 16f
@@ -22,7 +21,7 @@ public class MapBodyBuilder {
 
         Array<Body> bodies = new Array<Body>();
 
-        for(MapObject object : objects) {
+        for (MapObject object : objects) {
 
             if (object instanceof TextureMapObject) {
                 continue;
@@ -31,18 +30,14 @@ public class MapBodyBuilder {
             Shape shape;
 
             if (object instanceof RectangleMapObject) {
-                shape = getRectangle((RectangleMapObject)object);
-            }
-            else if (object instanceof PolygonMapObject) {
-                shape = getPolygon((PolygonMapObject)object);
-            }
-            else if (object instanceof PolylineMapObject) {
-                shape = getPolyline((PolylineMapObject)object);
-            }
-            else if (object instanceof CircleMapObject) {
-                shape = getCircle((CircleMapObject)object);
-            }
-            else {
+                shape = getRectangle((RectangleMapObject) object);
+            } else if (object instanceof PolygonMapObject) {
+                shape = getPolygon((PolygonMapObject) object);
+            } else if (object instanceof PolylineMapObject) {
+                shape = getPolyline((PolylineMapObject) object);
+            } else if (object instanceof CircleMapObject) {
+                shape = getCircle((CircleMapObject) object);
+            } else {
                 continue;
             }
 
@@ -62,7 +57,7 @@ public class MapBodyBuilder {
         Rectangle rectangle = rectangleObject.getRectangle();
         PolygonShape polygon = new PolygonShape();
         Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / ppt,
-                (rectangle.y + rectangle.height * 0.5f ) / ppt);
+                (rectangle.y + rectangle.height * 0.5f) / ppt);
         polygon.setAsBox(rectangle.width * 0.5f / ppt,
                 rectangle.height * 0.5f / ppt,
                 size,

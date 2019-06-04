@@ -64,12 +64,9 @@ public class ApocalypticGame extends BaseGame {
         playerFactory = new PlayerFactory(world, pWorld);
 
         pWorld.setContactListener(new MyContactListener());
-//        wallFactory.create(0f, 0, 10f, 1f);
 
         //Just a reminder that infinite tile maps are never supported. It would be best for me to create one in infinite mode and then scale it down.
         //Also a reminder, all methods having to do with the map object currently return their y-values normalized for the new direction of the origin.
-
-//        myTiledMapRenderer = new OrthogonalTiledMapRenderer(levelManager.getTiledMap(), 1/16f);
     }
 
     private boolean pointOnce = true;
@@ -80,11 +77,12 @@ public class ApocalypticGame extends BaseGame {
             Vector2 startPosition = new Vector2();
             ((RectangleMapObject)levelManager.getMapObjects().get("STARTING_POINT")).getRectangle().getPosition(startPosition);
             startPosition.scl(1/16f);
-//        camera.position.set(startPosition, 0f);
+
             camera.translate(startPosition);
             GameInfo.PLAYER = playerFactory.create(startPosition.x, startPosition.y);
             pointOnce = false;
         }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             GameInfo.RENDER_SPRITES = !GameInfo.RENDER_SPRITES;
         }
@@ -94,20 +92,6 @@ public class ApocalypticGame extends BaseGame {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             GameInfo.RENDER_HITBOX_OUTLINES = !GameInfo.RENDER_HITBOX_OUTLINES;
         }
-
-//        Vector3 pos = camera.position;
-//        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-//            camera.position.set(pos.x - 1f, pos.y, pos.z);
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-//            camera.position.set(pos.x + 1f, pos.y, pos.z);
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//            camera.position.set(pos.x, pos.y + 1, pos.z);
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//            camera.position.set(pos.x, pos.y - 1, pos.z);
-//        }
 
         camera.update();
 
