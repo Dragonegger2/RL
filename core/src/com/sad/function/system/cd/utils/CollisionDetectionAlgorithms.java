@@ -61,7 +61,7 @@ public class CollisionDetectionAlgorithms {
         return false;
     }
 
-    public boolean containsOrigin(Simplex simplex, Vector2 d) {
+    private boolean containsOrigin(Simplex simplex, Vector2 d) {
         // get the last point added to the simplex
         Vector2 a = simplex.getLast();
 
@@ -208,8 +208,12 @@ public class CollisionDetectionAlgorithms {
         return v1.dot(v2) > 0;
     }
 
-
-    public Edge findClosestEdge() {
+    /**
+     * Find the closest edge to the origin in the given simplex.
+     * @param simplex
+     * @return the closest calculated edge to the origin (0,0).
+     */
+    private Edge findClosestEdge(Simplex simplex) {
         Edge closest;
         closest = new Edge();
         closest.distance = Float.MAX_VALUE;
@@ -245,38 +249,13 @@ public class CollisionDetectionAlgorithms {
         return closest;
     }
 
-    public Vector2 intersect(Shape a, Shape b) {
-        if (!gjk(a, b)) {
-            return null;
-        }
-
-        float e0 = (simplex.get(1).x - simplex.get(0).x) * (simplex.get(1).y + simplex.get(0).y);
-        float e1 = (simplex.get(2).x - simplex.get(1).x) * (simplex.get(2).y + simplex.get(1).y);
-        float e2 = (simplex.get(0).x - simplex.get(2).x) * (simplex.get(0).y + simplex.get(2).y);
-
-        PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
-
-        Vector2 intersection = new Vector2();
-
-        for (int i = 0; i <= maxIterations; i++) {
-            Edge edge = findClosestEdge(winding);               //Get closest edge
-            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
-            float distance = support.dot(edge.normal);
-
-            if (Math.abs(distance - edge.distance) <= 0.000001) {
-                return intersection;
-            } else {
-                simplex.get().add(edge.index, support);
-            }
-
-            intersection = edge.normal.cpy();
-            intersection = intersection.scl(distance);
-        }
-
-        return intersection;
-    }
-
-    private Edge findClosestEdge(PolygonWinding winding) {
+    /**
+     * Find the closest edge to the origin in the given simplex using the given winding.
+     * @param simplex
+     * @param winding
+     * @return the closest edge to the origin.
+     */
+    private Edge findClosestEdge(Simplex simplex, PolygonWinding winding) {
         double closestDistance = Double.MAX_VALUE;
         Vector2 closestNormal = new Vector2();
         int closestIndex = 0;
@@ -312,6 +291,38 @@ public class CollisionDetectionAlgorithms {
         }
 
         return new Edge(closestDistance, closestNormal, closestIndex);
+    }
+
+    public Vector2 intersect(Shape a, Shape b) {
+        Simplex simplex = new Simplex();
+        if (!gjk(a, b, simplex)) {
+            return null;
+        }
+
+        float e0 = (simplex.get(1).x - simplex.get(0).x) * (simplex.get(1).y + simplex.get(0).y);
+        float e1 = (simplex.get(2).x - simplex.get(1).x) * (simplex.get(2).y + simplex.get(1).y);
+        float e2 = (simplex.get(0).x - simplex.get(2).x) * (simplex.get(0).y + simplex.get(2).y);
+
+        PolygonWinding winding = e0 + e1 + e2 >= 0 ? PolygonWinding.Clockwise : PolygonWinding.CounterClockwise;
+
+        Vector2 intersection = new Vector2();
+
+        for (int i = 0; i <= maxIterations; i++) {
+            Edge edge = findClosestEdge(winding);               //Get closest edge
+            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
+            float distance = support.dot(edge.normal);
+
+            if (Math.abs(distance - edge.distance) <= 0.000001) {
+                return intersection;
+            } else {
+                simplex.get().add(edge.index, support);
+            }
+
+            intersection = edge.normal.cpy();
+            intersection = intersection.scl(distance);
+        }
+
+        return intersection;
     }
 
 }
