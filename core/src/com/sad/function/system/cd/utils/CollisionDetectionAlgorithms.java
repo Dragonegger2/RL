@@ -8,7 +8,6 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 public class CollisionDetectionAlgorithms {
-    private static Simplex simplex;
 
     /**
      * The maximum number of simplex evolution iterations before we accept the
@@ -29,12 +28,16 @@ public class CollisionDetectionAlgorithms {
         return first.sub(second);
     }
 
-    public boolean gjk(Shape a, Shape b, Object ret) {
-        return false;
-    }
-
-    public boolean gjk(Shape a, Shape b) {
+    /**
+     * Perform the GJK algorithm to form a simplex that hopefully encapsulates the Origin.
+     * @param a     shape a
+     * @param b     shape b
+     * @param simplex adds simplex information to this object so that it can be used in calculations for the EPA.
+     * @return if a collision too place.
+     */
+    public boolean gjk(Shape a, Shape b, Simplex simplex) {
         simplex = new Simplex();
+
         Vector2 direction = new Vector2(1, 0);
         simplex.add(minkowskiPoint(a, b, direction));
 
