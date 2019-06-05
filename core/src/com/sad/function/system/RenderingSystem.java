@@ -3,6 +3,7 @@ package com.sad.function.system;
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -48,6 +49,7 @@ public class RenderingSystem extends BaseEntitySystem {
     private ComponentMapper<Velocity> mVelocity;
     private ComponentMapper<Translation> mTranslation;
 
+    @Wire
     private com.badlogic.gdx.physics.box2d.World pWorld;
 
     private SpriteBatch batch;
@@ -69,12 +71,11 @@ public class RenderingSystem extends BaseEntitySystem {
             Layer.RENDERABLE_LAYER.UI
     };
 
-    public RenderingSystem(ResourceManager resourceManager, com.badlogic.gdx.physics.box2d.World pWorld, LevelManager levelManager, OrthographicCamera camera) {
+    public RenderingSystem(ResourceManager resourceManager, LevelManager levelManager, OrthographicCamera camera) {
         super(Aspect.all(Layer.class).one(Translation.class, PhysicsBody.class).one(TextureComponent.class, Animation.class));
 
         this.resourceManager = resourceManager;
         this.camera = camera;
-        this.pWorld = pWorld;
         this.levelManager = levelManager;
 
         layerCollections = new HashMap<>();

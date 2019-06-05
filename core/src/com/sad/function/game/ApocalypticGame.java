@@ -48,7 +48,7 @@ public class ApocalypticGame extends BaseGame {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new RenderingSystem(resourceManager, pWorld, levelManager, camera),
+                        new RenderingSystem(resourceManager, levelManager, camera),
 
                         new PlayerInputSystem(),
                         new PhysicsSystem(pWorld),
@@ -58,6 +58,8 @@ public class ApocalypticGame extends BaseGame {
                 .build();
 
         world = new World(config);
+        //Inject the physics world.
+        world.inject(pWorld);
 
         playerFactory = new PlayerFactory(world, pWorld);
 
