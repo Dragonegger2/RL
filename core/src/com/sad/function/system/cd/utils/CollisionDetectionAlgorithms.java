@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.sad.function.system.cd.shapes.Shape;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
@@ -308,7 +309,7 @@ public class CollisionDetectionAlgorithms {
         Vector2 intersection = new Vector2();
 
         for (int i = 0; i <= maxIterations; i++) {
-            Edge edge = findClosestEdge(winding);               //Get closest edge
+            Edge edge = findClosestEdge(simplex, winding);               //Get closest edge
             Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
             float distance = support.dot(edge.normal);
 
@@ -323,6 +324,28 @@ public class CollisionDetectionAlgorithms {
         }
 
         return intersection;
+    }
+
+    private List<Vector2> clipLineSegement(Vector2 v1, Vector2 v2, Vector2 n, float o) {
+        float d1 = n.dot(v1) - o;
+        float d2 = n.dot(v2) - o;
+
+        List<Vector2> cp = new ArrayList<>();
+
+        if(d1 >= 0) {
+            cp.add(v1);
+        }
+        if(d2 >= 0) {
+            cp.add(v2);
+        }
+
+        if(d1 * d2 < 0) {
+            Vector2 delta = v2.cpy().sub(v1); //TODO Double check this.
+            Vector2 p = v1.cpy().mulAdd(delta, d1/(d1-d2));
+            cp.add(p);
+        }
+
+        return cp;
     }
 
 }
