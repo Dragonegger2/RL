@@ -5,7 +5,12 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * https://github.com/juhl/collision-detection-2d/blob/master/math.js
+ */
 public class Collision {
+    private static final Vector2 zero = new Vector2(0, 0);
+
     /**
      * Calculates the support point (furthest point in a given direction d) of the polygon.
      *
@@ -27,8 +32,6 @@ public class Collision {
 
         return bestIndex;
     }
-
-    private static final Vector2 zero = new Vector2(0,0);
 
     public List<Simplex> doGJK(Shape polygon1, Transform xf1, Shape polygon2, Transform xf2) {
         List<Simplex> simplexHistory = new ArrayList<>();
@@ -69,20 +72,20 @@ public class Collision {
                     simplex.solve3(zero);
                     break;
                 default:
-                    assert(false);
+                    assert (false);
             }
 
             Simplex record = new Simplex();
             record.copy(simplex);
             simplexHistory.add(record);
 
-            if(simplex.count == 3) {
+            if (simplex.count == 3) {
                 break;
             }
 
             Vector2 d = simplex.getSearchDirection();
 
-            if(d.dot(d) == 0) {
+            if (d.dot(d) == 0) {
                 break;
             }
 
@@ -95,14 +98,14 @@ public class Collision {
 
             boolean duplicate = false;
 
-            for(int i = 0; i < saveCount; i++) {
-                if(new_v.index1 == save1[i] && new_v.index2 == save2[i]) {
+            for (int i = 0; i < saveCount; i++) {
+                if (new_v.index1 == save1[i] && new_v.index2 == save2[i]) {
                     duplicate = true;
                     break;
                 }
             }
 
-            if(duplicate) {
+            if (duplicate) {
                 break;
             }
 
@@ -384,17 +387,6 @@ public class Collision {
         }
 
 
-        private Vector2 perpendicular(Vector2 v) {
-            return new Vector2(-v.y, v.x);
-        }
-
-        private Vector2 rperp(Vector2 v) {
-            return new Vector2(v.y, -v.x);
-        }
-
-        private Vector2 sub(Vector2 a, Vector2 b) {
-            return new Vector2(a.x - b.x, a.y - b.y);
-        }
 
     }
 
@@ -409,10 +401,216 @@ public class Collision {
     }
 
     public class Polytope {
+        public Simplex simplex;
+        public SimplexVertex[] verts;
+        public PolytopeEdge edgeHead,
+                edgeTail;
 
+        public Polytope(Simplex simplex) {
+            this.simplex = simplex;
+
+            verts = new SimplexVertex[3];
+
+            for (int i = 0; i < simplex.count; i++) {
+                //TODO Simplify this with a copy constructor.
+                this.verts[i] = new SimplexVertex();
+                this.verts[i].copy(simplex.verts[i]);
+            }
+
+            if (simplex.count == 2) {
+                insertEdge(edgeTail, new PolytopeEdge(0, 1));
+                insertEdge(edgeTail, new PolytopeEdge(1, 0));
+
+            } else if (simplex.count == 3) {
+                Vector2 a = simplex.verts[0].p;
+                Vector2 b = simplex.verts[1].p;
+                Vector2 c = simplex.verts[2].p;
+
+                Vector2 ab = b.cpy().sub(a);
+                Vector2 bc = c.cpy().sub(b);
+
+                if (ab.crs(bc) > 0) {
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(0, 1));
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(1, 2));
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(2, 0));
+                } else {
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(0, 2));
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(2, 1));
+                    this.insertEdge(this.edgeTail, new PolytopeEdge(1, 0));
+                }
+            }
+        }
+
+        public void insertEdge(PolytopeEdge prevEdge, PolytopeEdge newEdge) {
+            if (this.edgeHead == null) {
+                this.edgeHead = newEdge;
+                this.edgeTail = newEdge;
+            } else {
+                newEdge.prev = prevEdge;
+                newEdge.next = prevEdge.next;
+                newEdge.next.prev = newEdge;
+                prevEdge.next = newEdge;
+
+                if (prevEdge == edgeTail) {
+                    this.edgeTail = newEdge;
+                }
+            }
+        }
+
+        public void deleteEdge(PolytopeEdge edge) {
+            if (edge == this.edgeHead) {
+                this.edgeHead = edge.next;
+            }
+
+            if (edge == this.edgeTail) {
+                this.edgeTail = edge.prev;
+            }
+
+            edge.prev.next = edge.next;
+            edge.next.prev = edge.prev;
+        }
+
+        /**
+         * Get the closest edge to the origin.
+         *
+         * @return the closest edge to the origin.
+         */
+        public PolytopeEdge getClosestEdge() {
+            PolytopeEdge firstEdge = this.edgeHead;
+
+            if (firstEdge.distsq == null) {
+                Vector2 a = verts[firstEdge.index1].p;
+                Vector2 b = verts[firstEdge.index2].p;
+
+                Vector2 ab = b.cpy().sub(a);
+                float v = -ab.dot(a);
+                if (v <= 0) {
+                    Vector2 cp = new Vector2(a.x, a.y);
+                    firstEdge.distsq = cp.len2();
+                    firstEdge.dir = cp;
+                } else {
+                    float u = ab.dot(b);
+                    if (u <= 0) {
+                        Vector2 cp = new Vector2(b.x, b.y);
+                        firstEdge.distsq = cp.len2();
+                        firstEdge.dir = cp;
+                    }
+                    else {
+                        float s = 1/ab.len2();
+                        Vector2 cp = b.cpy().lerp(a, v * s); //TODO CHECK THIS LERP
+                        firstEdge.distsq = cp.len2();
+                        firstEdge.dir = rperp(ab);
+                    }
+                }
+            }
+
+            PolytopeEdge closestEdge = firstEdge;
+
+            for(PolytopeEdge edge = firstEdge.next; edge != this.edgeHead; edge = edge.next ) {
+                if(edge.distsq == null ) {
+                    Vector2 a = this.verts[edge.index1].p;
+                    Vector2 b = this.verts[edge.index2].p;
+                    Vector2 ab = b.cpy().sub(a);
+
+                    float v = -ab.dot(a);
+                    if (v <= 0) {
+                        Vector2 cp = new Vector2(a.x, a.y);
+                        edge.distsq = cp.len2();
+                        edge.dir = cp;
+                    }
+                    else {
+                        float u = ab.dot(b);
+                        if (u <= 0) {
+                            Vector2 cp = new Vector2(b.x, b.y);
+                            edge.distsq = cp.len2();
+                            edge.dir = cp;
+                        }
+                        else {
+                            float s = 1 / ab.len2();
+                            Vector2 cp = lerp(a, b, v * s); //TODO Simplify.
+                            edge.distsq = cp.len2();
+                            edge.dir = rperp(ab);
+                        }
+                    }
+                }
+
+                if(edge.distsq > 0.0001 && edge.distsq < closestEdge.distsq) {
+                    closestEdge = edge;
+                }
+            }
+
+            return closestEdge;
+        }
+    }
+
+    public class PolytopeEdge {
+        public int index1, index2;
+        public Float distsq;
+        public Vector2 dir;
+        public PolytopeEdge next, prev;
+
+        public PolytopeEdge(int index1, int index2) {
+            this.index1 = index1;
+            this.index2 = index2;
+            this.next = this;
+            this.prev = this;
+        }
     }
 
     public abstract class Shape {
         public Vector2[] verts;
+    }
+
+    private Vector2 perpendicular(Vector2 v) {
+        return new Vector2(-v.y, v.x);
+    }
+
+    private Vector2 rperp(Vector2 v) {
+        return new Vector2(v.y, -v.x);
+    }
+
+    private Vector2 sub(Vector2 a, Vector2 b) {
+        return new Vector2(a.x - b.x, a.y - b.y);
+    }
+
+    private Vector2 lerp(Vector2 v1, Vector2 v2, float t) {
+        return add(v1.cpy().scl(1-t), v2.cpy().scl(t));
+    }
+
+    private Vector2 add(Vector2 v1, Vector2 v2) {
+        return new Vector2(v1.x + v2.x, v1.y + v2.y);
+    }
+
+    public void doEPA(Shape polygon1, Transform xf1, Shape polygon2, Transform xf2, Simplex simplex) {
+        Polytope polytope = new Polytope(simplex);
+        List<PolytopeEdge> edgeHistory = new ArrayList<>();
+        PolytopeEdge closestEdge;
+
+        SimplexVertex[] v = polytope.verts;
+
+        int[] save1 = new int[3];
+        int[] save2 = new int[3];
+        int saveCount;
+
+        int max_iters = 20;
+        for(int iter = 0; iter  < max_iters; iter++){
+            saveCount = v.length;
+            for(int i = 0; i < saveCount; i++) {
+                save1[i] = v[i].index1;
+                save2[i] = v[i].index2;
+
+            }
+
+            PolytopeEdge edge = polytope.getClosestEdge();
+            edgeHistory.add(edge);
+
+            Vector2 d = edge.dir;
+
+            if(d.dot(d) == 0 ) {
+                break;
+            }
+
+
+        }
     }
 }
