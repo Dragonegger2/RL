@@ -11,6 +11,22 @@ public class Line extends Shape {
         this.end = end;
     }
 
+    public Vector2 getStart() {
+        return start;
+    }
+
+    public void setStart(Vector2 start) {
+        this.start = start;
+    }
+
+    public Vector2 getEnd() {
+        return end;
+    }
+
+    public void setEnd(Vector2 end) {
+        this.end = end;
+    }
+
     @Override
     public Vector2 support(Vector2 direction) {
         return start.dot(direction) > end.dot(direction) ? start : end;

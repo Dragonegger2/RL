@@ -48,7 +48,7 @@ public class ApocalypticGame extends BaseGame {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 .with(
-                        new RenderingSystem(resourceManager, levelManager, camera),
+                        new RenderingSystem(resourceManager, pWorld, levelManager, camera),
 
                         new PlayerInputSystem(),
                         new PhysicsSystem(pWorld),
@@ -70,6 +70,7 @@ public class ApocalypticGame extends BaseGame {
     }
 
     private boolean pointOnce = true;
+
     @Override
     public void render() {
         //Point the camera to the start position at least once.

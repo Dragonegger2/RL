@@ -4,7 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Translation;
 
 public class Rectangle extends Shape {
-    private Vector2[] vertices;
+    public Vector2[] vertices;
+    public Vector2 halfsize;
 
     public Rectangle(Translation translation, Vector2 halfsize) {
         super(translation);
@@ -28,6 +29,8 @@ public class Rectangle extends Shape {
 
         this.vertices[3].x =  1 * halfsize.x;
         this.vertices[3].y = -1 * halfsize.y;
+
+        this.halfsize = halfsize;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.sad.function.system;
+package com.sad.function.system.cd;
 
 import com.badlogic.gdx.math.Vector2;
 

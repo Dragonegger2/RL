@@ -9,6 +9,11 @@
  </tile>
  <tile id="2">
   <image width="27" height="32" source="../sprites/layers/2.png"/>
+  <objectgroup draworder="index">
+   <object id="3" x="0" y="8">
+    <polygon points="9,-7 26,-8 27,-8 27,24 11,24 3,20 3,15 0,13 0,7 2,6 2,0"/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="3">
   <image width="27" height="32" source="../sprites/layers/3.png"/>

@@ -96,7 +96,7 @@ public class MinkowskiCollisionDetection extends BaseEntitySystem {
         return false;
     }
 
-    ComponentMapper<PhysicsBody> mPhyiscs;
+    private ComponentMapper<PhysicsBody> mPhyiscs;
 
     private float bottom(int entity) {
         return mPhyiscs.create(entity).position.y;// + mPhysics.create(entity).yOffset;

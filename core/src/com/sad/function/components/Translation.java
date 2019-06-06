@@ -27,4 +27,12 @@ public class Translation extends Component {
         this.z = z;
         return this;
     }
+
+    public Translation translate(float x, float y, float z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+
+        return this;
+    }
 }

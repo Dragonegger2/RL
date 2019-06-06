@@ -36,8 +36,8 @@ public class CollisionDetectionAlgorithms {
      * @param simplex adds simplex information to this object so that it can be used in calculations for the EPA.
      * @return if a collision too place.
      */
-    public boolean gjk(Shape a, Shape b, Simplex simplex) {
-        simplex = new Simplex();
+    public Simplex gjk(Shape a, Shape b) {
+        Simplex simplex = new Simplex();
 
         Vector2 direction = new Vector2(1, 0);
         simplex.add(minkowskiPoint(a, b, direction));
@@ -49,17 +49,17 @@ public class CollisionDetectionAlgorithms {
         while (accumulator < maxIterations) {            //Prevent infinite problems.
             simplex.add(minkowskiPoint(a, b, direction));
             if (simplex.getLast().dot(direction) < 0) {
-                return false;
+                return null;
             } else {
                 if (containsOrigin(simplex, direction)) {
-                    return true;
+                    return simplex;
                 }
             }
             accumulator++;
         }
 
         //No intersections could be found in the alloted iterations.
-        return false;
+        return null;
     }
 
     private boolean containsOrigin(Simplex simplex, Vector2 d) {
@@ -295,8 +295,8 @@ public class CollisionDetectionAlgorithms {
     }
 
     public Vector2 intersect(Shape a, Shape b) {
-        Simplex simplex = new Simplex();
-        if (!gjk(a, b, simplex)) {
+        Simplex simplex = gjk(a,b);
+        if (simplex == null) {
             return null;
         }
 
