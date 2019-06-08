@@ -11,23 +11,21 @@ public class Ray {
         end = new Vector2();
     }
 
-    public void cast(Vector2 direction, float distance) {
+    public Ray cast(Vector2 direction, float distance) {
         this.end = start.cpy().add(direction.cpy().scl(direction));
+        return this;
     }
 
     public Vector2 getStart() {
         return start;
     }
 
-    public void setStart(Vector2 start) {
+    public Ray setStart(Vector2 start) {
         this.start = start;
+        return this;
     }
 
     public Vector2 getEnd() {
         return end;
-    }
-
-    public void setEnd(Vector2 end) {
-        this.end = end;
     }
 }

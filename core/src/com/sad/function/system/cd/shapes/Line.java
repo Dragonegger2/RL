@@ -28,6 +28,11 @@ public class Line extends Shape {
     }
 
     @Override
+    public Vector2 getOrigin() {
+        return null;
+    }
+
+    @Override
     public Vector2 support(Vector2 direction) {
         return start.dot(direction) > end.dot(direction) ? start : end;
     }

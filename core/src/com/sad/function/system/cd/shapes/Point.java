@@ -4,11 +4,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.components.Translation;
 
 /**
- * Class representing a single position.
+ * Class representing a single origin.
  */
 public class Point extends Shape {
-    public Point(Translation translation) {
-        super(translation);
+    private Vector2 origin;
+    public Point(Vector2 origin) {
+        this.origin = origin;
+    }
+
+    @Override
+    public Vector2 getOrigin() {
+        return origin;
     }
 
     /**
@@ -18,6 +24,6 @@ public class Point extends Shape {
      */
     @Override
     public Vector2 support(Vector2 direction) {
-        return new Vector2(translation.x, translation.y);
+        return origin.cpy();
     }
 }

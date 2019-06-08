@@ -23,7 +23,7 @@ class IsometricRangeYValueComparator implements Comparator<Integer> {
     public int compare(Integer e1, Integer e2) {
 
         //TODO Need to take into account the offset variable in layer.
-        //TODO Need to change what we use to get position. Otherwise the physics bodies we use won't ever get sorted properly.
+        //TODO Need to change what we use to get origin. Otherwise the physics bodies we use won't ever get sorted properly.
 
         return (int) Math.signum(
                 (-(world.getMapper(Translation.class).create(e1).y * isometricRangePerYValue - world.getMapper(Layer.class).create(e1).yLayerOffset))

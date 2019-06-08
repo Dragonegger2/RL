@@ -6,9 +6,16 @@ import com.sad.function.components.Translation;
 public class Circle extends Shape {
     public float radius;
 
-    public Circle(Translation translation, float radius) {
-        super(translation);
+    private Vector2 origin;
+
+    public Circle(Vector2 origin, float radius) {
+        this.origin = origin;
         this.radius = radius;
+    }
+
+    @Override
+    public Vector2 getOrigin() {
+        return origin;
     }
 
     /**
@@ -18,7 +25,7 @@ public class Circle extends Shape {
      */
     @Override
     public Vector2 support(Vector2 direction) {
-        Vector2 c = new Vector2(translation.x, translation.y);
+        Vector2 c = new Vector2(origin.x, origin.y);
         Vector2 d = new Vector2(direction).nor();
         d.scl(radius);
         c.add(d);

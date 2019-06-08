@@ -73,7 +73,7 @@ public class ApocalypticGame extends BaseGame {
 
     @Override
     public void render() {
-        //Point the camera to the start position at least once.
+        //Point the camera to the start origin at least once.
         if(pointOnce) {
             Vector2 startPosition = new Vector2();
             ((RectangleMapObject)levelManager.getMapObjects().get("STARTING_POINT")).getRectangle().getPosition(startPosition);

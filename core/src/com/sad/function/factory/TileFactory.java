@@ -32,8 +32,8 @@ public class TileFactory extends Factory{
 
     /**
      * Register the creation of a new wall with the world use to create this factory.
-     * @param x position
-     * @param y position
+     * @param x origin
+     * @param y origin
      * @return entity int.
      */
     public int create(float x, float y, String resourceName) {

@@ -6,13 +6,13 @@ import com.sad.function.system.cd.shapes.Polygon;
 import com.sad.function.system.cd.shapes.Shape;
 
 public class Physics {
-    public static boolean castRay(Ray ray, Shape shape, RayHit hit) {
+    public static boolean rayCast(Ray ray, Shape shape, RayHit hit) {
         if (shape instanceof Circle) {
-            return handleRayCircle(ray, (Circle)shape, hit);
+            return handleRayCircle(ray, (Circle) shape, hit);
         }
 
         if (shape instanceof Polygon) {
-            return handleRayPolygon(ray, (Polygon)shape, hit);
+            return handleRayPolygon(ray, (Polygon) shape, hit);
         }
 
         return false;
@@ -56,6 +56,7 @@ public class Physics {
 
         return false;
     }
+
     /**
      * Calculate if two line segments intersect.
      *
