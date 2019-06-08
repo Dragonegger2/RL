@@ -22,25 +22,29 @@ public abstract class Shape {
         return new Vector2(translation.x, translation.y);
     }
 
-    /**
-     Given a direction in global coordinates, return the vertex (in global coordinates)
-     that is the furthest in that direction
-     @param direction
-     @return Vec2
-     */
-    public Vector2 support(Vector2 direction) {
-        Vector2 farthestPoint = vertices.get(0);
+    public abstract Vector2 support(Vector2 direction);
+//    /**
+//     Given a direction in global coordinates, return the vertex (in global coordinates)
+//     that is the furthest in that direction
+//     @param direction
+//     @return Vec2
+//     */
+//    public Vector2 support(Vector2 direction) {
+//        Vector2 farthestPoint = vertices.get(0);
+//
+//        for (Vector2 vertex : vertices) {
+//            float a = direction.dot(vertex);
+//            float b = direction.dot(farthestPoint);
+//
+//            if (a > b) {
+//                farthestPoint = vertex;
+//            }
+//        }
+//
+//        return farthestPoint;
+//    }
 
-        for (Vector2 vertex : vertices) {
-            float a = direction.dot(vertex);
-            float b = direction.dot(farthestPoint);
-
-            if (a > b) {
-                farthestPoint = vertex;
-            }
-        }
-
-        return farthestPoint;
-    }
-
+//    public List<Vector2> getVertices() {
+//        return vertices;
+//    }
 }

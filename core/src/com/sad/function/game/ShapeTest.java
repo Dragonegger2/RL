@@ -19,6 +19,7 @@ import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 public class ShapeTest extends BaseGame {
     private static final Logger logger = LogManager.getLogger(ShapeTest.class);
     Vector2 velocity = new Vector2();
+
 //    Line ray;
     Translation position;
     private OrthographicCamera camera;
@@ -37,11 +38,8 @@ public class ShapeTest extends BaseGame {
 
         camera = new OrthographicCamera();
 
-        //Just a reminder that infinite tile maps are never supported. It would be best for me to create one in infinite mode and then scale it down.
-        //Also a reminder, all methods having to do with the map object currently return their y-values normalized for the new direction of the origin.
         position = new Translation();
         position.setX(0).setY(0);
-//        player = new Circle(position, 1);
         player = new Rectangle(position, new Vector2(0.5f, 0.5f));
         floor = new Rectangle(new Translation().setX(0f).setY(0f), new Vector2(5f, 0.25f));
         shapeRenderer = new ShapeRenderer();
@@ -90,9 +88,11 @@ public class ShapeTest extends BaseGame {
         renderShape(point);
         renderShape(v);
 
-        if(gjkShit.gjk(player,floor) != null) {
-            logger.info("Colliding!");
+        Vector2 penetration = gjkShit.intersect(player, floor);
+        if(penetration != null) {
+            position.translate(penetration.x, penetration.y, 0f);
         }
+
         shapeRenderer.end();
 
         Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y));
@@ -118,7 +118,7 @@ public class ShapeTest extends BaseGame {
         if(shape instanceof Rectangle) {
             Rectangle rectangle = (Rectangle)shape;
             shapeRenderer.setColor(Color.GREEN);
-            shapeRenderer.rect(rectangle.getOrigin().x - 0.5f, rectangle.getOrigin().y - 0.5f, rectangle.halfsize.x, rectangle.halfsize.y);
+            shapeRenderer.rect(rectangle.getOrigin().x - rectangle.halfsize.x, rectangle.getOrigin().y - rectangle.halfsize.y, rectangle.halfsize.x * 2, rectangle.halfsize.y * 2);
             return;
         }
         if(shape instanceof Point) {

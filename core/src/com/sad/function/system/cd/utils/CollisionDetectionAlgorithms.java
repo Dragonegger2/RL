@@ -2,6 +2,7 @@ package com.sad.function.system.cd.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.sad.function.system.cd.Collision;
 import com.sad.function.system.cd.shapes.Shape;
 
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ public class CollisionDetectionAlgorithms {
         return first.sub(second);
     }
 
+    public boolean gjk(Shape a, Shape b) {
+        Simplex simplex = new Simplex();
+        return gjk(a, b, simplex);
+    }
     /**
      * Perform the GJK algorithm to form a simplex that hopefully encapsulates the Origin.
      * @param a     shape a
@@ -36,9 +41,7 @@ public class CollisionDetectionAlgorithms {
      * @param simplex adds simplex information to this object so that it can be used in calculations for the EPA.
      * @return if a collision too place.
      */
-    public Simplex gjk(Shape a, Shape b) {
-        Simplex simplex = new Simplex();
-
+    public boolean gjk(Shape a, Shape b, Simplex simplex) {
         Vector2 direction = new Vector2(1, 0);
         simplex.add(minkowskiPoint(a, b, direction));
 
@@ -49,17 +52,17 @@ public class CollisionDetectionAlgorithms {
         while (accumulator < maxIterations) {            //Prevent infinite problems.
             simplex.add(minkowskiPoint(a, b, direction));
             if (simplex.getLast().dot(direction) < 0) {
-                return null;
+                return false;
             } else {
                 if (containsOrigin(simplex, direction)) {
-                    return simplex;
+                    return true;
                 }
             }
             accumulator++;
         }
 
         //No intersections could be found in the alloted iterations.
-        return null;
+        return false;
     }
 
     private boolean containsOrigin(Simplex simplex, Vector2 d) {
@@ -294,9 +297,11 @@ public class CollisionDetectionAlgorithms {
         return new Edge(closestDistance, closestNormal, closestIndex);
     }
 
+    static Simplex simplex;
     public Vector2 intersect(Shape a, Shape b) {
-        Simplex simplex = gjk(a,b);
-        if (simplex == null) {
+        Simplex simplex = new Simplex();
+
+        if (!gjk(a,b, simplex)) {
             return null;
         }
 
@@ -348,4 +353,17 @@ public class CollisionDetectionAlgorithms {
         return cp;
     }
 
+    public class SeparatingEdge {
+        public Vector2 v1;
+        public Vector2 v2;
+
+        public SeparatingEdge() {
+            v1 = new Vector2();
+            v2 = new Vector2();
+        }
+    }
+
+//    public SeparatingEdge findSeparatingEdge(Shape shape, Vector2 n) {
+//
+//    }
 }
