@@ -47,7 +47,7 @@ public class Rectangle extends Polygon {
     }
 
     public Vector2 getBottom() {
-        return origin.cpy().sub(0, - halfsize.y);
+        return origin.cpy().sub(0, halfsize.y);
     }
 
     public Vector2 getTopLeft() {

@@ -12,7 +12,7 @@ public class Ray {
     }
 
     public Ray cast(Vector2 direction, float distance) {
-        this.end = start.cpy().add(direction.cpy().scl(direction));
+        this.end = start.cpy().add(direction.cpy().scl(distance));
         return this;
     }
 

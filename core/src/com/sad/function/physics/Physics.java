@@ -15,6 +15,8 @@ public class Physics {
             return handleRayPolygon(ray, (Polygon) shape, hit);
         }
 
+
+
         return false;
     }
 
@@ -47,9 +49,11 @@ public class Physics {
                 //TODO: Calculate penetration depth.
                 //TODO: Calculate penetration normal
 
-                hit = new RayHit();
                 hit.setCollisionPoint(calculateIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4));
+                Vector2 pNormal = hit.getCollisionPoint().cpy().sub(ray.getEnd());
 
+                hit.setpDepth(pNormal.len());
+                hit.setpNormal(pNormal.nor());
                 return true;
             }
         }

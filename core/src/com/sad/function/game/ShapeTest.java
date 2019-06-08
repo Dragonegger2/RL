@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.physics.Physics;
@@ -81,9 +82,8 @@ public class ShapeTest extends BaseGame {
             velocity.sub(0, velocity.y);
         }
 
-        position.add(velocity.x, velocity.y);
+//        position.add(velocity.x, velocity.y);
 
-        float miny = computeLimitBottom(player, floor);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -96,7 +96,23 @@ public class ShapeTest extends BaseGame {
 //        }
         renderShape(player);
         renderShape(floor);
+//        renderShape(new Point(player.getLeft()));
+//        renderShape(new Point(player.getRight()));
+//        renderShape(new Point(player.getTop()));
+        renderShape(new Point(player.getBottom()));
+//        renderShape(new Point(player.getTopLeft()));
+//        renderShape(new Point(player.getTopRight()));
+        renderShape(new Point(player.getBottomLeft()));
+        renderShape(new Point(player.getBottomRight()));
+
+        float miny = computeLimitBottom(player, floor);
+
+        player.getOrigin().set(player.getOrigin().x, miny + player.halfsize.y);
+        renderShape(new Point(player.getBottom().add(new Vector2(0, -2))));
+        renderShape(new Point(player.getBottomRight().add(new Vector2(0, -2))));
+        renderShape(new Point(player.getBottomLeft().add(new Vector2(0, -2))));
         shapeRenderer.end();
+
 
         Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y));
     }
@@ -104,7 +120,7 @@ public class ShapeTest extends BaseGame {
     public float computeLimitBottom(Rectangle rect, Shape s) {
         //Also need speed?
         Vector2 velocity = new Vector2();
-        float rayDistance = Math.abs(velocity.y) > 1 ? velocity.y : Math.signum(velocity.y) * 1;
+        float rayDistance = 0.5f;//Math.abs(velocity.y) > 1 ? velocity.y : Math.signum(velocity.y) * 1;
 
         Ray rayBottomLeft = new Ray().setStart(rect.getBottomLeft()).cast(new Vector2(0, -1), rayDistance);
         Ray rayBottomRight = new Ray().setStart(rect.getBottomRight()).cast(new Vector2(0, -1), rayDistance);
@@ -114,16 +130,20 @@ public class ShapeTest extends BaseGame {
         Vector2 limitBottomRight = rayBottomRight.getEnd().cpy();
         Vector2 limitBottom = rayBottom.getEnd().cpy();
 
-        RayHit hitBottomLeft = null;
-        RayHit hitBottomRight = null;
-        RayHit hitBottom = null;
+        RayHit hitBottomLeft = new RayHit();
+        RayHit hitBottomRight = new RayHit();
+        RayHit hitBottom = new RayHit();
 
         boolean slopeLeft = false;
         boolean slopeRight = false;
 
+        shapeRenderer.setColor(Color.FIREBRICK);
+        shapeRenderer.rectLine(rayBottomLeft.getStart().x, rayBottomLeft.getStart().y, rayBottomLeft.getEnd().x, rayBottomLeft.getEnd().y, 0.012f);
+        shapeRenderer.rectLine(rayBottomRight.getStart().x, rayBottomRight.getStart().y, rayBottomRight.getEnd().x, rayBottomRight.getEnd().y, 0.012f);
+        shapeRenderer.rectLine(rayBottom.getStart().x, rayBottom.getStart().y, rayBottom.getEnd().x, rayBottom.getEnd().y, 0.012f);
+
         if (Physics.rayCast(rayBottomLeft, s, hitBottomLeft)) {
             limitBottomLeft = hitBottomLeft.getCollisionPoint();
-
             //TODO: Not sure these are making any sense.
             slopeLeft = Math.abs(hitBottomLeft.getpNormal().angle() - 90) >= 5;
         }
