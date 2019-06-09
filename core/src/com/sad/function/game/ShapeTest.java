@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.physics.Physics;
@@ -61,66 +60,52 @@ public class ShapeTest extends BaseGame {
     public void render() {
         camera.position.set(position.x, position.y, 0);
         camera.update();
+
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             velocity.add(-0.125f, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             velocity.add(0.125f, 0);
         }
-//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//            velocity.add(0, 0.125f);
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//            velocity.add(0, -0.125f);
-//        }
 
         //Kill movement if they aren't being moved.
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            velocity.sub(velocity.x, 0);//Stop moving in the xdirection if no keys are pressed.
+            velocity.set(0, velocity.y);//Stop moving in the xdirection if no keys are pressed.
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            velocity.sub(0, velocity.y);
+            velocity.set(velocity.x, 0);
         }
 
-//        position.add(velocity.x, velocity.y);
-
-
+        player.getOrigin().add(velocity.x, velocity.y);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-//        for (int i = 0; i < everybody.size(); i++) {
-//            renderShape(everybody.get(i));
-//        }
-        renderShape(player);
-        renderShape(floor);
-//        renderShape(new Point(player.getLeft()));
-//        renderShape(new Point(player.getRight()));
-//        renderShape(new Point(player.getTop()));
-        renderShape(new Point(player.getBottom()));
-//        renderShape(new Point(player.getTopLeft()));
-//        renderShape(new Point(player.getTopRight()));
-        renderShape(new Point(player.getBottomLeft()));
-        renderShape(new Point(player.getBottomRight()));
+            renderShape(player);
+            renderShape(floor);
+            renderShape(new Point(player.getBottom()));
+            renderShape(new Point(player.getBottomLeft()));
+            renderShape(new Point(player.getBottomRight()));
 
-        float miny = computeLimitBottom(player, floor);
+            float miny = computeLimitBottom(player, floor);
 
-        player.getOrigin().set(player.getOrigin().x, miny + player.halfsize.y);
-        renderShape(new Point(player.getBottom().add(new Vector2(0, -2))));
-        renderShape(new Point(player.getBottomRight().add(new Vector2(0, -2))));
-        renderShape(new Point(player.getBottomLeft().add(new Vector2(0, -2))));
+            player.getOrigin().set(player.getOrigin().x, miny + player.halfsize.y);
+            renderShape(new Point(player.getBottom().add(new Vector2(0, -2))));
+            renderShape(new Point(player.getBottomRight().add(new Vector2(0, -2))));
+            renderShape(new Point(player.getBottomLeft().add(new Vector2(0, -2))));
         shapeRenderer.end();
 
 
-        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y));
+        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, velocity.x, velocity.y));
     }
 
     public float computeLimitBottom(Rectangle rect, Shape s) {
         //Also need speed?
-        Vector2 velocity = new Vector2();
-        float rayDistance = 0.5f;//Math.abs(velocity.y) > 1 ? velocity.y : Math.signum(velocity.y) * 1;
+        Vector2 v = new Vector2();
+        float rayDistance = v.y + 0.5f;//Math.abs(velocity.y) > 1 ? velocity.y : Math.signum(velocity.y) * 1;
+
 
         Ray rayBottomLeft = new Ray().setStart(rect.getBottomLeft()).cast(new Vector2(0, -1), rayDistance);
         Ray rayBottomRight = new Ray().setStart(rect.getBottomRight()).cast(new Vector2(0, -1), rayDistance);
@@ -174,6 +159,12 @@ public class ShapeTest extends BaseGame {
         } else {
             return Math.max(limitBottomLeft.y, limitBottomRight.y);
         }
+    }
+    public float computeLimitTop(Rectangle rect, Vector2 v, Shape s) {
+        Ray rayTopLeft = new Ray();
+        Ray rayTopRight = new Ray();
+
+        return 0;
     }
 
     @Override
