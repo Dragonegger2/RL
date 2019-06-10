@@ -8,15 +8,11 @@ public class RayHit {
 
     private float pDepth;
 
+    public RayHit() {}
     public RayHit(Vector2 collisionPoint, Vector2 penetratingVector) {
         this.collisionPoint = collisionPoint;
         pNormal = penetratingVector.cpy().nor();
         pDepth = penetratingVector.len();
-    }
-
-    public RayHit() {
-        collisionPoint = new Vector2();
-        pNormal = new Vector2();
     }
 
     public float getpDepth() {

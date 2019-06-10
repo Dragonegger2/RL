@@ -1,0 +1,272 @@
+
+player.png
+size: 1966,162
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+player_cling
+  rotate: false
+  xy: 0, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+player_duck
+  rotate: false
+  xy: 82, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+player_hurt
+  rotate: false
+  xy: 164, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_hurt
+  rotate: false
+  xy: 246, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_idle
+  rotate: false
+  xy: 328, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_idle
+  rotate: false
+  xy: 410, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_idle
+  rotate: false
+  xy: 410, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+player_idle
+  rotate: false
+  xy: 492, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+player_jump
+  rotate: false
+  xy: 574, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_jump
+  rotate: false
+  xy: 656, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_jump
+  rotate: false
+  xy: 738, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+player_jump
+  rotate: false
+  xy: 820, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+player_jump
+  rotate: false
+  xy: 902, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+player_jump
+  rotate: false
+  xy: 984, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 6
+player_run
+  rotate: false
+  xy: 1066, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_run
+  rotate: false
+  xy: 1148, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_run
+  rotate: false
+  xy: 1230, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+player_run
+  rotate: false
+  xy: 1312, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+player_run
+  rotate: false
+  xy: 1394, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+player_run
+  rotate: false
+  xy: 1476, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 6
+player_run
+  rotate: false
+  xy: 1558, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 7
+player_run
+  rotate: false
+  xy: 1640, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 8
+player_run
+  rotate: false
+  xy: 1722, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 9
+player_run
+  rotate: false
+  xy: 1804, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 10
+player_run_shot
+  rotate: false
+  xy: 1886, 0
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_run_shot
+  rotate: false
+  xy: 0, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_run_shot
+  rotate: false
+  xy: 82, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3
+player_run_shot
+  rotate: false
+  xy: 164, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 4
+player_run_shot
+  rotate: false
+  xy: 246, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 5
+player_run_shot
+  rotate: false
+  xy: 328, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 6
+player_run_shot
+  rotate: false
+  xy: 410, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 7
+player_run_shot
+  rotate: false
+  xy: 492, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 8
+player_run_shot
+  rotate: false
+  xy: 574, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 9
+player_run_shot
+  rotate: false
+  xy: 656, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 10
+player_shoot_up
+  rotate: false
+  xy: 738, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
+player_stand
+  rotate: false
+  xy: 820, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 1
+player_stand
+  rotate: false
+  xy: 902, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 2
+player_stand
+  rotate: false
+  xy: 984, 82
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: 3

@@ -26,7 +26,6 @@ public class ShapeTest extends BaseGame {
     private static final float MAX_VELOCITY = 3f;
     private static final float SNAP_LIMIT = 0.5f; //TODO: I'm not sure that this is actually what this is.
     Vector2 velocity = new Vector2();
-    Vector2 position;
     private OrthographicCamera camera;
     private ResourceManager resourceManager;
     private ShapeRenderer shapeRenderer;
@@ -38,7 +37,7 @@ public class ShapeTest extends BaseGame {
 
     private Ray rayBottomLeft;
     private Ray rayBottomRight;
-    private Ray rayBottom;
+    private Ray rayBottom = new Ray();
     private Ray rayTopLeft;
     private Ray rayTopRight;
     private Ray rayTop;
@@ -56,7 +55,7 @@ public class ShapeTest extends BaseGame {
 
     private RayHit hitBottomLeft;
     private RayHit hitBottomRight;
-    private RayHit hitBottom;
+    private RayHit hitBottom = new RayHit();
     private RayHit hitTopLeft;
     private RayHit hitTopRight;
     private RayHit hitTop;
@@ -79,12 +78,10 @@ public class ShapeTest extends BaseGame {
 
         camera = new OrthographicCamera();
 
-        position = new Vector2();
-        position.set(0, 1);
-        player = new Rectangle(position, new Vector2(0.5f, 0.5f));
+        player = new Rectangle(new Vector2(0,1), new Vector2(0.5f, 0.5f));
         floor = new Rectangle(new Vector2(0, 0), new Vector2(5f, 0.25f));
 
-        Vector2 pointA = new Vector2(-5,.25f);
+        Vector2 pointA = new Vector2(1,.25f);
         Vector2 pointB = new Vector2(6, .5f);
         Vector2 pointC = new Vector2(6, .25f);
 
@@ -95,9 +92,8 @@ public class ShapeTest extends BaseGame {
 
         ramp = new Polygon(new Vector2(0,0), vertices);
 
-        line = new Line(new Vector2(-100f, -100f),new Vector2(100f, -100f));
+        line = new Line(new Vector2(-10, 0.25f),new Vector2(1f, 0.25f));
 
-        collidables.add(floor);
         collidables.add(ramp);
         collidables.add(line);
         shapeRenderer = new ShapeRenderer();
@@ -105,7 +101,6 @@ public class ShapeTest extends BaseGame {
 
     @Override
     public void render() {
-        velocity.y += -9.8f * Gdx.graphics.getDeltaTime();
         camera.position.set(player.getOrigin().x, player.getOrigin().y, 0);
         camera.update();
 
@@ -116,12 +111,14 @@ public class ShapeTest extends BaseGame {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         renderShape(player);
-        renderShape(floor);
         renderShape(ramp);
         renderShape(line);
-//        renderDebugRay(bottom, bottom.getEnd());
+        if(hitBottom.getCollisionPoint() != null) {
+            renderDebugRay(rayBottom, hitBottom.getCollisionPoint());
+        } else {
+            renderDebugRay(rayBottom, new Vector2(rayBottom.getOrigin().x, -1000));
+        }
         shapeRenderer.end();
-
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             velocity.add(-0.125f, 0);
@@ -129,64 +126,33 @@ public class ShapeTest extends BaseGame {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             velocity.add(0.125f, 0);
         }
-
-        physics = new Physics();
-
-        //Clamp X&Y Velocity.
-        velocity.x = MathUtils.clamp(velocity.x, -MAX_VELOCITY, MAX_VELOCITY);
-        velocity.y = MathUtils.clamp(velocity.y, -9.8f, 9.8f);
-
-
-        float distanceB = player.halfsize.y + velocity.y;
-
-        //Kill movement if they aren't being moved.
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             velocity.set(0, velocity.y);//Stop moving in the xdirection if no keys are pressed.
         }
-//        if (!Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//            velocity.set(velocity.x, 0);
-//        }
 
-        //TODO: Change this to use the hit detection.
+        velocity.y += -9.8f * Gdx.graphics.getDeltaTime();
+
+        velocity.x = MathUtils.clamp(velocity.x, -MAX_VELOCITY, MAX_VELOCITY);
+        velocity.y = MathUtils.clamp(velocity.y, -9.8f, 9.8f);
+
         player.getOrigin().add(velocity.x, 0);
 
+        rayBottom = new Ray().setOrigin(player.getOrigin().cpy()).setDirection(down);
 
-        //The formula for collisions would work better if I also checked for minimum distance between the data.
-        //Distance is always infinite. Maybe.
-        Ray bottom = new Ray().setOrigin(player.getOrigin().cpy()).setDirection(down);
+        //I only technically want to do this if my velocity is negative.
+        limitBottom = player.getBottom().cpy().add(0, velocity.y);
 
-        limitBottom = player.getBottom();
-
-//        float temp = computeBottom(player, velocity);
+        hitBottom = new RayHit();
 
 
-        RayHit rayHit = new RayHit();
         //TODO: Modify this method to accept a distance and a collision mask.
-        if(Physics.rayCast(bottom, collidables, rayHit, distanceB)) {
-            limitBottom = rayHit.getCollisionPoint();
-            logger.info("HIT SOME SHIZ");
+        if(Physics.rayCast(rayBottom, collidables, hitBottom, 10f)) {
+//            limitBottom = hitBottom.getCollisionPoint();
             velocity.y = 0;
         }
 
-        player.getOrigin().set(player.getOrigin().x, player.halfsize.y + distanceB);
-
         Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, velocity.x, velocity.y));
     }
-
-//    private float computeBottom(Rectangle r, Vector2 velocity) {
-//        float distance = velocity.y + 10;
-//        Ray bottom = new Ray().setOrigin(r.getOrigin().cpy()).setDirection(down);
-//        RayHit rayHit = new RayHit();
-//        float minMovementY = Float.MIN_VALUE;
-//        for(Shape s : collidables) {
-//            if(physics.rayCast(bottom, s, rayHit, velocity.y)) {
-//                if(rayHit.getCollisionPoint().y > minMovementY) {
-//                    minMovementY = rayHit.getCollisionPoint().y;
-//                }
-//            }
-//        }
-//        return minMovementY;
-//    }
 
     @Override
     public void resize(int width, int height) {

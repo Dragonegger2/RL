@@ -5,7 +5,6 @@ import com.sad.function.system.cd.shapes.Circle;
 import com.sad.function.system.cd.shapes.Polygon;
 import com.sad.function.system.cd.shapes.Shape;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class Physics {
@@ -54,7 +53,7 @@ public class Physics {
         float x1 = ray.getOrigin().x;
         float y1 = ray.getOrigin().y;
 
-        Vector2 end = ray.getOrigin().cpy().add(ray.getDirection().scl(distance));
+        Vector2 end = ray.getOrigin().cpy().add(ray.getDirection().cpy().scl(distance));
 //        float x2 = ray.getOrigin().adgetEnd().x;
 //        float y2 = ray.getEnd().y;
         float x2 = end.x;
