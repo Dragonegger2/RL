@@ -66,7 +66,7 @@ public class ApocalypticGame extends BaseGame {
         pWorld.setContactListener(new MyContactListener());
 
         //Just a reminder that infinite tile maps are never supported. It would be best for me to create one in infinite mode and then scale it down.
-        //Also a reminder, all methods having to do with the map object currently return their y-values normalized for the new direction of the origin.
+        //Also a reminder, all methods having to do with the map object currently return their y-values normalized for the new setDirection of the origin.
     }
 
     private boolean pointOnce = true;

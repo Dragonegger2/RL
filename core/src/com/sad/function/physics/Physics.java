@@ -5,19 +5,42 @@ import com.sad.function.system.cd.shapes.Circle;
 import com.sad.function.system.cd.shapes.Polygon;
 import com.sad.function.system.cd.shapes.Shape;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class Physics {
-    public static boolean rayCast(Ray ray, Shape shape, RayHit hit) {
+    public static boolean rayCast(Ray ray, Shape shape, RayHit hit, float distance) {
         if (shape instanceof Circle) {
             return handleRayCircle(ray, (Circle) shape, hit);
         }
 
         if (shape instanceof Polygon) {
-            return handleRayPolygon(ray, (Polygon) shape, hit);
+            return handleRayPolygon(ray, (Polygon) shape, hit, distance);
         }
 
-
-
         return false;
+    }
+
+    public static boolean rayCast(Ray ray, List<Shape> bodies, RayHit hit, float distance) {
+        float min = Float.MIN_VALUE;
+        boolean found = false;
+        boolean currentOperation;
+
+        for (Shape body : bodies) {
+            RayHit temp = new RayHit();
+            currentOperation = rayCast(ray, body, temp, distance);
+            if (currentOperation) {
+                if (temp.getCollisionPoint().y > min) {
+                    found = true;
+                    min = temp.getCollisionPoint().y;
+                    hit.setpNormal(temp.getpNormal());
+                    hit.setpDepth(temp.getpDepth());
+                    hit.setCollisionPoint(temp.getCollisionPoint());
+                }
+            }
+
+        }
+        return found;
     }
 
     private static boolean handleRayCircle(Ray ray, Circle circle, RayHit hit) {
@@ -25,14 +48,17 @@ public class Physics {
         return false;
     }
 
-    private static boolean handleRayPolygon(Ray ray, Polygon polygon, RayHit hit) {
+    private static boolean handleRayPolygon(Ray ray, Polygon polygon, RayHit hit, float distance) {
         Vector2[] vertices = polygon.getVertices();
 
-        float x1 = ray.getStart().x;
-        float y1 = ray.getStart().y;
-        float x2 = ray.getEnd().x;
-        float y2 = ray.getEnd().y;
+        float x1 = ray.getOrigin().x;
+        float y1 = ray.getOrigin().y;
 
+        Vector2 end = ray.getOrigin().cpy().add(ray.getDirection().scl(distance));
+//        float x2 = ray.getOrigin().adgetEnd().x;
+//        float y2 = ray.getEnd().y;
+        float x2 = end.x;
+        float y2 = end.y;
         int next;
         for (int current = 0; current < vertices.length; current++) {
             next = current + 1;
@@ -50,7 +76,7 @@ public class Physics {
                 //TODO: Calculate penetration normal
 
                 hit.setCollisionPoint(calculateIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4));
-                Vector2 pNormal = hit.getCollisionPoint().cpy().sub(ray.getEnd());
+                Vector2 pNormal = hit.getCollisionPoint().cpy().sub(end);
 
                 hit.setpDepth(pNormal.len());
                 hit.setpNormal(pNormal.nor());
@@ -76,7 +102,7 @@ public class Physics {
      */
     public static boolean lineLine(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
 
-        // calculate the direction of the lines
+        // calculate the setDirection of the lines
         float uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
         float uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 

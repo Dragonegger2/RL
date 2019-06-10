@@ -48,7 +48,7 @@ public class PlayerInputSystem extends IteratingSystem {
 
         //Calculate stilltime and damp
         if (!Gdx.input.isKeyPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.LEFT)) {
-            //Dampen the linear lVelocity in the X-direction by 10%, kill speed if it no longer exceeds 50%
+            //Dampen the linear lVelocity in the X-setDirection by 10%, kill speed if it no longer exceeds 50%
             player.setLinearVelocity(lVelocity.x * HORIZONTAL_DRAG, lVelocity.y);
 
             mAnimation.create(entity).animationName = "hero-male-side-idle";

@@ -3,29 +3,30 @@ package com.sad.function.physics;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ray {
-    private Vector2 start,
-                    end;
+    //Direction should be a normalized vector.
+    private Vector2 direction;
+    private Vector2 origin;
 
     public Ray() {
-        start = new Vector2();
-        end = new Vector2();
+        origin = new Vector2();
+        direction = new Vector2();
     }
 
-    public Ray cast(Vector2 direction, float distance) {
-        this.end = start.cpy().add(direction.cpy().scl(distance));
+    public Ray setDirection(Vector2 direction) {
+        this.direction = direction;
         return this;
     }
 
-    public Vector2 getStart() {
-        return start;
+    public Vector2 getOrigin() {
+        return origin;
     }
 
-    public Ray setStart(Vector2 start) {
-        this.start = start;
+    public Ray setOrigin(Vector2 origin) {
+        this.origin = origin;
         return this;
     }
 
-    public Vector2 getEnd() {
-        return end;
+    public Vector2 getDirection() {
+        return direction;
     }
 }

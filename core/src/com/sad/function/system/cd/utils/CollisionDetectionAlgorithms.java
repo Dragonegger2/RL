@@ -20,7 +20,7 @@ public class CollisionDetectionAlgorithms {
     public int maxIterations = 20;
 
     /**
-     * Calculates a single point in the Minkowski Difference in a given direction
+     * Calculates a single point in the Minkowski Difference in a given setDirection
      */
     private Vector2 minkowskiPoint(Shape a, Shape b, Vector2 direction) {
         Vector2 first = a.support(direction);
@@ -45,7 +45,7 @@ public class CollisionDetectionAlgorithms {
         Vector2 direction = new Vector2(1, 0);
         simplex.add(minkowskiPoint(a, b, direction));
 
-        //TODO Instead of being arbitrary, i could look up the collision if I stored them and use the witness points to create a suitable direction angle to save time. I think...?
+        //TODO Instead of being arbitrary, i could look up the collision if I stored them and use the witness points to create a suitable setDirection angle to save time. I think...?
         direction.set(simplex.getLast().cpy().scl(-1));
 
         int accumulator = 0;
@@ -89,14 +89,14 @@ public class CollisionDetectionAlgorithms {
             if (isSameDirection(abPerp, ao)) {
                 // remove point c
                 simplex.remove(c);
-                // set the new direction to abPerp
+                // set the new setDirection to abPerp
                 d.set(abPerp);
             } else {
                 // is the origin in R3
                 if (acPerp.dot(ao) > 0) {
                     // remove point b
                     simplex.remove(b);
-                    // set the new direction to acPerp
+                    // set the new setDirection to acPerp
                     d.set(acPerp);
                 } else {
                     // otherwise we know its in R5 so we can return true
@@ -111,8 +111,8 @@ public class CollisionDetectionAlgorithms {
 
             if (isSameDirection(ab, ao)) {
 
-                Vector2 abPerp = tripleProduct(ab, ao, ab); // get the perp to AB in the direction of the origin
-                d.set(abPerp); // set the direction to abPerp
+                Vector2 abPerp = tripleProduct(ab, ao, ab); // get the perp to AB in the setDirection of the origin
+                d.set(abPerp); // set the setDirection to abPerp
             } else {
                 simplex.remove(b);
                 d.set(ao);
@@ -134,7 +134,7 @@ public class CollisionDetectionAlgorithms {
     }
 
     //a is the point that was most recently added to the simplex.
-    //Updates the simplex and the direction. This is wehre the magic happens!
+    //Updates the simplex and the setDirection. This is wehre the magic happens!
     // a = last index
     boolean processSimplex(List<Vector2> simplex, Vector2 direction) {
         if (simplex.size() == 2) {
@@ -315,7 +315,7 @@ public class CollisionDetectionAlgorithms {
 
         for (int i = 0; i <= maxIterations; i++) {
             Edge edge = findClosestEdge(simplex, winding);               //Get closest edge
-            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the direction of the edge that is closest to the origin
+            Vector2 support = minkowskiPoint(a, b, edge.normal);       //Get minkowskiPoint in the setDirection of the edge that is closest to the origin
             float distance = support.dot(edge.normal);
 
             if (Math.abs(distance - edge.distance) <= 0.000001) {

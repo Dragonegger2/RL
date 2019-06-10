@@ -12,10 +12,10 @@ public class Collision {
     private static final Vector2 zero = new Vector2(0, 0);
 
     /**
-     * Calculates the support point (furthest point in a given direction d) of the polygon.
+     * Calculates the support point (furthest point in a given setDirection d) of the polygon.
      *
      * @param polygon shape to search in.
-     * @param d       direction to search in.
+     * @param d       setDirection to search in.
      * @return index of the vertices
      */
     public int supportPoint(Shape polygon, Vector2 d) {
