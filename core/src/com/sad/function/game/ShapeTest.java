@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.global.GameInfo;
 import com.sad.function.manager.ResourceManager;
 import com.sad.function.physics.Physics;
 import com.sad.function.physics.Ray;
@@ -30,7 +31,12 @@ public class ShapeTest extends BaseGame {
     private static final Vector2 right = new Vector2(1, 0);
     private static final Vector2 up = new Vector2(0, 1);
     private static final Vector2 down = new Vector2(0, -1);
-    Vector2 velocity = new Vector2();
+    Vector2 speed = new Vector2();
+    float limitMinY,
+            limitMinX,
+            limitMaxY,
+            limitMaxX;
+
     private OrthographicCamera camera;
     private ResourceManager resourceManager;
     private ShapeRenderer shapeRenderer;
@@ -38,7 +44,6 @@ public class ShapeTest extends BaseGame {
     private Rectangle floor;
     private Polygon ramp;
     private boolean isAboveSlope;
-
     private Ray rayBottomLeft;
     private Ray rayBottomRight;
     private Ray rayBottom = new Ray();
@@ -47,7 +52,6 @@ public class ShapeTest extends BaseGame {
     private Ray rayTop;
     private Ray rayLeft;
     private Ray rayRight;
-
     private Vector2 limitBottomLeft;
     private Vector2 limitBottomRight;
     private Vector2 limitBottom;
@@ -56,7 +60,6 @@ public class ShapeTest extends BaseGame {
     private Vector2 limitTop;
     private Vector2 limitLeft;
     private Vector2 limitRight;
-
     private RayHit hitBottomLeft;
     private RayHit hitBottomRight;
     private RayHit hitBottom = new RayHit();
@@ -65,17 +68,19 @@ public class ShapeTest extends BaseGame {
     private RayHit hitTop;
     private RayHit hitLeft;
     private RayHit hitRight;
-
-    private List<Shape> collidables = new ArrayList<>();
-
-    private Physics physics;
-
-    private boolean slopeRight;
-    private boolean slopeLeft;
     private RayHit hitLeftTop;
     private RayHit hitLeftBottom;
     private RayHit hitRightTop;
     private RayHit hitRightBottom;
+    private List<Shape> collidables = new ArrayList<>();
+    private Physics physics;
+    private boolean slopeRight;
+    private boolean slopeLeft;
+    //TODO Need to ensure that this is accurate.
+    private float slopeLimitAngle = 5;
+    private boolean isJumping;
+    private boolean isOnSlope;
+    private boolean isRunning;
 
     @Override
     public void create() {
@@ -101,6 +106,11 @@ public class ShapeTest extends BaseGame {
         collidables.add(ramp);
         collidables.add(line);
         shapeRenderer = new ShapeRenderer();
+
+        limitMinY = computeLimitBottom(player, 200f);
+        limitMinX = computeLimitLeft(player, 200f);
+        limitMaxX = computeLimitRight(player, 200f);
+        limitMaxY = computeLimitTop(player, 200f);
     }
 
     @Override
@@ -108,42 +118,17 @@ public class ShapeTest extends BaseGame {
         camera.position.set(player.getOrigin().x, player.getOrigin().y, 0);
         camera.update();
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        for(Shape s : collidables) {
-            renderShape(s);
-        }
-
-        renderShape(player);
-        if (hitBottom.getCollisionPoint() != null) {
-            renderDebugRay(rayBottom, hitBottom.getCollisionPoint());
-        } else {
-            renderDebugRay(rayBottom, new Vector2(rayBottom.getOrigin().x, -1000));
-        }
-        shapeRenderer.end();
+        r();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            velocity.add(-0.125f, 0);
+            speed.add(-0.125f, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            velocity.add(0.125f, 0);
+            speed.add(0.125f, 0);
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            velocity.set(0, velocity.y);//Stop moving in the xdirection if no keys are pressed.
+            speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
         }
-
-        //Apply gravity.
-        velocity.y += -9.8f * Gdx.graphics.getDeltaTime();
-
-        //Clamp my velocity values.
-        velocity.x = MathUtils.clamp(velocity.x, -MAX_VELOCITY, MAX_VELOCITY);
-        velocity.y = MathUtils.clamp(velocity.y, -9.8f, 9.8f);
-
-        player.getOrigin().add(velocity.x, 0);
 
         //All we're using this rayDistanace for is to find the closest point. Later, we're going to take into account our speed and then check if our position would exceed the minimum position.
         float rayDistance = 200f;
@@ -151,44 +136,87 @@ public class ShapeTest extends BaseGame {
         //This is the closest point in the negative y direction.
         float limitMinY = computeLimitBottom(player, rayDistance);
 
-//        player.getOrigin().set(player.getOrigin().x, limitMinY + player.halfsize.y);
+        if (speed.x < 0) {
+            limitMinX = computeLimitLeft(player, 200f);
+        }
+        if (speed.x > 0) {
+            limitMaxX = computeLimitRight(player, 200f);
+        }
+        if (speed.y > 0) {
+            limitMaxY = computeLimitTop(player, 200f);
+        }
 
-        logger.info("Minimum Y Value: {}", limitMinY);
+        float posMinY = limitMinY + player.halfsize.y - player.getOrigin().y;
+        float posMaxY = limitMaxY - player.halfsize.y - player.getOrigin().y;
+        float posMinX = limitMinX + player.halfsize.x - player.getOrigin().x;
+        float posMaxX = limitMaxX - player.halfsize.x - player.getOrigin().x;
 
-        //I only technically want to do this if my velocity is negative.
-//        limitBottom = player.getBottom().cpy().add(0, velocity.y);
-//
-//        hitBottom = new RayHit();
-//
-//
-//        //TODO: Modify this method to accept a distance and a collision mask.
-//        if (Physics.rayCast(rayBottom, collidables, hitBottom, 10f)) {
-////            limitBottom = hitBottom.getCollisionPoint();
-//            velocity.y = 0;
-//        }
+        //TODO: These hardcoded values need to be calculated.
+        boolean isGrounded = player.getBottom().y <= (isAboveSlope ? limitMinY + 0.005 : limitMinY + 0.001);
+        boolean isTopBlocked = player.getTop().y >= limitMaxX - 1;
+        boolean isLeftBlocked = player.getLeft().x <= limitMinX + 1;
+        boolean isRightBlocked = player.getRight().x >= limitMaxX - 1;
 
-        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, velocity.x, velocity.y));
+        if(isGrounded && !isJumping) {
+            speed.y = 0;
+            isOnSlope = isAboveSlope;
+        } else {
+            speed.y = Math.max(speed.y - GameInfo.GRAVITY * Gdx.graphics.getDeltaTime(), -GameInfo.MAX_FALL_SPEED);
+            isOnSlope = false;
+        }
+
+        if((isLeftBlocked && speed.x < 0) || (isRightBlocked && speed.x > 0)) {
+            speed.x = 0;
+        }
+
+        if(isJumping) {
+            // if top blocked while jumping turn off vertical speed.
+            if(isTopBlocked) {
+                speed.y = 0;
+            }
+
+            if(speed.y <= 0) {
+                isJumping = false;
+            }
+        }
+
+        //region apply speed.
+        if(isOnSlope) {
+            player.getOrigin().set(player.getOrigin().x, posMinY);
+        } else {
+            player.getOrigin().set(player.getOrigin().x,
+                    MathUtils.clamp(player.getOrigin().y + speed.y * Gdx.graphics.getDeltaTime(), posMinY, posMaxY));
+        }
+
+        player.getOrigin().set(
+                MathUtils.clamp(player.getOrigin().x + speed.x * Gdx.graphics.getDeltaTime(), posMinX, posMaxX),
+                player.getOrigin().y);
+
+        isRunning = false;
+        //endregion
+        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, speed.x, speed.y));
     }
 
+    //region compute limits
     private float computeLimitBottom(Rectangle rect, float rayDistance) {
-        rayBottomLeft       = new Ray().setOrigin(rect.getLeft()).setDirection(down);
-        rayBottomRight      = new Ray().setOrigin(rect.getRight()).setDirection(down);
-        rayBottom           = new Ray().setOrigin(rect.getOrigin()).setDirection(down);
+        Ray rayBottomLeft = new Ray().setOrigin(rect.getLeft()).setDirection(down);
+        Ray rayBottomRight = new Ray().setOrigin(rect.getRight()).setDirection(down);
+        Ray rayBottom = new Ray().setOrigin(rect.getOrigin()).setDirection(down);
 
-        //The limitsBottoms are actually origin + halfsize + velocity in our direction.
+        //The limitsBottoms are actually origin + halfsize + speed in our direction.
         //TODO: I need to figure out what the below snippet is trying to do:
         /*
          * Vector3 limitBottomLeft = rayBottomLeft.origin + Vector3.down * m_rayDistance;
          * Vector3 limitBottomRight = rayBottomRight.origin + Vector3.down * m_rayDistance;
          * Vector3 limitBottom = rayBottom.origin + Vector3.down * m_rayDistance;
          */
-        limitBottomLeft     = new Vector2();// = rect.getBottomLeft().ad
-        limitBottomRight    = new Vector2(); // = rayBottomRight.getEnd().cpy();
-        limitBottom         = new Vector2(); //= rayBottom.getEnd().cpy();
+        Vector2 limitBottomLeft = new Vector2();// = rect.getBottomLeft().ad
+        Vector2 limitBottomRight = new Vector2(); // = rayBottomRight.getEnd().cpy();
+        Vector2 limitBottom = new Vector2(); //= rayBottom.getEnd().cpy();
 
-        hitBottomLeft    = new RayHit();
-        hitBottomRight   = new RayHit();
-        hitBottom        = new RayHit();
+        hitBottomLeft = new RayHit();
+        hitBottomRight = new RayHit();
+        hitBottom = new RayHit();
 
         slopeLeft = false;
         slopeRight = false;
@@ -197,13 +225,13 @@ public class ShapeTest extends BaseGame {
             limitBottomLeft = hitBottomLeft.getCollisionPoint();
 
             //TODO: Not sure these are making any sense...
-            slopeLeft = Math.abs(hitBottomLeft.getpNormal().angle() - 90) >= 5;
+            slopeLeft = Math.abs(hitBottomLeft.getCollisionPoint().angle() - 90) >= 5;
         }
 
         if (Physics.rayCast(rayBottomRight, collidables, hitBottomRight, rayDistance)) {
             limitBottomRight = hitBottomRight.getCollisionPoint();
 
-            slopeRight = hitBottomRight.getpNormal().angle() - 90 >= 5;
+            slopeRight = hitBottomRight.getCollisionPoint().angle() - 90 >= 5;
         }
 
         isAboveSlope = (slopeLeft && slopeRight) ||
@@ -230,6 +258,7 @@ public class ShapeTest extends BaseGame {
 
     /**
      * Calculates the farthest an entity can move. Doesn't matter if the entity can't move that far.
+     *
      * @param rect
      * @param rayDistance
      * @return
@@ -242,19 +271,16 @@ public class ShapeTest extends BaseGame {
         limitTopLeft = rayTopLeft.getOrigin().cpy().add(up.scl(rayDistance));
         limitTopRight = rayTopRight.getOrigin().cpy().add(up.scl(rayDistance));
 
-        if(Physics.rayCast(rayTopLeft, collidables, hitTopLeft, rayDistance)) {
+        if (Physics.rayCast(rayTopLeft, collidables, hitTopLeft, rayDistance)) {
             limitTopLeft = hitTopLeft.getCollisionPoint();
         }
 
-        if(Physics.rayCast(rayTopRight, collidables, hitTopRight, rayDistance)) {
+        if (Physics.rayCast(rayTopRight, collidables, hitTopRight, rayDistance)) {
             limitTopRight = hitTopRight.getCollisionPoint();
         }
 
         return Math.min(limitTopLeft.y, limitTopRight.y);
     }
-
-    //TODO Need to ensure that this is accurate.
-    private float slopeLimitAngle = 5;
 
     private float computeLimitLeft(Rectangle rect, float rayDistance) {
         //Don't measure from the edge you're checking to prevent issues arising from penetration.
@@ -274,19 +300,23 @@ public class ShapeTest extends BaseGame {
         Vector2 limitLeftTop = rayLeftTop.getOrigin().cpy().add(left.scl(rayDistance));
         Vector2 limitLeftBottom = rayLeftBottom.getOrigin().cpy().add(left.scl(rayDistance));
 
-        if(Physics.rayCast(rayLeft, collidables, hitLeft, rayDistance)) {
-            if(hitLeft.getpNormal().angle() > slopeLimitAngle)
+        hitLeft = new RayHit();
+        hitLeftTop = new RayHit();
+        hitLeftBottom = new RayHit();
+
+        if (Physics.rayCast(rayLeft, collidables, hitLeft, rayDistance)) {
+            if (hitLeft.getpNormal().angle() > slopeLimitAngle)
                 limitLeft = hitLeft.getCollisionPoint();
         }
-        
-        if(Physics.rayCast(rayTopLeft, collidables, hitLeftTop, rayDistance)) {
-            if(hitLeftTop.getpNormal().angle() > slopeLimitAngle) {
+
+        if (Physics.rayCast(rayLeftTop, collidables, hitLeftTop, rayDistance)) {
+            if (hitLeftTop.getpNormal().angle() > slopeLimitAngle) {
                 limitLeftTop = hitLeftTop.getCollisionPoint();
             }
         }
-        
-        if(Physics.rayCast(rayLeftBottom, collidables, hitLeftBottom, rayDistance)) {
-            if(hitLeftBottom.getpNormal().angle() > slopeLimitAngle) {
+
+        if (Physics.rayCast(rayLeftBottom, collidables, hitLeftBottom, rayDistance)) {
+            if (hitLeftBottom.getpNormal().angle() > slopeLimitAngle) {
                 limitLeftBottom = hitLeftBottom.getCollisionPoint();
             }
         }
@@ -303,26 +333,32 @@ public class ShapeTest extends BaseGame {
         Vector2 limitRightTop = rayRightTop.getOrigin().cpy().add(right.scl(rayDistance));
         Vector2 limitRightBottom = rayRightBottom.getOrigin().cpy().add(right.scl(rayDistance));
 
-        if(Physics.rayCast(rayRight, collidables, hitRight, rayDistance)) {
-            if(hitRight.getpNormal().angle()> slopeLimitAngle) {
+        hitRight = new RayHit();
+        hitRightTop = new RayHit();
+        hitRightBottom = new RayHit();
+
+        if (Physics.rayCast(rayRight, collidables, hitRight, rayDistance)) {
+            if (hitRight.getpNormal().angle() > slopeLimitAngle) {
                 limitRight = hitRight.getCollisionPoint();
             }
         }
 
-        if(Physics.rayCast(rayRightTop, collidables, hitRightTop, rayDistance)) {
-            if(hitRightTop.getpNormal().angle() > slopeLimitAngle) {
+        if (Physics.rayCast(rayRightTop, collidables, hitRightTop, rayDistance)) {
+            if (hitRightTop.getpNormal().angle() > slopeLimitAngle) {
                 limitRightTop = hitRightTop.getCollisionPoint();
             }
         }
 
-        if(Physics.rayCast(rayRightBottom, collidables, hitRightBottom, rayDistance)) {
-            if(hitRightBottom.getpNormal().angle() > slopeLimitAngle) {
+        if (Physics.rayCast(rayRightBottom, collidables, hitRightBottom, rayDistance)) {
+            if (hitRightBottom.getpNormal().angle() > slopeLimitAngle) {
                 limitRightBottom = hitRightBottom.getCollisionPoint();
             }
         }
 
         return Math.min(Math.min(limitRight.x, limitRightTop.x), limitRightBottom.x);
     }
+
+    //endregion
 
     @Override
     public void resize(int width, int height) {
@@ -340,6 +376,22 @@ public class ShapeTest extends BaseGame {
         shapeRenderer.setColor(Color.CORAL);
         shapeRenderer.circle(ray.getOrigin().x, ray.getOrigin().y, 0.05f, 10);
         shapeRenderer.circle(end.x, end.y, 0.05f, 10);
+
+    }
+
+    private void r() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        for (Shape s : collidables) {
+            renderShape(s);
+        }
+
+        renderShape(player);
+        shapeRenderer.end();
 
     }
 

@@ -25,4 +25,7 @@ public class GameInfo {
     public enum FIXTURE_TYPE {
         FOOT
     }
+
+    public static float GRAVITY = 9.8f;
+    public static float MAX_FALL_SPEED = 15f;
 }
