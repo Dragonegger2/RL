@@ -22,7 +22,7 @@ public class Ray {
     }
 
     public Ray setOrigin(Vector2 origin) {
-        this.origin = origin;
+        this.origin = origin.cpy();
         return this;
     }
 

@@ -25,6 +25,10 @@ public class ShapeTest extends BaseGame {
     private static final Logger logger = LogManager.getLogger(ShapeTest.class);
     private static final float MAX_VELOCITY = 3f;
     private static final float SNAP_LIMIT = 0.5f; //TODO: I'm not sure that this is actually what this is.
+    private static final Vector2 left = new Vector2(-1, 0);
+    private static final Vector2 right = new Vector2(1, 0);
+    private static final Vector2 up = new Vector2(0, 1);
+    private static final Vector2 down = new Vector2(0, -1);
     Vector2 velocity = new Vector2();
     private OrthographicCamera camera;
     private ResourceManager resourceManager;
@@ -32,9 +36,7 @@ public class ShapeTest extends BaseGame {
     private Rectangle player;
     private Rectangle floor;
     private Polygon ramp;
-
     private boolean isAboveSlope;
-
     private Ray rayBottomLeft;
     private Ray rayBottomRight;
     private Ray rayBottom = new Ray();
@@ -43,7 +45,6 @@ public class ShapeTest extends BaseGame {
     private Ray rayTop;
     private Ray rayLeft;
     private Ray rayRight;
-
     private Vector2 limitBottomLeft;
     private Vector2 limitBottomRight;
     private Vector2 limitBottom;
@@ -52,7 +53,6 @@ public class ShapeTest extends BaseGame {
     private Vector2 limitTop;
     private Vector2 limitLeft;
     private Vector2 limitRight;
-
     private RayHit hitBottomLeft;
     private RayHit hitBottomRight;
     private RayHit hitBottom = new RayHit();
@@ -61,16 +61,11 @@ public class ShapeTest extends BaseGame {
     private RayHit hitTop;
     private RayHit hitLeft;
     private RayHit hitRight;
-
     private List<Shape> collidables = new ArrayList<>();
-
-    private static final Vector2 left = new Vector2(-1, 0);
-    private static final Vector2 right = new Vector2(1, 0);
-    private static final Vector2 up = new Vector2(0, 1);
-    private static final Vector2 down = new Vector2(0, -1);
-
     private Physics physics;
     private Line line;
+    private boolean slopeRight;
+    private boolean slopeLeft;
 
     @Override
     public void create() {
@@ -78,10 +73,10 @@ public class ShapeTest extends BaseGame {
 
         camera = new OrthographicCamera();
 
-        player = new Rectangle(new Vector2(0,1), new Vector2(0.5f, 0.5f));
+        player = new Rectangle(new Vector2(0, 1), new Vector2(0.5f, 0.5f));
         floor = new Rectangle(new Vector2(0, 0), new Vector2(5f, 0.25f));
 
-        Vector2 pointA = new Vector2(1,.25f);
+        Vector2 pointA = new Vector2(1, .25f);
         Vector2 pointB = new Vector2(6, .5f);
         Vector2 pointC = new Vector2(6, .25f);
 
@@ -90,9 +85,9 @@ public class ShapeTest extends BaseGame {
         vertices[1] = pointB;
         vertices[2] = pointC;
 
-        ramp = new Polygon(new Vector2(0,0), vertices);
+        ramp = new Polygon(new Vector2(0, 0), vertices);
 
-        line = new Line(new Vector2(-10, 0.25f),new Vector2(1f, 0.25f));
+        line = new Line(new Vector2(-10, 0.25f), new Vector2(1f, 0.25f));
 
         collidables.add(ramp);
         collidables.add(line);
@@ -113,7 +108,7 @@ public class ShapeTest extends BaseGame {
         renderShape(player);
         renderShape(ramp);
         renderShape(line);
-        if(hitBottom.getCollisionPoint() != null) {
+        if (hitBottom.getCollisionPoint() != null) {
             renderDebugRay(rayBottom, hitBottom.getCollisionPoint());
         } else {
             renderDebugRay(rayBottom, new Vector2(rayBottom.getOrigin().x, -1000));
@@ -137,8 +132,16 @@ public class ShapeTest extends BaseGame {
 
         player.getOrigin().add(velocity.x, 0);
 
-        rayBottom = new Ray().setOrigin(player.getOrigin().cpy()).setDirection(down);
+        float rayDistance = player.getOrigin().y - player.getBottom().y;
+        if(velocity.y < 0) {
+            rayDistance += Math.abs(velocity.y);
+        }
 
+        rayBottom = new Ray().setOrigin(player.getOrigin().cpy()).setDirection(down);
+        float min_Y = computeLimitBottom(player, rayDistance);
+
+        player.getOrigin().set(player.getOrigin().x, min_Y + player.halfsize.y);
+        logger.info("Minimum Y Value: {}", min_Y);
         //I only technically want to do this if my velocity is negative.
         limitBottom = player.getBottom().cpy().add(0, velocity.y);
 
@@ -146,13 +149,68 @@ public class ShapeTest extends BaseGame {
 
 
         //TODO: Modify this method to accept a distance and a collision mask.
-        if(Physics.rayCast(rayBottom, collidables, hitBottom, 10f)) {
+        if (Physics.rayCast(rayBottom, collidables, hitBottom, 10f)) {
 //            limitBottom = hitBottom.getCollisionPoint();
             velocity.y = 0;
         }
 
         Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, velocity.x, velocity.y));
     }
+
+    public float computeLimitBottom(Rectangle rect, float rayDistance) {
+        //Also need speed?
+//        float rayDistance = 0.5f;//Math.abs(velocity.y) > 1 ? velocity.y : Math.signum(velocity.y) * 1;
+        rayBottomLeft       = new Ray().setOrigin(rect.getLeft()).setDirection(down);
+        rayBottomRight      = new Ray().setOrigin(rect.getRight()).setDirection(down);
+        rayBottom           = new Ray().setOrigin(rect.getOrigin()).setDirection(down);
+
+        //The limitsBottoms are actually origin + halfsize + velocity in our direction.
+        limitBottomLeft     = new Vector2();// = rect.getBottomLeft().ad
+        limitBottomRight    = new Vector2(); // = rayBottomRight.getEnd().cpy();
+        limitBottom         = new Vector2(); //= rayBottom.getEnd().cpy();
+
+        hitBottomLeft    = new RayHit();
+        hitBottomRight   = new RayHit();
+        hitBottom        = new RayHit();
+
+        slopeLeft = false;
+        slopeRight = false;
+
+        if (Physics.rayCast(rayBottomLeft, collidables, hitBottomLeft, rayDistance)) {
+            limitBottomLeft = hitBottomLeft.getCollisionPoint();
+
+            //TODO: Not sure these are making any sense.
+            slopeLeft = Math.abs(hitBottomLeft.getpNormal().angle() - 90) >= 5;
+        }
+
+        if (Physics.rayCast(rayBottomRight, collidables, hitBottomRight, rayDistance)) {
+            limitBottomRight = hitBottomRight.getCollisionPoint();
+
+            slopeRight = hitBottomRight.getpNormal().angle() - 90 >= 5;
+        }
+
+        isAboveSlope = (slopeLeft && slopeRight) ||
+                (slopeLeft && !slopeRight && limitBottomLeft.y >= limitBottomRight.y) ||
+                (!slopeLeft && slopeRight && limitBottomRight.y >= limitBottomLeft.y);
+
+
+        if (isAboveSlope) {
+            if (Physics.rayCast(rayBottom, collidables, hitBottom, rayDistance)) {
+                limitBottom = hitBottom.getCollisionPoint();
+            }
+
+            if (slopeLeft && limitBottomLeft.y - limitBottom.y > 5) {
+                return limitBottomLeft.y;
+            } else if (slopeRight && limitBottomRight.y - limitBottom.y > 5) {
+                return limitBottomRight.y;
+            } else {
+                return limitBottom.y;
+            }
+        } else {
+            return Math.max(limitBottomLeft.y, limitBottomRight.y);
+        }
+    }
+
 
     @Override
     public void resize(int width, int height) {
@@ -198,12 +256,12 @@ public class ShapeTest extends BaseGame {
             shapeRenderer.rectLine(line.getStart().x, line.getStart().y, line.getEnd().x, line.getEnd().y, 0.0625f);
             return;
         }
-        if(shape instanceof Polygon) {
-            Polygon polygon = (Polygon)shape;
+        if (shape instanceof Polygon) {
+            Polygon polygon = (Polygon) shape;
             shapeRenderer.setColor(Color.GRAY);
-            for(int current = 0; current < polygon.getVertices().length - 1; current++) {
+            for (int current = 0; current < polygon.getVertices().length - 1; current++) {
                 int next = current + 1;
-                if(next > polygon.getVertices().length - 1) next=0;
+                if (next > polygon.getVertices().length - 1) next = 0;
                 shapeRenderer.rectLine(polygon.getVertices()[current].x, polygon.getVertices()[current].y, polygon.getVertices()[next].x, polygon.getVertices()[next].y, 0.0625f);
 
             }
