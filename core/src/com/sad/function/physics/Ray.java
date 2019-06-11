@@ -26,6 +26,11 @@ public class Ray {
         return this;
     }
 
+    public Ray setOrigin(float x, float y) {
+        this.origin = new Vector2(x, y);
+        return this;
+    }
+
     public Vector2 getDirection() {
         return direction;
     }
