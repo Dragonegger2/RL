@@ -115,6 +115,7 @@ public class ShapeTest extends BaseGame {
 
     @Override
     public void render() {
+        float delta = Gdx.graphics.getDeltaTime();
         camera.position.set(player.getOrigin().x, player.getOrigin().y, 0);
         camera.update();
 
@@ -131,10 +132,16 @@ public class ShapeTest extends BaseGame {
         }
 
         //All we're using this rayDistanace for is to find the closest point. Later, we're going to take into account our speed and then check if our position would exceed the minimum position.
-        float rayDistance = 200f;
 
         //This is the closest point in the negative y direction.
-        float limitMinY = computeLimitBottom(player, rayDistance);
+
+        float rayDistance = 0.25f + player.halfsize.y;
+        if(speed.y < 0) {
+            rayDistance += Math.abs(speed.y);
+        }
+
+        //Not sure why it's jittering...
+        limitMinY = computeLimitBottom(player, rayDistance);
 
         if (speed.x < 0) {
             limitMinX = computeLimitLeft(player, 200f);
@@ -146,13 +153,14 @@ public class ShapeTest extends BaseGame {
             limitMaxY = computeLimitTop(player, 200f);
         }
 
-        float posMinY = limitMinY + player.halfsize.y - player.getOrigin().y;
-        float posMaxY = limitMaxY - player.halfsize.y - player.getOrigin().y;
-        float posMinX = limitMinX + player.halfsize.x - player.getOrigin().x;
-        float posMaxX = limitMaxX - player.halfsize.x - player.getOrigin().x;
+        float posMinY = limitMinY + player.halfsize.y;
+        float posMaxY = limitMaxY - player.halfsize.y;
+        float posMinX = limitMinX + player.halfsize.x;
+        float posMaxX = limitMaxX - player.halfsize.x;
 
         //TODO: These hardcoded values need to be calculated.
-        boolean isGrounded = player.getBottom().y <= (isAboveSlope ? limitMinY + 0.005 : limitMinY + 0.001);
+        boolean isGrounded = player.getBottom().y <= (isAboveSlope ? limitMinY + 0.125f : limitMinY + 0.0625f);//
+//        boolean isGrounded = player.getBottom().y <= limitMinY + 0.005 : limitMinY + 0.001);//
         boolean isTopBlocked = player.getTop().y >= limitMaxX - 1;
         boolean isLeftBlocked = player.getLeft().x <= limitMinX + 1;
         boolean isRightBlocked = player.getRight().x >= limitMaxX - 1;
@@ -161,7 +169,7 @@ public class ShapeTest extends BaseGame {
             speed.y = 0;
             isOnSlope = isAboveSlope;
         } else {
-            speed.y = Math.max(speed.y - GameInfo.GRAVITY * Gdx.graphics.getDeltaTime(), -GameInfo.MAX_FALL_SPEED);
+            speed.y = Math.max(speed.y - GameInfo.GRAVITY * delta, -GameInfo.MAX_FALL_SPEED);
             isOnSlope = false;
         }
 
@@ -185,11 +193,11 @@ public class ShapeTest extends BaseGame {
             player.getOrigin().set(player.getOrigin().x, posMinY);
         } else {
             player.getOrigin().set(player.getOrigin().x,
-                    MathUtils.clamp(player.getOrigin().y + speed.y * Gdx.graphics.getDeltaTime(), posMinY, posMaxY));
+                    MathUtils.clamp(player.getOrigin().y + speed.y * delta, posMinY, posMaxY));
         }
 
         player.getOrigin().set(
-                MathUtils.clamp(player.getOrigin().x + speed.x * Gdx.graphics.getDeltaTime(), posMinX, posMaxX),
+                MathUtils.clamp(player.getOrigin().x + speed.x * delta, posMinX, posMaxX),
                 player.getOrigin().y);
 
         isRunning = false;
@@ -210,9 +218,9 @@ public class ShapeTest extends BaseGame {
          * Vector3 limitBottomRight = rayBottomRight.origin + Vector3.down * m_rayDistance;
          * Vector3 limitBottom = rayBottom.origin + Vector3.down * m_rayDistance;
          */
-        Vector2 limitBottomLeft = new Vector2();// = rect.getBottomLeft().ad
-        Vector2 limitBottomRight = new Vector2(); // = rayBottomRight.getEnd().cpy();
-        Vector2 limitBottom = new Vector2(); //= rayBottom.getEnd().cpy();
+        Vector2 limitBottomLeft = rect.getBottomLeft().cpy().add(down.scl(rayDistance));
+        Vector2 limitBottomRight = rect.getBottomRight().cpy().add(down.scl(rayDistance));
+        Vector2 limitBottom = rect.getBottom().cpy().add(down.scl(rayDistance));
 
         hitBottomLeft = new RayHit();
         hitBottomRight = new RayHit();
