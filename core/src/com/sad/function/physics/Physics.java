@@ -8,7 +8,7 @@ import com.sad.function.system.cd.shapes.Shape;
 import java.util.List;
 
 public class Physics {
-    public static boolean rayCast(Ray ray, Shape shape, RayHit hit, float distance) {
+    private static boolean rayCast(Ray ray, Shape shape, RayHit hit, float distance) {
         if (shape instanceof Circle) {
             return handleRayCircle(ray, (Circle) shape, hit);
         }
@@ -42,6 +42,7 @@ public class Physics {
                     float y2 = hit.getCollisionPoint().y;
 
                     hit.distance = (float)Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+                    hit.collidedWith = body;
                 }
             }
 

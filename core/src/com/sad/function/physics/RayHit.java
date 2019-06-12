@@ -1,6 +1,7 @@
 package com.sad.function.physics;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.system.cd.shapes.Shape;
 
 public class RayHit {
     private Vector2 collisionPoint,
@@ -9,12 +10,9 @@ public class RayHit {
 
     private float pDepth;
 
+    public Shape collidedWith;
+
     public RayHit() {}
-    public RayHit(Vector2 collisionPoint, Vector2 penetratingVector) {
-        this.collisionPoint = collisionPoint;
-        pNormal = penetratingVector.cpy().nor();
-        pDepth = penetratingVector.len();
-    }
 
     public float getpDepth() {
         return pDepth;

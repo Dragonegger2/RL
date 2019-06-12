@@ -31,6 +31,14 @@ public class Ray {
         return this;
     }
 
+    /**
+     * Returns a point in space along the ray that is the provided distance away.
+     * @param distance to cast the ray.
+     * @return point along the ray distance away from the origin.
+     */
+    public Vector2 cast(float distance) {
+        return origin.cpy().add(direction.cpy().scl(distance));
+    }
     public Vector2 getDirection() {
         return direction;
     }
