@@ -34,36 +34,18 @@ public class Rectangle extends Polygon {
         this.halfsize = halfsize;
     }
 
-    public Vector2 getLeft() {
-        return origin.cpy().sub(halfsize.x, 0);
+    public float getLeft() { return origin.x - halfsize.x; }
+
+    public float getTop() {
+        return origin.y + halfsize.y;
     }
 
-    public Vector2 getRight() {
-        return origin.cpy().add(halfsize.x, 0);     //origin + width/2
+    public float getBottom() {
+        return origin.y - halfsize.y;
     }
 
-    public Vector2 getTop() {
-        return origin.cpy().add(0, halfsize.y);
-    }
-
-    public Vector2 getBottom() {
-        return origin.cpy().sub(0, halfsize.y);
-    }
-
-    public Vector2 getTopLeft() {
-        return getLeft().add(0, halfsize.y);
-    }
-
-    public Vector2 getTopRight() {
-        return getRight().add(0, halfsize.y);
-    }
-
-    public Vector2 getBottomLeft() {
-        return getLeft().sub(0, halfsize.y);
-    }
-
-    public Vector2 getBottomRight() {
-        return getRight().sub(0, halfsize.y);
+    public float getRight() {
+        return origin.x + halfsize.x;
     }
 
     @Override

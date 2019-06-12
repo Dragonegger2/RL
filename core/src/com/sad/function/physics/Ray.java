@@ -13,7 +13,7 @@ public class Ray {
     }
 
     public Ray setDirection(Vector2 direction) {
-        this.direction = direction;
+        this.direction = direction.cpy();
         return this;
     }
 

@@ -107,10 +107,10 @@ public class ShapeTest extends BaseGame {
         collidables.add(line);
         shapeRenderer = new ShapeRenderer();
 
-        limitMinY = computeLimitBottom(player, 200f);
-        limitMinX = computeLimitLeft(player, 200f);
-        limitMaxX = computeLimitRight(player, 200f);
-        limitMaxY = computeLimitTop(player, 200f);
+//        limitMinY = computeLimitBottom(player, 200f);
+//        limitMinX = computeLimitLeft(player, 200f);
+//        limitMaxX = computeLimitRight(player, 200f);
+//        limitMaxY = computeLimitTop(player, 200f);
     }
 
     @Override
@@ -131,6 +131,9 @@ public class ShapeTest extends BaseGame {
             speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
         }
 
+        if(!isOnSlope) {
+            speed.y += -9.8f * delta;
+        }
         //All we're using this rayDistanace for is to find the closest point. Later, we're going to take into account our speed and then check if our position would exceed the minimum position.
 
         //This is the closest point in the negative y direction.
@@ -144,13 +147,16 @@ public class ShapeTest extends BaseGame {
         limitMinY = computeLimitBottom(player, rayDistance);
 
         if (speed.x < 0) {
+            rayDistance = player.halfsize.x + Math.abs(rayDistance);
             limitMinX = computeLimitLeft(player, 200f);
         }
         if (speed.x > 0) {
-            limitMaxX = computeLimitRight(player, 200f);
+            rayDistance = player.halfsize.x + Math.abs(speed.x);
+            limitMaxX = computeLimitRight(player, rayDistance);
         }
         if (speed.y > 0) {
-            limitMaxY = computeLimitTop(player, 200f);
+            rayDistance = player.halfsize.y + speed.y;
+            limitMaxY = computeLimitTop(player, rayDistance);
         }
 
         float posMinY = limitMinY + player.halfsize.y;
@@ -159,11 +165,11 @@ public class ShapeTest extends BaseGame {
         float posMaxX = limitMaxX - player.halfsize.x;
 
         //TODO: These hardcoded values need to be calculated.
-        boolean isGrounded = player.getBottom().y <= (isAboveSlope ? limitMinY + 0.125f : limitMinY + 0.0625f);//
+        boolean isGrounded = player.getBottom() <= (isAboveSlope ? limitMinY + 0.125f : limitMinY + 0.0625f);//
 //        boolean isGrounded = player.getBottom().y <= limitMinY + 0.005 : limitMinY + 0.001);//
-        boolean isTopBlocked = player.getTop().y >= limitMaxX - 1;
-        boolean isLeftBlocked = player.getLeft().x <= limitMinX + 1;
-        boolean isRightBlocked = player.getRight().x >= limitMaxX - 1;
+        boolean isTopBlocked = player.getTop() >= limitMaxX - 1;
+        boolean isLeftBlocked = player.getLeft() <= limitMinX + 1;
+        boolean isRightBlocked = player.getRight() >= limitMaxX - 1;
 
         if(isGrounded && !isJumping) {
             speed.y = 0;
@@ -207,8 +213,8 @@ public class ShapeTest extends BaseGame {
 
     //region compute limits
     private float computeLimitBottom(Rectangle rect, float rayDistance) {
-        Ray rayBottomLeft = new Ray().setOrigin(rect.getLeft()).setDirection(down);
-        Ray rayBottomRight = new Ray().setOrigin(rect.getRight()).setDirection(down);
+        Ray rayBottomLeft = new Ray().setOrigin(rect.getLeft(), rect.getOrigin().y).setDirection(down);
+        Ray rayBottomRight = new Ray().setOrigin(rect.getRight(), rect.getOrigin().y).setDirection(down);
         Ray rayBottom = new Ray().setOrigin(rect.getOrigin()).setDirection(down);
 
         //The limitsBottoms are actually origin + halfsize + speed in our direction.
@@ -218,9 +224,9 @@ public class ShapeTest extends BaseGame {
          * Vector3 limitBottomRight = rayBottomRight.origin + Vector3.down * m_rayDistance;
          * Vector3 limitBottom = rayBottom.origin + Vector3.down * m_rayDistance;
          */
-        Vector2 limitBottomLeft = rect.getBottomLeft().cpy().add(down.scl(rayDistance));
-        Vector2 limitBottomRight = rect.getBottomRight().cpy().add(down.scl(rayDistance));
-        Vector2 limitBottom = rect.getBottom().cpy().add(down.scl(rayDistance));
+        Vector2 limitBottomLeft = rayBottomLeft.getOrigin().cpy().add(down.scl(rayDistance)); //rect.getBottomLeft().cpy().add(down.scl(rayDistance));
+        Vector2 limitBottomRight = rayBottomRight.getOrigin().cpy().add(down.scl(rayDistance));//rect.getBottomRight().cpy().add(down.scl(rayDistance));
+        Vector2 limitBottom = rayBottom.getOrigin().cpy().add(down.scl(rayDistance));//rect.getBottom().cpy().add(down.scl(rayDistance));
 
         hitBottomLeft = new RayHit();
         hitBottomRight = new RayHit();
@@ -231,8 +237,6 @@ public class ShapeTest extends BaseGame {
 
         if (Physics.rayCast(rayBottomLeft, collidables, hitBottomLeft, rayDistance)) {
             limitBottomLeft = hitBottomLeft.getCollisionPoint();
-
-            //TODO: Not sure these are making any sense...
             slopeLeft = Math.abs(hitBottomLeft.getCollisionPoint().angle() - 90) >= 5;
         }
 
@@ -272,8 +276,8 @@ public class ShapeTest extends BaseGame {
      * @return
      */
     private float computeLimitTop(Rectangle rect, float rayDistance) {
-        rayTopLeft = new Ray().setOrigin(rect.getTopLeft()).setDirection(up);
-        rayTopRight = new Ray().setOrigin(rect.getTopRight()).setDirection(up);
+        rayTopLeft = new Ray().setOrigin(rect.getLeft(), player.getTop()).setDirection(up);
+        rayTopRight = new Ray().setOrigin(player.getRight(), player.getOrigin().y).setDirection(up);
 
 
         limitTopLeft = rayTopLeft.getOrigin().cpy().add(up.scl(rayDistance));
@@ -293,15 +297,15 @@ public class ShapeTest extends BaseGame {
     private float computeLimitLeft(Rectangle rect, float rayDistance) {
         //Don't measure from the edge you're checking to prevent issues arising from penetration.
         Ray rayLeft = new Ray()
-                .setOrigin(rect.getRight())
+                .setOrigin(rect.getRight(), rect.getOrigin().y)
                 .setDirection(left);
 
         Ray rayLeftTop = new Ray()
-                .setOrigin(rect.getRight().x, rect.getTop().y)
+                .setOrigin(rect.getRight(), rect.getTop())
                 .setDirection(left);
 
         Ray rayLeftBottom = new Ray()
-                .setOrigin(rect.getRight().x, rect.getBottom().y)
+                .setOrigin(rect.getRight(), rect.getBottom())
                 .setDirection(left);
 
         Vector2 limitLeft = rayLeft.getOrigin().cpy().add(left.scl(rayDistance));
@@ -333,9 +337,9 @@ public class ShapeTest extends BaseGame {
     }
 
     private float computeLimitRight(Rectangle rect, float rayDistance) {
-        Ray rayRight = new Ray().setOrigin(rect.getLeft()).setDirection(right);
-        Ray rayRightTop = new Ray().setOrigin(rect.getLeft()).setDirection(right);
-        Ray rayRightBottom = new Ray().setOrigin(rect.getLeft()).setDirection(right);
+        Ray rayRight = new Ray().setOrigin(rect.getLeft(), player.getOrigin().y).setDirection(right);
+        Ray rayRightTop = new Ray().setOrigin(rect.getLeft(), player.getOrigin().y).setDirection(right);
+        Ray rayRightBottom = new Ray().setOrigin(rect.getLeft(), player.getOrigin().y).setDirection(right);
 
         Vector2 limitRight = rayRight.getOrigin().cpy().add(right.scl(rayDistance));
         Vector2 limitRightTop = rayRightTop.getOrigin().cpy().add(right.scl(rayDistance));

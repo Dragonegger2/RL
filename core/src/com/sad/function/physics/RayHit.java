@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class RayHit {
     private Vector2 collisionPoint,
             pNormal;
+    public float distance;
 
     private float pDepth;
 

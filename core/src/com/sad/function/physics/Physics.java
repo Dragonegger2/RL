@@ -35,6 +35,13 @@ public class Physics {
                     hit.setpNormal(temp.getpNormal());
                     hit.setpDepth(temp.getpDepth());
                     hit.setCollisionPoint(temp.getCollisionPoint());
+
+                    float x1 = ray.getOrigin().x;
+                    float y1 = ray.getOrigin().y;
+                    float x2 = hit.getCollisionPoint().x;
+                    float y2 = hit.getCollisionPoint().y;
+
+                    hit.distance = (float)Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
                 }
             }
 
