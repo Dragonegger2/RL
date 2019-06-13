@@ -1,8 +1,5 @@
 package com.sad.function.global;
 
-import com.sad.function.event.GlobalEventQueue;
-import com.sad.function.input.InputEventPool;
-
 public class GameInfo {
     public static final boolean DEBUG = true;
 
@@ -10,8 +7,6 @@ public class GameInfo {
 
     //The best value seems to be somewhere between 6 & 12.
     public static final float VIRTUAL_HEIGHT = 12f;
-
-    public static InputEventPool inputEventPool = new InputEventPool(100);
 
     public static boolean RENDER_SPRITES = true;
     public static boolean RENDER_SPRITE_OUTLINES = true;
