@@ -1,5 +1,6 @@
 package com.sad.function.collision.differ.data;
 
+import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.differ.shapes.Ray;
 import com.sad.function.collision.differ.shapes.Shape;
 
@@ -17,6 +18,10 @@ public class RayCollision {
         end = 0.0f;
 
         return this;
+    }
+
+    public Vector2 collisionPoint() {
+        return ray.start.cpy().add(ray.getDir().cpy().scl(start));
     }
 
     public RayCollision clone() {

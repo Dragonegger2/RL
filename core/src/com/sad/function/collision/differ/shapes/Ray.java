@@ -7,7 +7,6 @@ public class Ray {
     public Vector2 end;
     public InfiniteState infinite;
 
-    private Vector2 direction;
     private Vector2 dir_cache;
 
     public Ray(Vector2 start, Vector2 end, InfiniteState infinite) {
@@ -23,10 +22,6 @@ public class Ray {
         dir_cache.y = end.y - start.y;
 
         return dir_cache;
-    }
-
-    public Vector2 getDirection() {
-        return direction;
     }
 
     public enum InfiniteState {

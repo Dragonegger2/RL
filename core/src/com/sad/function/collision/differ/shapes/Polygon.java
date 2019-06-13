@@ -19,6 +19,7 @@ public class Polygon extends Shape {
         name = "polygon" + vertices.size();
 
         _transformedVertices = new ArrayList<>();
+        _vertices = new ArrayList<>();
         _vertices.addAll(vertices);
     }
 
@@ -79,7 +80,7 @@ public class Polygon extends Shape {
     }
 
     public List<Vector2> transformedVertices() {
-        return null;
+        return getTransformedVertices();
     }
 
     List<Vector2> getTransformedVertices() {
