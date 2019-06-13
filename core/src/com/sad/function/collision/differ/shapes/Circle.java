@@ -37,6 +37,6 @@ public class Circle extends Shape {
     }
 
     public float getTransformedRadius() {
-        return _radius * scaleX();
+        return _radius * getScaleX();
     }
 }

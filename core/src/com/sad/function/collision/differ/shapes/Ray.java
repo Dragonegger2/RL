@@ -10,8 +10,8 @@ public class Ray {
     private Vector2 dir_cache;
 
     public Ray(Vector2 start, Vector2 end, InfiniteState infinite) {
-        this.start = start;
-        this.end = end;
+        this.start = start.cpy();
+        this.end = end.cpy();
         this.infinite = infinite == null ? InfiniteState.NOT_INFINITE: infinite;
 
         dir_cache = new Vector2(end.x-start.x, end.y - start.y);

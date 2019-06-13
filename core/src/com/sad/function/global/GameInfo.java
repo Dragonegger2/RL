@@ -6,7 +6,7 @@ public class GameInfo {
     public static final float MAX_MOVEMENT_SPEED = 160f;
 
     //The best value seems to be somewhere between 6 & 12.
-    public static final float VIRTUAL_HEIGHT = 12f;
+    public static final float VIRTUAL_HEIGHT = 24f;
 
     public static boolean RENDER_SPRITES = true;
     public static boolean RENDER_SPRITE_OUTLINES = true;

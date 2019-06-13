@@ -13,14 +13,8 @@ public abstract class Shape {
     public String name = "shape";
     public Object data;
     public Map<String, String> tags;
-    public Vector2 position;
     public float x;
     public float y;
-    public float rotation = 0; //In degrees;
-
-    public float scaleX() { return _scale.x; }
-    public float scaleY() { return _scale.y; }
-    public Vector2 position() { return position; }
 
     protected Vector2 _position;
     protected float _rotation = 0;
@@ -36,7 +30,7 @@ public abstract class Shape {
     public Shape(float x, float y) {
         tags = new HashMap<>();
 
-        _position = new Vector2();
+        _position = new Vector2(x, y);
         _scale = new Vector2(1,1);
         _rotation = 0;
         _scaleX = 1;

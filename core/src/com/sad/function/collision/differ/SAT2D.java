@@ -134,10 +134,10 @@ public class SAT2D {
 
         float totalRadius = circle1.getTransformedRadius() + circle2.getTransformedRadius();
 
-        float distanceSq = circle1.position.cpy().sub(circle2.position).len2();
+        float distanceSq = circle1.getPosition().cpy().sub(circle2.getPosition()).len2();
 
         if (distanceSq < totalRadius * totalRadius) {
-            float difference = totalRadius - circle1.position.cpy().sub(circle2.position).len(); //just use len instead of len2, not square root
+            float difference = totalRadius - circle1.getPosition().cpy().sub(circle2.getPosition()).len(); //just use len instead of len2, not square root
 
             into.shape1 = circle1;
             into.shape2 = circle2;
@@ -191,7 +191,7 @@ public class SAT2D {
 
     public static RayCollision testRayVsCircle(Ray ray, Circle circle, RayCollision into) {
         Vector2 delta = new Vector2(ray.end.x - ray.start.x, ray.end.y - ray.start.y);
-        Vector2 ray2Circle = new Vector2(ray.start.x - circle.position.x, ray.start.y - circle.position.y);
+        Vector2 ray2Circle = new Vector2(ray.start.x - circle.getPosition().x, ray.start.y - circle.getPosition().y);
 
         float a = delta.len2();
         float b = 2 * delta.dot(ray2Circle);

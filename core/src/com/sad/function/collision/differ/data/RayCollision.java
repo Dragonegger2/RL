@@ -16,11 +16,11 @@ public class RayCollision {
      * give you the collision point.
      * This may result in collisions that are not treating this ray as a line segment. To ensure that it's within my line segment:
      *
-     * float xMin = start.x < end.x ? start.x : end.x;
-     * float xMax = start.x < end.x ? end.x : start.x;
+     * float xMin = origin.x < end.x ? origin.x : end.x;
+     * float xMax = origin.x < end.x ? end.x : origin.x;
      *
-     * float yMin = start.y < end.y ? start.y : end.y;
-     * float yMax = start.y < end.y ? end.y : start.y;
+     * float yMin = origin.y < end.y ? origin.y : end.y;
+     * float yMax = origin.y < end.y ? end.y : origin.y;
      *
      * if(result.x > xMax || result.x < xMin) {
      *     return false;

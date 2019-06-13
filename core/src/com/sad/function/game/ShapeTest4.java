@@ -8,72 +8,94 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.differ.SAT2D;
+import com.sad.function.collision.differ.Collision;
 import com.sad.function.collision.differ.data.RayCollision;
-import com.sad.function.collision.differ.data.RayIntersection;
+import com.sad.function.collision.differ.data.ShapeCollision;
 import com.sad.function.collision.differ.shapes.Polygon;
 import com.sad.function.collision.differ.shapes.Ray;
+import com.sad.function.collision.differ.shapes.Rectangle;
+import com.sad.function.collision.differ.shapes.Shape;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
 public class ShapeTest4 extends ApplicationAdapter {
     private static final Logger logger = LogManager.getLogger(ShapeTest4.class);
+    private final Vector2 down = new Vector2(0, -1);
+    private final Vector2 up = new Vector2(0, 1);
+    private final Vector2 left = new Vector2(-1, 0);
+    private final Vector2 right = new Vector2(1, 0);
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
-    private Polygon player;
-
+    private Rectangle player;
     private Polygon ground;
+    private List<Shape> collidables = new ArrayList<>();
+    private Vector2 speed;
+
     @Override
     public void create() {
 
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
-        player = Polygon.rectangle(0, 0, 0.5f, 0.5f, true);
+        player = new Rectangle(0, 10, 0.5f, 0.5f, true);
 
         ground = Polygon.rectangle(0, -0.5f, 5f, 0.5f, true);
+        collidables.add(ground);
+
+        speed = new Vector2();
     }
 
     @Override
     public void render() {
-        camera.position.set(0, 0, 0);
+
         float delta = 1f / 60f;   //TODO fix my timestep.
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
 
+        speed.y += -9.8 * delta;
+        player.getPosition().add(speed.x * delta, speed.y * delta);
 
-        Ray r1 = new Ray(new Vector2(-1, 0),
-                new Vector2(0, 0), Ray.InfiniteState.INFINITE);
+        List<ShapeCollision> collisions = Collision.shapeWithShapes(player, collidables, null);
+        if(!collisions.isEmpty()) {
+            logger.info("Stuff happened.");
+        }
 
-
-        RayCollision r = SAT2D.testRayVsPolygon(r1, player, null);
-
+        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
         camera.update();
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.LIME);
-        renderRay(r1);
-//        renderRay(r2);
-
-        renderPolygon(player);
-        if (r != null) {
-            renderPoint(r.collisionPoint());
-        }
-        shapeRenderer.end();
-        //endregion
+        r();
     }
-
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
+        camera.position.x = player.getPosition().x;
+        camera.position.y = player.getPosition().y;
+    }
+
+    //region rendering logic
+    public void r() {
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.LIME);
+
+        List<ShapeCollision> collisionList = Collision.shapeWithShapes(player, collidables, null);
+
+        renderPolygon(ground);
+        renderPolygon(player);
+
+        shapeRenderer.end();
     }
 
     public void renderPoint(Vector2 p) {
@@ -96,12 +118,12 @@ public class ShapeTest4 extends ApplicationAdapter {
     }
 
     public void renderPolygon(Polygon p) {
-        for(Vector2 vertex: p.transformedVertices()) {
+        for (Vector2 vertex : p.transformedVertices()) {
 
         }
-        for(int i = 0; i < p.transformedVertices().size(); i++) {
+        for (int i = 0; i < p.transformedVertices().size(); i++) {
             int j = i + 1;
-            if(j == p.transformedVertices().size()) j = 0;
+            if (j == p.transformedVertices().size()) j = 0;
 
             shapeRenderer.rectLine(p.transformedVertices().get(i).x,
                     p.transformedVertices().get(i).y,
@@ -109,41 +131,6 @@ public class ShapeTest4 extends ApplicationAdapter {
                     p.transformedVertices().get(j).y, 0.0625f);
         }
     }
-//
-//    private void renderShape(Shape shape) {
-//        if (shape instanceof Circle) {
-//            Circle circle = (Circle) shape;
-//            shapeRenderer.setColor(Color.RED);
-//            shapeRenderer.circle(circle.getOrigin().x, circle.getOrigin().y, circle.radius, 15);
-//            return;
-//        }
-//        if (shape instanceof Rectangle) {
-//            Rectangle rectangle = (Rectangle) shape;
-//            shapeRenderer.setColor(Color.GREEN);
-//            shapeRenderer.rect(rectangle.getOrigin().x - rectangle.halfsize.x, rectangle.getOrigin().y - rectangle.halfsize.y, rectangle.halfsize.x * 2, rectangle.halfsize.y * 2);
-//            return;
-//        }
-//        if (shape instanceof Point) {
-//            Point point = (Point) shape;
-//            shapeRenderer.setColor(Color.BLUE);
-//            shapeRenderer.circle(point.getOrigin().x, point.getOrigin().y, 0.0625f, 15);
-//            return;
-//        }
-//        if (shape instanceof Line) {
-//            Line line = (Line) shape;
-//            shapeRenderer.setColor(Color.PURPLE);
-//            shapeRenderer.rectLine(line.getStart().x, line.getStart().y, line.getEnd().x, line.getEnd().y, 0.0625f);
-//            return;
-//        }
-//        if (shape instanceof Polygon) {
-//            Polygon polygon = (Polygon) shape;
-//            shapeRenderer.setColor(Color.GRAY);
-//            for (int current = 0; current < polygon.getVertices().length - 1; current++) {
-//                int next = current + 1;
-//                if (next > polygon.getVertices().length - 1) next = 0;
-//                shapeRenderer.rectLine(polygon.getVertices()[current].x, polygon.getVertices()[current].y, polygon.getVertices()[next].x, polygon.getVertices()[next].y, 0.0625f);
-//
-//            }
-//        }
-//    }
+
+    //endregion
 }

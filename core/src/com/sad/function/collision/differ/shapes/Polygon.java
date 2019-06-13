@@ -53,6 +53,35 @@ public class Polygon extends Shape {
         return new Polygon(x, y, vertices);
     }
 
+    /**
+     * Calculate vertices for a rectangle shape.
+     * @param width
+     * @param height
+     * @param centered
+     * @return
+     */
+    public static List<Vector2> rectangle(float width, float height, boolean centered) {
+        List<Vector2> vertices = new ArrayList<>();
+
+        if (centered) {
+
+            vertices.add(new Vector2(-width / 2, -height / 2));
+            vertices.add(new Vector2(width / 2, -height / 2));
+            vertices.add(new Vector2(width / 2, height / 2));
+            vertices.add(new Vector2(-width / 2, height / 2));
+
+        } else {
+
+            vertices.add(new Vector2(0, 0));
+            vertices.add(new Vector2(width, 0));
+            vertices.add(new Vector2(width, height));
+            vertices.add(new Vector2(0, height));
+
+        }
+
+        return vertices;
+    }
+
     public static Polygon rectangle(float x, float y, float width, float height, boolean centered) {
         List<Vector2> vertices = new ArrayList<>();
 

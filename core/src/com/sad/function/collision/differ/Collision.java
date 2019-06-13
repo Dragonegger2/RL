@@ -47,9 +47,27 @@ public class Collision {
         return results;
     }
 
+    public static RayCollision rayWithShapesFirst(Ray ray, List<Shape> shapes, RayCollision into) {
+        if(shapes.size() == 0) { return null; }
+
+        into = into == null ? new RayCollision() : into.reset();
+
+        RayCollision closest = rayWithShape(ray, shapes.get(0), null);
+
+        for(int i = 1; i < shapes.size(); i++) {
+            RayCollision result = rayWithShape(ray, shapes.get(i), null);
+            if(result.distanceFromStartOfRay < closest.distanceFromStartOfRay) {
+                closest.copy(result);
+            }
+        }
+
+        return closest;
+    }
+
     public static RayIntersection rayWithRay(Ray ray1, Ray ray2, RayIntersection into) {
         return SAT2D.testRayVsRay(ray1, ray2, into);
     }
+
     private static <T> List<T> clearShapeList(List s) {
         s.clear();
         return s;
