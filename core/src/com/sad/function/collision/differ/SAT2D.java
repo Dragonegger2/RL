@@ -224,8 +224,8 @@ public class SAT2D {
 
                 into.shape = circle;
                 into.ray = ray;
-                into.start = t1;
-                into.end = t2;
+                into.distanceFromStartOfRay = t1;
+                into.distanceFromEndOfRay = t2;
 
                 return into;
 
@@ -288,8 +288,8 @@ public class SAT2D {
             into = (into == null) ? new RayCollision() : into.reset();
             into.shape = polygon;
             into.ray = ray;
-            into.start = min_u;
-            into.end = max_u;
+            into.distanceFromStartOfRay = min_u;
+            into.distanceFromEndOfRay = max_u;
 
             return into;
         }
@@ -299,12 +299,12 @@ public class SAT2D {
     /*
     public static function testRayVsRay( ray1:Ray, ray2:Ray, ?into:RayIntersection ) : RayIntersection {
 
-        var delta1X = ray1.end.x - ray1.start.x;
-        var delta1Y = ray1.end.y - ray1.start.y;
-        var delta2X = ray2.end.x - ray2.start.x;
-        var delta2Y = ray2.end.y - ray2.start.y;
-        var diffX = ray1.start.x - ray2.start.x;
-        var diffY = ray1.start.y - ray2.start.y;
+        var delta1X = ray1.distanceFromEndOfRay.x - ray1.distanceFromStartOfRay.x;
+        var delta1Y = ray1.distanceFromEndOfRay.y - ray1.distanceFromStartOfRay.y;
+        var delta2X = ray2.distanceFromEndOfRay.x - ray2.distanceFromStartOfRay.x;
+        var delta2Y = ray2.distanceFromEndOfRay.y - ray2.distanceFromStartOfRay.y;
+        var diffX = ray1.distanceFromStartOfRay.x - ray2.distanceFromStartOfRay.x;
+        var diffY = ray1.distanceFromStartOfRay.y - ray2.distanceFromStartOfRay.y;
         var ud = delta2Y * delta1X - delta2X * delta1Y;
 
         if(ud == 0.0) return null;

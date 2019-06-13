@@ -8,20 +8,44 @@ public class RayCollision {
     public Shape shape;
     public Ray ray;
 
-    public float start = 0.0f;
-    public float end = 0.0f;
+    /**
+     * measure distance from the distanceFromStartOfRay of the ray.
+     *
+     * Using below
+     * ray.distanceFromStartOfRay.cpy().add(ray.getDir().cpy().scl(distanceFromStartOfRay));
+     * give you the collision point.
+     * This may result in collisions that are not treating this ray as a line segment. To ensure that it's within my line segment:
+     *
+     * float xMin = start.x < end.x ? start.x : end.x;
+     * float xMax = start.x < end.x ? end.x : start.x;
+     *
+     * float yMin = start.y < end.y ? start.y : end.y;
+     * float yMax = start.y < end.y ? end.y : start.y;
+     *
+     * if(result.x > xMax || result.x < xMin) {
+     *     return false;
+     * }
+     *
+     * if(result.y > yMax || result.y < yMin) {
+     *     return false;
+     * }
+     */
 
+    public float distanceFromStartOfRay = 0.0f;
+    public float distanceFromEndOfRay = 0.0f;
+
+    //Penetration deption
     public RayCollision reset() {
         ray = null;
         shape = null;
-        start = 0.0f;
-        end = 0.0f;
+        distanceFromStartOfRay = 0.0f;
+        distanceFromEndOfRay = 0.0f;
 
         return this;
     }
 
     public Vector2 collisionPoint() {
-        return ray.start.cpy().add(ray.getDir().cpy().scl(start));
+        return ray.start.cpy().add(ray.getDir().cpy().scl(distanceFromStartOfRay));
     }
 
     public RayCollision clone() {
@@ -32,8 +56,8 @@ public class RayCollision {
     public void copy(RayCollision other) {
         ray = other.ray;
         shape = other.shape;
-        start = other.start;
-        end = other.end;
+        distanceFromStartOfRay = other.distanceFromStartOfRay;
+        distanceFromEndOfRay = other.distanceFromEndOfRay;
     }
 
 }
