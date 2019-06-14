@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.differ.shapes.Polygon;
 import com.sad.function.collision.differ.shapes.Rectangle;
 import com.sad.function.collision.differ.shapes.Shape;
+import com.sad.function.collision.overlay.Body;
+import com.sad.function.collision.overlay.Collidable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,6 +41,9 @@ public class ShapeTest5 extends ApplicationAdapter {
         camera = new OrthographicCamera();
 
         speed = new Vector2();
+        Collidable player = new Collidable(0, 0);
+
+        Body b = new Body();
     }
 
     @Override
