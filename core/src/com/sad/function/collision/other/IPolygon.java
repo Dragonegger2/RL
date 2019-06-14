@@ -1,4 +1,4 @@
-package com.sad.function.collision;
+package com.sad.function.collision.other;
 
 import com.badlogic.gdx.math.Vector2;
 

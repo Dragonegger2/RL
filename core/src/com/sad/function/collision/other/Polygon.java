@@ -1,9 +1,10 @@
-package com.sad.function.collision;
+package com.sad.function.collision.other;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.other.IPolygon;
 
 //https://github.com/sevdanski/SAT_AS3/blob/master/com/sevenson/geom/sat/shapes/Polygon.as
-public class Polygon implements IPolygon{
+public class Polygon implements IPolygon {
     private Vector2 position;
 
     @Override

@@ -59,18 +59,22 @@ public class ShapeTest4 extends ApplicationAdapter {
             Gdx.app.exit();
         }
 
-        speed.y += -9.8 * delta;
-        player.getPosition().add(speed.x * delta, speed.y * delta);
+//        speed.y += -9.8 * delta;
+//        player.getPosition().add(speed.x * delta, speed.y * delta);
 
-        List<ShapeCollision> collisions = Collision.shapeWithShapes(player, collidables, null);
-        if(!collisions.isEmpty()) {
-            logger.info("Stuff happened.");
-        }
+//        List<ShapeCollision> collisions = Collision.shapeWithShapes(player, collidables, null);
+//        if(!collisions.isEmpty()) {
+//            logger.info("Stuff happened.");
+//        }
 
-        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
-        camera.update();
-
+        speed.y -= 9.8 * delta;
+        player.getPosition().sub(0f, speed.y * delta);
         r();
+
+        Gdx.graphics.setTitle(String.format("P: {%s, %s) C: {%s, %s)", player.getPosition().x,
+                player.getPosition().y,
+                camera.position.x,
+                camera.position.y));
     }
 
     @Override
@@ -82,6 +86,8 @@ public class ShapeTest4 extends ApplicationAdapter {
 
     //region rendering logic
     public void r() {
+        camera.position.set(player.getPosition().x, player.getPosition().y, 0);
+        camera.update();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -90,7 +96,8 @@ public class ShapeTest4 extends ApplicationAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.LIME);
 
-        List<ShapeCollision> collisionList = Collision.shapeWithShapes(player, collidables, null);
+
+//        List<ShapeCollision> collisionList = Collision.shapeWithShapes(player, collidables, null);
 
         renderPolygon(ground);
         renderPolygon(player);
@@ -103,19 +110,19 @@ public class ShapeTest4 extends ApplicationAdapter {
         shapeRenderer.circle(p.x, p.y, 0.125f, 15);
     }
 
-    public void renderRay(Ray r) {
-        Vector2 start = r.start;
-        Vector2 end = r.end;
-
-        if (r.infinite == Ray.InfiniteState.INFINITE) {
-            //TODO:
-        }
-        if (r.infinite == Ray.InfiniteState.INFINITE_FROM_START) {
-            end = start.cpy().add(r.getDir().cpy().scl(Float.MAX_VALUE));
-        }
-
-        shapeRenderer.rectLine(start.x, start.y, end.x, end.y, 0.125f);
-    }
+//    public void renderRay(Ray r) {
+//        Vector2 start = r.start;
+//        Vector2 end = r.end;
+//
+//        if (r.infinite == Ray.InfiniteState.INFINITE) {
+//            //TODO:
+//        }
+//        if (r.infinite == Ray.InfiniteState.INFINITE_FROM_START) {
+//            end = start.cpy().add(r.getDir().cpy().scl(Float.MAX_VALUE));
+//        }
+//
+//        shapeRenderer.rectLine(start.x, start.y, end.x, end.y, 0.125f);
+//    }
 
     public void renderPolygon(Polygon p) {
         for (Vector2 vertex : p.transformedVertices()) {
