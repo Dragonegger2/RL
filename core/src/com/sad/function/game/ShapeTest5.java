@@ -13,6 +13,7 @@ import com.sad.function.collision.differ.shapes.Rectangle;
 import com.sad.function.collision.differ.shapes.Shape;
 import com.sad.function.collision.overlay.Body;
 import com.sad.function.collision.overlay.Collidable;
+import com.sad.function.collision.overlay.shape.Circle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +35,8 @@ public class ShapeTest5 extends ApplicationAdapter {
     private List<Shape> collidables = new ArrayList<>();
     private Vector2 speed;
 
+    private Circle player;
+
     @Override
     public void create() {
 
@@ -41,9 +44,8 @@ public class ShapeTest5 extends ApplicationAdapter {
         camera = new OrthographicCamera();
 
         speed = new Vector2();
-        Collidable player = new Collidable(0, 0);
 
-        Body b = new Body();
+        player = new Circle(new Vector2(0,0), 1);
     }
 
     @Override
@@ -55,6 +57,8 @@ public class ShapeTest5 extends ApplicationAdapter {
             Gdx.app.exit();
         }
 
+        r();
+
     }
 
     @Override
@@ -62,9 +66,12 @@ public class ShapeTest5 extends ApplicationAdapter {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
     }
 
+    //TODO: circle, box, polygon,
+    //
+
     //region rendering logic
     public void r() {
-        camera.position.set(0,0,0);
+        camera.position.set(player.getOrigin().x, player.getOrigin().y, 0);
         camera.update();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -72,8 +79,8 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.LIME);
 
+        renderCircle(player);
         shapeRenderer.end();
     }
 
@@ -82,6 +89,13 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.circle(p.x, p.y, 0.125f, 15);
     }
 
+    public void renderCircle(Circle c) {
+        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.circle(c.getOrigin().x,
+                c.getOrigin().y,
+                c.getRadius(),
+                15);
+    }
     public void renderPolygon(Polygon p) {
         for (Vector2 vertex : p.transformedVertices()) {
 

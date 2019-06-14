@@ -15,7 +15,7 @@ public class Circle extends Shape {
     public Vector2 getVertex(int i, Vector2 axis) {
         Vector2 norAxis = axis.cpy().nor();
 
-        if(i==0) {
+        if (i == 0) {
             return new Vector2(origin.x + (-norAxis.y * radius),
                     origin.y + (norAxis.x * radius));
         } else {
@@ -26,6 +26,7 @@ public class Circle extends Shape {
 
     /**
      * A circle has no normals.
+     *
      * @return an empty set.
      */
     @Override
@@ -35,10 +36,17 @@ public class Circle extends Shape {
 
     /**
      * A circle has two nodes.
+     *
      * @return 2. It's always 2.
      */
     @Override
     public int getNumberOfVertices() {
         return 2;
     }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public Vector2 getOrigin() { return origin; }
 }
