@@ -29,4 +29,11 @@ public class Projection {
         }
         return 0;
     }
+
+    public boolean contains(Projection p2) {
+        return p2.min > this.min && p2.max < this.max;
+    }
+
+    public float getMin() { return this.min; }
+    public float getMax() { return this.max; }
 }

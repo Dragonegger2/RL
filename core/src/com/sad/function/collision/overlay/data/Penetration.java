@@ -2,12 +2,12 @@ package com.sad.function.collision.overlay.data;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class MTV {
-    private Vector2 pNor;
+public class Penetration {
+    private Vector2 normal;
     private float distance;
 
-    public MTV(Vector2 pNro, float overlap) {
-        this.pNor = pNro;
+    public Penetration(Vector2 pNro, float overlap) {
+        this.normal = pNro;
         this.distance = overlap;
     }
 
@@ -15,7 +15,7 @@ public class MTV {
         return distance;
     }
 
-    public Vector2 getPenetrationVector() {
-        return pNor;
+    public Vector2 getNormal() {
+        return normal;
     }
 }
