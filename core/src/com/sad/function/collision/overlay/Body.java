@@ -1,25 +1,44 @@
 package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.shape.Shape;
 
-/**
- * Body is managed by it's local space coordinates.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class Body {
-    private Collidable parent;
     private Vector2 position;
-    private Shape s;
+    private Vector2 velocity;
 
-    public Body(Vector2 position, Shape s) {
-        this.position = position;
-        this.s = s;
+    private List<Fixture> bodies;
 
-        boolean isSensor = false;
+    public Body(float x, float y) {
+        position = new Vector2(x, y);
+        velocity = new Vector2();
+
+        bodies = new ArrayList<>();
     }
     public Vector2 getPosition() { return position; }
-    public void setParent(Collidable collidable) {
-        parent = collidable;
+
+    public Fixture createBody(Fixture b) {
+        bodies.add(b);
+        b.setParent(this);
+
+        return b;
     }
-    //TODO Copy shape into this.
+
+    public List<Fixture> getBodies() {
+        return bodies;
+    }
+
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Vector2 velocity) {
+        this.velocity = velocity;
+    }
+
+    public void impulse(float x, float y) {
+        this.velocity.add(x, y);
+    }
 }

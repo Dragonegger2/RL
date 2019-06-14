@@ -2,7 +2,9 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.data.Penetration;
+import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Projection;
+import com.sad.function.collision.overlay.shape.Rectangle;
 import com.sad.function.collision.overlay.shape.Shape;
 
 import java.lang.reflect.Array;
@@ -11,6 +13,17 @@ import static java.lang.Math.abs;
 
 public class Collision {
 
+    private static Penetration testCollision(Circle a,  Circle b) {
+        Penetration p = new Penetration(null,0, null, null);
+
+        //TODO: two circles collide if the distance between their origins is less than the sum of their radii.
+        return p;
+    }
+
+    private static Penetration testCollision(Rectangle r1, Rectangle r2) {
+        //TODO: Simplify the two axis cases for rectangles down to two; You do not need to calculate against parallel axes.
+        return null;
+    }
     public static Penetration testCollision(Shape a, Shape b) {
         Vector2[] axes1 = a.getAxes();
         Vector2[] axes2 = b.getAxes();
@@ -76,7 +89,7 @@ public class Collision {
         }
 
         //If we make it here, there has been a collision.
-        return new Penetration(smallest, overlap);
+        return new Penetration(smallest, overlap, a, b);
     }
 
     private static Projection project(Shape a, Vector2 axis) {

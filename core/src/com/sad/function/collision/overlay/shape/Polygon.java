@@ -3,10 +3,10 @@ package com.sad.function.collision.overlay.shape;
 import com.badlogic.gdx.math.Vector2;
 
 public class Polygon extends Shape {
-    private Vector2 origin; //TODO: Add a method to calculate the origin.
-    private Vector2[] nodes;
+    Vector2 origin; //TODO: Add a method to calculate the origin.
+    Vector2[] nodes;
 
-    public Polygon(Vector2[] vertexes) {
+    public Polygon(Vector2[] vertexes, boolean centered) {
         nodes = new Vector2[vertexes.length];
 
         for (int i = 0; i < vertexes.length; i++) {

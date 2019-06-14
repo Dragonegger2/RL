@@ -9,11 +9,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.differ.shapes.Polygon;
-import com.sad.function.collision.differ.shapes.Rectangle;
 import com.sad.function.collision.differ.shapes.Shape;
-import com.sad.function.collision.overlay.Body;
-import com.sad.function.collision.overlay.Collidable;
+import com.sad.function.collision.overlay.Collision;
+import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.Circle;
+import com.sad.function.collision.overlay.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,10 +25,6 @@ import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 @SuppressWarnings("ALL")
 public class ShapeTest5 extends ApplicationAdapter {
     private static final Logger logger = LogManager.getLogger(ShapeTest5.class);
-    private final Vector2 down = new Vector2(0, -1);
-    private final Vector2 up = new Vector2(0, 1);
-    private final Vector2 left = new Vector2(-1, 0);
-    private final Vector2 right = new Vector2(1, 0);
 
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
@@ -36,7 +32,8 @@ public class ShapeTest5 extends ApplicationAdapter {
     private Vector2 speed;
 
     private Circle player;
-
+    private Rectangle ground;
+    private Penetration p;
     @Override
     public void create() {
 
@@ -46,6 +43,9 @@ public class ShapeTest5 extends ApplicationAdapter {
         speed = new Vector2();
 
         player = new Circle(new Vector2(0,0), 1);
+
+
+        ground = new Rectangle(new Vector2(0,-1f), new Vector2(5, .5f), true);
     }
 
     @Override
@@ -57,6 +57,11 @@ public class ShapeTest5 extends ApplicationAdapter {
             Gdx.app.exit();
         }
 
+        p = Collision.testCollision(player, ground);
+
+        if(p != null) {
+            logger.info("Collision between {} and {}", player, ground);
+        }
         r();
 
     }
@@ -64,10 +69,10 @@ public class ShapeTest5 extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
+        camera.position.x = player.getOrigin().x;
+        camera.position.y = player.getOrigin().y;
     }
 
-    //TODO: circle, box, polygon,
-    //
 
     //region rendering logic
     public void r() {
@@ -80,7 +85,10 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+
+        renderRectangle(ground);
         renderCircle(player);
+
         shapeRenderer.end();
     }
 
@@ -96,6 +104,21 @@ public class ShapeTest5 extends ApplicationAdapter {
                 c.getRadius(),
                 15);
     }
+
+    public void renderRectangle(Rectangle r) {
+        shapeRenderer.setColor(Color.FIREBRICK);
+        if(r.isCentered()) {
+            shapeRenderer.rect(r.getPosition().x - r.getHalfsizeWidth(),
+                    r.getPosition().y - r.getHalfsizeHeight(),
+                    r.getHalfsizeWidth()*2,
+                    r.getHalfsizeHeight()*2);
+        } else {
+            shapeRenderer.rect(r.getPosition().x, r.getPosition().y,
+                    r.getHalfsizeWidth()*2,
+                    r.getHalfsizeHeight()*2);
+        }
+    }
+
     public void renderPolygon(Polygon p) {
         for (Vector2 vertex : p.transformedVertices()) {
 
