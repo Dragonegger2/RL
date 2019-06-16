@@ -22,9 +22,9 @@ public class Collision {
         return null;
     }
 
-    public static Penetration testCollision(Shape a, Shape b) {
-        Transform sAT = new Transform(a.getOrigin().x, a.getOrigin().y);
-        Transform sBT = new Transform(b.getOrigin().x, b.getOrigin().y);
+    public static Penetration testCollision(AbstractShape a, AbstractShape b) {
+        Transform sAT = new Transform(a.getCenter().x, a.getCenter().y);
+        Transform sBT = new Transform(b.getCenter().x, b.getCenter().y);
 
         Vector2[] axes1 = a.getAxes(sAT);
         Vector2[] axes2 = b.getAxes(sBT);
@@ -36,8 +36,8 @@ public class Collision {
         for (int i = 0; i < size; i++) {
             Vector2 axis = axes1[i];
 
-            Projection p1 = project(a, sAT, axis);
-            Projection p2 = project(b, sAT, axis);
+            Projection p1 = a.project(axis, sAT);
+            Projection p2 = b.project(axis, sBT);
 
             if (!p1.overlaps(p2)) {
                 return null;
@@ -65,8 +65,8 @@ public class Collision {
         for (int i = 0; i < axes2.length; i++) {
             Vector2 axis = axes2[i];
 
-            Projection p1 = project(a, sAT, axis);
-            Projection p2 = project(b, sBT, axis);
+            Projection p1 = a.project(axis, sAT);
+            Projection p2 = b.project(axis, sBT);
 
             if (!p1.overlaps(p2)) {
                 return null;
@@ -100,20 +100,20 @@ public class Collision {
         return new Penetration(n, overlap, a, b);
     }
 
-    private static Projection project(Shape a, Transform t, Vector2 axis) {
-        // Project the shapes along the axis
-        float min = axis.dot(a.getVertex(0, t, axis)); // Get the first min
-        float max = min;
-        for (int i = 1; i < a.getNumberOfVertices(); i++) {
-            float p = axis.dot(a.getVertex(i, t, axis)); // Get the dot product between the axis and the node
-            if (p < min) {
-                min = p;
-            } else if (p > max) {
-                max = p;
-            }
-        }
-        return new Projection(min, max);
-    }
+//    private static Projection project(Shape a, Transform t, Vector2 axis) {
+//        // Project the shapes along the axis
+//        float min = axis.dot(a.getVertex(0, t, axis)); // Get the first min
+//        float max = min;
+//        for (int i = 1; i < a.getNumberOfVertices(); i++) {
+//            float p = axis.dot(a.getVertex(i, t, axis)); // Get the dot product between the axis and the node
+//            if (p < min) {
+//                min = p;
+//            } else if (p > max) {
+//                max = p;
+//            }
+//        }
+//        return new Projection(min, max);
+//    }
 
     public static Vector2[] concatenate(Vector2[] a, Vector2[] b) {
         // Concatenate the two arrays of nodes

@@ -5,13 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 public class Rectangle extends Polygon {
     private Vector2 halfsize;
     private Vector2 origin;
-    private boolean centered;
-    public Rectangle(Vector2 origin, Vector2 halfsize, boolean centered) {
-        super(calculateVertexes(halfsize, centered), centered);
 
+    public Rectangle(Vector2 origin, float width, float height) {
         this.halfsize = halfsize;
         this.origin = origin;
-        this.centered = centered;
     }
 
     private static Vector2[] calculateVertexes(Vector2 halfsize, boolean centered) {
@@ -42,13 +39,13 @@ public class Rectangle extends Polygon {
      */
     @Override
     public Vector2[] getAxes(Transform transform) {
-        Vector2[] axes = new Vector2[nodes.length];
+        Vector2[] axes = new Vector2[vertices.length];
 
-        for (int i = 0; i < nodes.length; i++) {
-            int j = i + 1 == nodes.length ? 0 : i + 1;
+        for (int i = 0; i < vertices.length; i++) {
+            int j = i + 1 == vertices.length ? 0 : i + 1;
 
-            axes[i] = new Vector2(nodes[i].x + transform.x - nodes[j].x + transform.x ,
-                    nodes[i].y + transform.y - nodes[j].y + transform.y);
+            axes[i] = new Vector2(vertices[i].x + transform.x - vertices[j].x + transform.x ,
+                    vertices[i].y + transform.y - vertices[j].y + transform.y);
 
             axes[i].nor();
             axes[i] = normal(axes[i]);
@@ -60,12 +57,12 @@ public class Rectangle extends Polygon {
      * Returns the list of vertices for this rectangle.
      * @return this rectangles vertices.
      */
-    public Vector2[] getRawVertices() { return nodes; }
+    public Vector2[] getRawVertices() { return vertices; }
 
     public Vector2[] getTransformedVertices(Transform t) {
-        Vector2[] verts = new Vector2[nodes.length];
-        for(int i = 0; i < nodes.length; i++) {
-            verts[i] = nodes[i].cpy().add(t.x, t.y);
+        Vector2[] verts = new Vector2[vertices.length];
+        for(int i = 0; i < vertices.length; i++) {
+            verts[i] = vertices[i].cpy().add(t.x, t.y);
         }
 
         return verts;
@@ -73,7 +70,7 @@ public class Rectangle extends Polygon {
 
     @Override
     public int getNumberOfVertices() {
-        return nodes.length;
+        return vertices.length;
     }
 
     public float getHalfsizeWidth() {
@@ -82,10 +79,6 @@ public class Rectangle extends Polygon {
 
     public float getHalfsizeHeight() {
         return halfsize.y;
-    }
-
-    public boolean isCentered() {
-        return centered;
     }
 
     public Vector2 getOrigin() {

@@ -36,7 +36,7 @@ public class Circle extends Shape {
     }
 
     /**
-     * A circle has two nodes.
+     * A circle has two vertices.
      *
      * @return 2. It's always 2.
      */
