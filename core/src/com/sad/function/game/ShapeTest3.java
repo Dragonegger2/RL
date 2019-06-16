@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,16 +58,19 @@ public class ShapeTest3 extends ApplicationAdapter {
     public void render() {
         float delta = 1f / 60f;   //TODO fix my timestep.
 
-        //region Input
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            speed.add(-0.125f, 0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            speed.add(0.125f, 0);
-        }
-        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
-        }
+//        //region Input
+//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+//            speed.add(-0.125f, 0);
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            speed.add(0.125f, 0);
+//        }
+//        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
+//        }
+
+        speed.x = MathUtils.clamp(speed.x, -3f, 3f);
+        speed.x = -0.125f;
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();

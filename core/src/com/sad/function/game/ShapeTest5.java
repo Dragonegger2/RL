@@ -12,9 +12,13 @@ import com.sad.function.collision.overlay.Collision;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Rectangle;
+import com.sad.function.collision.overlay.shape.Shape;
 import com.sad.function.collision.overlay.shape.Transform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
@@ -28,7 +32,10 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     private Rectangle player;
     private Rectangle ground;
-    private Penetration p;
+    private Rectangle wall;
+
+    private List<Shape> staticBodies;
+
     @Override
     public void create() {
 
@@ -37,8 +44,14 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         speed = new Vector2();
 
-        player = new Rectangle(new Vector2(3,0), new Vector2(0.5f, 0.5f), true);
-        ground = new Rectangle(new Vector2(-2,-1f), new Vector2(10, .5f), true);
+        staticBodies = new ArrayList<>();
+
+        player = new Rectangle(new Vector2(3, 0), new Vector2(0.5f, 0.5f), true);
+        ground = new Rectangle(new Vector2(-2, -1f), new Vector2(10, .5f), true);
+        ground = new Rectangle(new Vector2(-2, -1f), new Vector2(10, .5f), true);
+        wall = new Rectangle(new Vector2(-2, -1f), new Vector2(1, 10), true);
+        staticBodies.add(wall);
+        staticBodies.add(ground);
     }
 
     @Override
@@ -49,16 +62,37 @@ public class ShapeTest5 extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
+        float delta = 1f / 60f;   //TODO fix my timestep.
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 
-            float delta = 1f / 60f;   //TODO fix my timestep.
+        //region Input
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            speed.add(-0.125f, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            speed.add(0.125f, 0);
+        }
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
+        }
 
-            p = Collision.testCollision(player, ground);
-            if (p != null) {
-                logger.info("Distance: {} Collision {} & {}", p.distance, player, ground);
-//                player.getOrigin().x += p.normal.x * p.distance;
-//                player.getOrigin().y += p.normal.y * p.distance;
+        Vector2 potentialPosition = player.getOrigin().add(speed.x, speed.y);
+
+
+//        player.getAxes(new Transform(player.getOrigin()));
+
+        //Calculate all collisions.
+        float minTranslationDistance = Float.MAX_VALUE;
+        Vector2 direction = new Vector2();
+        Penetration[] penetrations = new Penetration[staticBodies.size()];
+        for (int i = 0; i < staticBodies.size(); i++) {
+            //Naive way of doing this I beleive
+            Transform t1 = new Transform(player.getOrigin());
+            Transform t2 = new Transform(staticBodies.get(i).getOrigin());
+
+            Penetration p = Collision.testCollision(player, t1, staticBodies.get(i), t2);
+            if(p != null && p.distance != 0) {
+                player.getOrigin().add(p.normal.scl(p.distance));
             }
         }
     }
@@ -81,32 +115,21 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        renderRectangle(wall);
         renderRectangle(ground);
         renderRectangle(player);
 
-        shapeRenderer.setColor(Color.LIME);
-        renderPoint(player.getRawVertices()[0].cpy().add(player.getOrigin()));
-        renderPoint(player.getRawVertices()[1].cpy().add(player.getOrigin()));
-        renderPoint(player.getRawVertices()[2].cpy().add(player.getOrigin()));
-        renderPoint(player.getRawVertices()[3].cpy().add(player.getOrigin()));
-
-        shapeRenderer.setColor(Color.CORAL);
-        renderPoint(player.getRawVertices()[0]);
-        renderPoint(player.getRawVertices()[1]);
-        renderPoint(player.getRawVertices()[2]);
-        renderPoint(player.getRawVertices()[3]);
-
         shapeRenderer.setColor(Color.BLUE);
-
-        Vector2[] v = ground.getTransformedVertices(new Transform(ground.getOrigin()));
-        for(int i = 0; i < v.length; i++) {
-            renderPoint(v[i]);
-        }
-
-        Vector2[] raw = ground.getRawVertices();
-        for(int i = 0; i < raw.length; i++) {
-            renderPoint(raw[i]);
-        }
+//
+//        Vector2[] v = ground.getTransformedVertices(new Transform(ground.getOrigin()));
+//        for (int i = 0; i < v.length; i++) {
+//            renderPoint(v[i]);
+//        }
+//
+//        Vector2[] raw = ground.getRawVertices();
+//        for (int i = 0; i < raw.length; i++) {
+//            renderPoint(raw[i]);
+//        }
 
         shapeRenderer.end();
     }
@@ -126,15 +149,15 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     public void renderRectangle(Rectangle r) {
         shapeRenderer.setColor(Color.FIREBRICK);
-        if(r.isCentered()) {
+        if (r.isCentered()) {
             shapeRenderer.rect(r.getOrigin().x - r.getHalfsizeWidth(),
                     r.getOrigin().y - r.getHalfsizeHeight(),
-                    r.getHalfsizeWidth()*2,
-                    r.getHalfsizeHeight()*2);
+                    r.getHalfsizeWidth() * 2,
+                    r.getHalfsizeHeight() * 2);
         } else {
             shapeRenderer.rect(r.getOrigin().x, r.getOrigin().y,
-                    r.getHalfsizeWidth()*2,
-                    r.getHalfsizeHeight()*2);
+                    r.getHalfsizeWidth() * 2,
+                    r.getHalfsizeHeight() * 2);
         }
     }
 

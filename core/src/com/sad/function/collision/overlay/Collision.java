@@ -22,9 +22,7 @@ public class Collision {
         return null;
     }
 
-    public static Penetration testCollision(Shape a, Shape b) {
-        Transform sAT = new Transform(a.getOrigin().x, a.getOrigin().y);
-        Transform sBT = new Transform(b.getOrigin().x, b.getOrigin().y);
+    public static Penetration testCollision(Shape a, Transform sAT, Shape b, Transform sBT) {
 
         Vector2[] axes1 = a.getAxes(sAT);
         Vector2[] axes2 = b.getAxes(sBT);
