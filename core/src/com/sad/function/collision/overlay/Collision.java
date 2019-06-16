@@ -10,19 +10,19 @@ import static java.lang.Math.abs;
 
 public class Collision {
 
-    private static Penetration testCollision(Circle a,  Circle b) {
+    private static Penetration detect(Circle a, Circle b) {
         Penetration p = new Penetration(null,0, null, null);
 
         //TODO: two circles collide if the distance between their origins is less than the sum of their radii.
         return p;
     }
 
-    private static Penetration testCollision(Rectangle r1, Rectangle r2) {
+    private static Penetration detect(Rectangle r1, Rectangle r2) {
         //TODO: Simplify the two axis cases for rectangles down to two; You do not need to calculate against parallel axes.
         return null;
     }
 
-    public static Penetration testCollision(Shape a, Transform sAT, Shape b, Transform sBT) {
+    public static boolean detect(Shape a, Transform sAT, Shape b, Transform sBT, Penetration penetration) {
 
         Vector2[] axes1 = a.getAxes(sAT);
         Vector2[] axes2 = b.getAxes(sBT);
@@ -38,7 +38,7 @@ public class Collision {
             Projection p2 = project(b, sBT, axis);
 
             if (!p1.overlaps(p2)) {
-                return null;
+                return false;
             } else {
                 float o = p1.getOverlap(p2);
 
@@ -67,7 +67,7 @@ public class Collision {
             Projection p2 = project(b, sBT, axis);
 
             if (!p1.overlaps(p2)) {
-                return null;
+                return false;
             } else {
                 float o = p1.getOverlap(p2);
                 if (p1.contains(p2) || p2.contains(p1)) {
@@ -88,14 +88,12 @@ public class Collision {
             }
         }
 
-        Penetration p = new Penetration();
-        p.distance =  overlap;
-        p.normal = n;
-        p.a = a;
-        p.b = b;
+        penetration.distance = overlap;
+        penetration.normal = n;
+        penetration.a = a;
+        penetration.b = b;
 
-        //If we make it here, there has been a collision.
-        return new Penetration(n, overlap, a, b);
+        return true;
     }
 
     private static Projection project(Shape a, Transform t, Vector2 axis) {

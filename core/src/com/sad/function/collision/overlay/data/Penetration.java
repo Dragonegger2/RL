@@ -17,12 +17,22 @@ public class Penetration {
         this.b = b;
     }
 
-    public Penetration reset() {
+    public Penetration clear() {
         normal = null;
         distance = -1;
         a = null;
         b = null;
 
         return this;
+    }
+
+    public Penetration clone() {
+        Penetration clone = new Penetration();
+        clone.normal = normal;
+        clone.distance = distance;
+        clone.a = a;
+        clone.b = b;
+
+        return clone;
     }
 }

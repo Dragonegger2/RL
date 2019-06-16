@@ -35,6 +35,7 @@ public class ShapeTest5 extends ApplicationAdapter {
     private Rectangle wall;
 
     private List<Shape> staticBodies;
+    private Penetration[] penetrations;
 
     @Override
     public void create() {
@@ -84,15 +85,19 @@ public class ShapeTest5 extends ApplicationAdapter {
         //Calculate all collisions.
         float minTranslationDistance = Float.MAX_VALUE;
         Vector2 direction = new Vector2();
-        Penetration[] penetrations = new Penetration[staticBodies.size()];
+        penetrations = new Penetration[staticBodies.size()];
         for (int i = 0; i < staticBodies.size(); i++) {
             //Naive way of doing this I beleive
             Transform t1 = new Transform(player.getOrigin());
             Transform t2 = new Transform(staticBodies.get(i).getOrigin());
 
-            Penetration p = Collision.testCollision(player, t1, staticBodies.get(i), t2);
-            if(p != null && p.distance != 0) {
-                player.getOrigin().add(p.normal.scl(p.distance));
+            Penetration penetration = new Penetration();
+
+            if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
+                Gdx.graphics.setTitle("Collision!");
+                player.getOrigin().add(penetration.normal.scl(penetration.distance));
+            } else {
+                Gdx.graphics.setTitle("Not colliding.");
             }
         }
     }
@@ -120,16 +125,6 @@ public class ShapeTest5 extends ApplicationAdapter {
         renderRectangle(player);
 
         shapeRenderer.setColor(Color.BLUE);
-//
-//        Vector2[] v = ground.getTransformedVertices(new Transform(ground.getOrigin()));
-//        for (int i = 0; i < v.length; i++) {
-//            renderPoint(v[i]);
-//        }
-//
-//        Vector2[] raw = ground.getRawVertices();
-//        for (int i = 0; i < raw.length; i++) {
-//            renderPoint(raw[i]);
-//        }
 
         shapeRenderer.end();
     }
@@ -159,25 +154,6 @@ public class ShapeTest5 extends ApplicationAdapter {
                     r.getHalfsizeWidth() * 2,
                     r.getHalfsizeHeight() * 2);
         }
-    }
-
-//    public void renderPolygon(Polygon p) {
-//        for (Vector2 vertex : p.transformedVertices()) {
-//
-//        }
-//        for (int i = 0; i < p.transformedVertices().size(); i++) {
-//            int j = i + 1;
-//            if (j == p.transformedVertices().size()) j = 0;
-//
-//            shapeRenderer.rectLine(p.transformedVertices().get(i).x,
-//                    p.transformedVertices().get(i).y,
-//                    p.transformedVertices().get(j).x,
-//                    p.transformedVertices().get(j).y, 0.0625f);
-//        }
-//    }
-
-    public void translate(float x, float y) {
-
     }
     //endregion
 }

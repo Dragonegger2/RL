@@ -23,6 +23,13 @@ public class Transform {
      * @return
      */
     public Vector2 getTransformed(Vector2 v) {
-        return v.cpy().add(x, y);
+        Vector2 tv = new Vector2();
+        float x = v.x;
+        float y = v.y;
+
+        tv.x = x + this.x;
+        tv.y = y + this.y;
+
+        return tv;
     }
 }
