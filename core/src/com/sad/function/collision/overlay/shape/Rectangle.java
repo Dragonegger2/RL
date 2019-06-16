@@ -4,25 +4,23 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Rectangle extends Polygon {
     private Vector2 halfsize;
-    private Vector2 position;
+    private Vector2 origin;
     private boolean centered;
-    public Rectangle(Vector2 position, Vector2 halfsize, boolean centered) {
+    public Rectangle(Vector2 origin, Vector2 halfsize, boolean centered) {
         super(calculateVertexes(halfsize, centered), centered);
 
         this.halfsize = halfsize;
-        this.position = position;
+        this.origin = origin;
         this.centered = centered;
     }
 
     private static Vector2[] calculateVertexes(Vector2 halfsize, boolean centered) {
         Vector2[] vertices = new Vector2[4];
         if (centered) {
-
-            vertices[0] = new Vector2(-halfsize.x / 2, -halfsize.y / 2);
-            vertices[1] = new Vector2(halfsize.x / 2, -halfsize.y / 2);
-            vertices[2] = new Vector2(halfsize.x / 2, halfsize.y / 2);
-            vertices[3] = new Vector2(-halfsize.x / 2, halfsize.y / 2);
-
+            vertices[0] = new Vector2(-halfsize.x, -halfsize.y);
+            vertices[1] = new Vector2(halfsize.x, -halfsize.y);
+            vertices[2] = new Vector2(halfsize.x, halfsize.y);
+            vertices[3] = new Vector2(-halfsize.x, halfsize.y);
         } else {
 
             vertices[0] = new Vector2(0, 0);
@@ -43,12 +41,15 @@ public class Rectangle extends Polygon {
      * TODO: Rectangles can be simplified, two of the axis are parallel so we don't need to check them.
      */
     @Override
-    public Vector2[] getAxes() {
+    public Vector2[] getAxes(Transform transform) {
         Vector2[] axes = new Vector2[nodes.length];
+
         for (int i = 0; i < nodes.length; i++) {
             int j = i + 1 == nodes.length ? 0 : i + 1;
 
-            axes[i] = new Vector2(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+            axes[i] = new Vector2(nodes[i].x + transform.x - nodes[j].x + transform.x ,
+                    nodes[i].y + transform.y - nodes[j].y + transform.y);
+
             axes[i].nor();
             axes[i] = normal(axes[i]);
         }
@@ -59,7 +60,16 @@ public class Rectangle extends Polygon {
      * Returns the list of vertices for this rectangle.
      * @return this rectangles vertices.
      */
-    public Vector2[] getVertices() { return nodes; }
+    public Vector2[] getRawVertices() { return nodes; }
+
+    public Vector2[] getTransformedVertices(Transform t) {
+        Vector2[] verts = new Vector2[nodes.length];
+        for(int i = 0; i < nodes.length; i++) {
+            verts[i] = nodes[i].cpy().add(t.x, t.y);
+        }
+
+        return verts;
+    }
 
     @Override
     public int getNumberOfVertices() {
@@ -78,11 +88,11 @@ public class Rectangle extends Polygon {
         return centered;
     }
 
-    public Vector2 getPosition() {
-        return position;
+    public Vector2 getOrigin() {
+        return origin;
     }
 
-    public void setPosition(Vector2 position) {
-        this.position = position;
+    public void setOrigin(Vector2 origin) {
+        this.origin = origin;
     }
 }

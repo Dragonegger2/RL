@@ -49,6 +49,8 @@ public class Fixture {
         this.type = type;
     }
 
+    //TODO Add dispose method for shapes.
+
     public void setParent(Body collidable) {
         parent = collidable;
     }

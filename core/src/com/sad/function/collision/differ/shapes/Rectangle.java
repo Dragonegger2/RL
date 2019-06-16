@@ -30,7 +30,6 @@ public class Rectangle extends Polygon {
             vertices.add(new Vector2(width, 0));
             vertices.add(new Vector2(width, height));
             vertices.add(new Vector2(0, height));
-
         }
 
         return vertices;

@@ -128,10 +128,10 @@ public class ShapeTest3 extends ApplicationAdapter {
 //        if (shape instanceof Polygon) {
 //            Polygon polygon = (Polygon) shape;
 //            shapeRenderer.setColor(Color.GRAY);
-//            for (int current = 0; current < polygon.getVertices().length - 1; current++) {
+//            for (int current = 0; current < polygon.getRawVertices().length - 1; current++) {
 //                int next = current + 1;
-//                if (next > polygon.getVertices().length - 1) next = 0;
-//                shapeRenderer.rectLine(polygon.getVertices()[current].x, polygon.getVertices()[current].y, polygon.getVertices()[next].x, polygon.getVertices()[next].y, 0.0625f);
+//                if (next > polygon.getRawVertices().length - 1) next = 0;
+//                shapeRenderer.rectLine(polygon.getRawVertices()[current].x, polygon.getRawVertices()[current].y, polygon.getRawVertices()[next].x, polygon.getRawVertices()[next].y, 0.0625f);
 //
 //            }
 //        }

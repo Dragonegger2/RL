@@ -12,16 +12,17 @@ public class Circle extends Shape {
     }
 
     @Override
-    public Vector2 getVertex(int i, Vector2 axis) {
-        Vector2 norAxis = axis.cpy().nor();
-
-        if (i == 0) {
-            return new Vector2(origin.x + (-norAxis.y * radius),
-                    origin.y + (norAxis.x * radius));
-        } else {
-            return new Vector2(origin.x + (norAxis.y * radius),
-                    origin.y + (-norAxis.x * radius));
-        }
+    public Vector2 getVertex(int i, Transform t, Vector2 axis) {
+        return null;
+//        Vector2 norAxis = axis.cpy().nor();
+//
+//        if (i == 0) {
+//            return new Vector2(origin.x + (-norAxis.y * radius),
+//                    origin.y + (norAxis.x * radius));
+//        } else {
+//            return new Vector2(origin.x + (norAxis.y * radius),
+//                    origin.y + (-norAxis.x * radius));
+//        }
     }
 
     /**
@@ -30,7 +31,7 @@ public class Circle extends Shape {
      * @return an empty set.
      */
     @Override
-    public Vector2[] getAxes() {
+    public Vector2[] getAxes(Transform t) {
         return new Vector2[]{};
     }
 

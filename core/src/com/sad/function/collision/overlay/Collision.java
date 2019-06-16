@@ -2,10 +2,7 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.data.Penetration;
-import com.sad.function.collision.overlay.shape.Circle;
-import com.sad.function.collision.overlay.shape.Projection;
-import com.sad.function.collision.overlay.shape.Rectangle;
-import com.sad.function.collision.overlay.shape.Shape;
+import com.sad.function.collision.overlay.shape.*;
 
 import java.lang.reflect.Array;
 
@@ -24,18 +21,23 @@ public class Collision {
         //TODO: Simplify the two axis cases for rectangles down to two; You do not need to calculate against parallel axes.
         return null;
     }
+
     public static Penetration testCollision(Shape a, Shape b) {
-        Vector2[] axes1 = a.getAxes();
-        Vector2[] axes2 = b.getAxes();
+        Transform sAT = new Transform(a.getOrigin().x, a.getOrigin().y);
+        Transform sBT = new Transform(b.getOrigin().x, b.getOrigin().y);
+
+        Vector2[] axes1 = a.getAxes(sAT);
+        Vector2[] axes2 = b.getAxes(sBT);
 
         Vector2 smallest = new Vector2();
         float overlap = Float.POSITIVE_INFINITY;//Really large value.
 
-        for (int i = 0; i < axes1.length; i++) {
+        int size = axes1.length;
+        for (int i = 0; i < size; i++) {
             Vector2 axis = axes1[i];
 
-            Projection p1 = project(a, axis);
-            Projection p2 = project(b, axis);
+            Projection p1 = project(a, sAT, axis);
+            Projection p2 = project(b, sAT, axis);
 
             if (!p1.overlaps(p2)) {
                 return null;
@@ -44,7 +46,7 @@ public class Collision {
 
                 if (p1.contains(p2) || p2.contains(p1)) {
                     float min = abs(p1.getMin() - p2.getMin());
-                    float max = abs(p1.getMax() - p2.getMin());
+                    float max = abs(p1.getMax() - p2.getMax());
 
                     if (max > min) {
                         axis.scl(-1);
@@ -63,8 +65,8 @@ public class Collision {
         for (int i = 0; i < axes2.length; i++) {
             Vector2 axis = axes2[i];
 
-            Projection p1 = project(a, axis);
-            Projection p2 = project(b, axis);
+            Projection p1 = project(a, sAT, axis);
+            Projection p2 = project(b, sBT, axis);
 
             if (!p1.overlaps(p2)) {
                 return null;
@@ -87,17 +89,22 @@ public class Collision {
                 }
             }
         }
+        Penetration p = new Penetration();
+        p.distance =  overlap;
+        p.normal = smallest;
+        p.a = a;
+        p.b = b;
 
         //If we make it here, there has been a collision.
         return new Penetration(smallest, overlap, a, b);
     }
 
-    private static Projection project(Shape a, Vector2 axis) {
+    private static Projection project(Shape a, Transform t, Vector2 axis) {
         // Project the shapes along the axis
-        float min = axis.dot(a.getVertex(0, axis)); // Get the first min
+        float min = axis.dot(a.getVertex(0, t, axis)); // Get the first min
         float max = min;
         for (int i = 1; i < a.getNumberOfVertices(); i++) {
-            float p = axis.dot(a.getVertex(i, axis)); // Get the dot product between the axis and the node
+            float p = axis.dot(a.getVertex(i, t, axis)); // Get the dot product between the axis and the node
             if (p < min) {
                 min = p;
             } else if (p > max) {

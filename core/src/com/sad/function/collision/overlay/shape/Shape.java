@@ -6,8 +6,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 public abstract class Shape {
     protected Fixture parent;
 
-    public abstract Vector2 getVertex(int i, Vector2 axis);
-    public abstract Vector2[] getAxes();
+    public abstract Vector2 getOrigin();
+    public abstract Vector2 getVertex(int i, Transform t, Vector2 axis);
+    public abstract Vector2[] getAxes(Transform transform);
     public abstract int getNumberOfVertices();
     /**
      * Returns the vector that is perpendicular to the provided one.
@@ -15,11 +16,6 @@ public abstract class Shape {
      */
     public Vector2 normal(Vector2 v) {
         return new Vector2(-1 * v.y, v.x);
-    }
-
-    public class Transform {
-        public float x = 0;
-        public float y = 0;
     }
 
     public void setParentFixture(Fixture f) { this.parent = f; }

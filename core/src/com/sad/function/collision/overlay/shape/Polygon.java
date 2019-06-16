@@ -2,6 +2,9 @@ package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * All axis are stored in local coordinates.
+ */
 public class Polygon extends Shape {
     Vector2 origin; //TODO: Add a method to calculate the origin.
     Vector2[] nodes;
@@ -63,13 +66,18 @@ public class Polygon extends Shape {
     }
 
     @Override
-    public Vector2 getVertex(int i, Vector2 axis) {
-        return nodes[i];
+    public Vector2 getOrigin() {
+        return centerOfMass(this.nodes); //TODO: Make this actually calculated...
+    }
+
+    @Override
+    public Vector2 getVertex(int i, Transform t, Vector2 axis) {
+        return t.getTransformed(nodes[i]);
     }
 
     @Override
 
-    public Vector2[] getAxes() {
+    public Vector2[] getAxes(Transform transform) {
         Vector2[] axes = new Vector2[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
             int j = i + 1 == nodes.length ? 0 : i + 1;
