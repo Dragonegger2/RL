@@ -108,19 +108,19 @@ public class ShapeTest3 extends ApplicationAdapter {
 //        if (shape instanceof Circle) {
 //            Circle circle = (Circle) shape;
 //            shapeRenderer.setColor(Color.RED);
-//            shapeRenderer.circle(circle.getOrigin().x, circle.getOrigin().y, circle.radius, 15);
+//            shapeRenderer.circle(circle.getCenter().x, circle.getCenter().y, circle.radius, 15);
 //            return;
 //        }
 //        if (shape instanceof Rectangle) {
 //            Rectangle rectangle = (Rectangle) shape;
 //            shapeRenderer.setColor(Color.GREEN);
-//            shapeRenderer.rect(rectangle.getOrigin().x - rectangle.halfsize.x, rectangle.getOrigin().y - rectangle.halfsize.y, rectangle.halfsize.x * 2, rectangle.halfsize.y * 2);
+//            shapeRenderer.rect(rectangle.getCenter().x - rectangle.halfsize.x, rectangle.getCenter().y - rectangle.halfsize.y, rectangle.halfsize.x * 2, rectangle.halfsize.y * 2);
 //            return;
 //        }
 //        if (shape instanceof Point) {
 //            Point point = (Point) shape;
 //            shapeRenderer.setColor(Color.BLUE);
-//            shapeRenderer.circle(point.getOrigin().x, point.getOrigin().y, 0.0625f, 15);
+//            shapeRenderer.circle(point.getCenter().x, point.getCenter().y, 0.0625f, 15);
 //            return;
 //        }
 //        if (shape instanceof Line) {

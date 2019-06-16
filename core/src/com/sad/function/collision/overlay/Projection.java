@@ -1,4 +1,4 @@
-package com.sad.function.collision.overlay.shape;
+package com.sad.function.collision.overlay;
 
 public class Projection {
     private float min;

@@ -60,7 +60,7 @@
 //        }
 //
 ////        speed.y += -9.8 * delta;
-////        player.getOrigin().add(speed.x * delta, speed.y * delta);
+////        player.getCenter().add(speed.x * delta, speed.y * delta);
 //
 ////        List<ShapeCollision> collisions = Collision.shapeWithShapes(player, collidables, null);
 ////        if(!collisions.isEmpty()) {

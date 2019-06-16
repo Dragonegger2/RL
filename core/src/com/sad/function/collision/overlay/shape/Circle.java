@@ -49,7 +49,7 @@ public class Circle extends Shape {
         return radius;
     }
 
-    public Vector2 getOrigin() { return origin; }
+    public Vector2 getCenter() { return origin; }
 
     /**
      * Returns the furthest vertex in a given direction.
@@ -58,7 +58,7 @@ public class Circle extends Shape {
      */
     public Vector2 getSupportPoint(Vector2 direction, Transform transform) {
         Vector2 nAxis = direction.cpy().nor();
-        Vector2 center = getOrigin().cpy();
+        Vector2 center = getCenter().cpy();
 
         center.add(transform.x, transform.y);
 

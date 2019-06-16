@@ -1,27 +1,42 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
+import com.sad.function.collision.overlay.Projection;
 
-public abstract class Shape {
-    protected Fixture parent;
+import java.util.UUID;
 
-    public abstract Vector2 getOrigin();
-    public abstract Vector2 getVertex(int i, Transform t, Vector2 axis);
-    public abstract Vector2[] getAxes(Transform transform);
-    public abstract int getNumberOfVertices();
+public interface Shape {
+    UUID getId();
+    Vector2 getCenter();
+    float getRadius();
+    float getRadius(Vector2 center);
+
+    Projection project(Vector2 vector);
+    Projection project(Vector2 vector, Transform transform);
+
+    boolean contains(Vector2 point);
+    boolean contains(Vector2 point, Transform transform);
+
+//    float createMass(float density); TODO Don't need this yet.
+
+//    Vector2[] getAxes(Transform transform);
+
+
+
+
+
+
 
 
     /**
      * Returns the vector that is perpendicular to the provided one.
      * @return the perpendicular vector.
      */
-    public static Vector2 normal(Vector2 v) {
-        return new Vector2(-1 * v.y, v.x);
+    static Vector2 normal(Vector2 v) {
+        return new Vector2(-v.y, v.x);
     }
 
-    public void setParentFixture(Fixture f) { this.parent = f; }
-    public Fixture getParentFixture() { return parent; }
-    public boolean hasParentFixture() { return parent != null; }
-
+//    public void setParentFixture(Fixture f) { this.parent = f; }
+//    public Fixture getParentFixture() { return parent; }
+//    public boolean hasParentFixture() { return parent != null; }
 }

@@ -77,10 +77,10 @@ public class ShapeTest5 extends ApplicationAdapter {
             speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
         }
 
-        Vector2 potentialPosition = player.getOrigin().add(speed.x, speed.y);
+        Vector2 potentialPosition = player.getCenter().add(speed.x, speed.y);
 
 
-//        player.getAxes(new Transform(player.getOrigin()));
+//        player.getAxes(new Transform(player.getCenter()));
 
         //Calculate all collisions.
         float minTranslationDistance = Float.MAX_VALUE;
@@ -88,14 +88,14 @@ public class ShapeTest5 extends ApplicationAdapter {
         penetrations = new Penetration[staticBodies.size()];
         for (int i = 0; i < staticBodies.size(); i++) {
             //Naive way of doing this I beleive
-            Transform t1 = new Transform(player.getOrigin());
-            Transform t2 = new Transform(staticBodies.get(i).getOrigin());
+            Transform t1 = new Transform(player.getCenter());
+            Transform t2 = new Transform(staticBodies.get(i).getCenter());
 
             Penetration penetration = new Penetration();
 
             if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
                 Gdx.graphics.setTitle("Collision!");
-                player.getOrigin().add(penetration.normal.scl(penetration.distance));
+                player.getCenter().add(penetration.normal.scl(penetration.distance));
             } else {
                 Gdx.graphics.setTitle("Not colliding.");
             }
@@ -105,13 +105,13 @@ public class ShapeTest5 extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
-        camera.position.x = player.getOrigin().x;
-        camera.position.y = player.getOrigin().y;
+        camera.position.x = player.getCenter().x;
+        camera.position.y = player.getCenter().y;
     }
 
     //region rendering logic
     public void r() {
-        camera.position.set(player.getOrigin().x, player.getOrigin().y, 0);
+        camera.position.set(player.getCenter().x, player.getCenter().y, 0);
         camera.update();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -136,8 +136,8 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     public void renderCircle(Circle c) {
         shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.circle(c.getOrigin().x,
-                c.getOrigin().y,
+        shapeRenderer.circle(c.getCenter().x,
+                c.getCenter().y,
                 c.getRadius(),
                 15);
     }
@@ -145,12 +145,12 @@ public class ShapeTest5 extends ApplicationAdapter {
     public void renderRectangle(Rectangle r) {
         shapeRenderer.setColor(Color.FIREBRICK);
         if (r.isCentered()) {
-            shapeRenderer.rect(r.getOrigin().x - r.getHalfsizeWidth(),
-                    r.getOrigin().y - r.getHalfsizeHeight(),
+            shapeRenderer.rect(r.getCenter().x - r.getHalfsizeWidth(),
+                    r.getCenter().y - r.getHalfsizeHeight(),
                     r.getHalfsizeWidth() * 2,
                     r.getHalfsizeHeight() * 2);
         } else {
-            shapeRenderer.rect(r.getOrigin().x, r.getOrigin().y,
+            shapeRenderer.rect(r.getCenter().x, r.getCenter().y,
                     r.getHalfsizeWidth() * 2,
                     r.getHalfsizeHeight() * 2);
         }
