@@ -3,7 +3,6 @@ package com.sad.function.game.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.sad.function.game.ShapeTest3;
-import com.sad.function.game.ShapeTest4;
 import com.sad.function.game.ShapeTest5;
 
 public class DesktopLauncher {

@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.differ.shapes.Shape;
 import com.sad.function.collision.overlay.Collision;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.Circle;
@@ -16,9 +15,6 @@ import com.sad.function.collision.overlay.shape.Rectangle;
 import com.sad.function.collision.overlay.shape.Transform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
@@ -28,7 +24,6 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
-    private List<Shape> collidables = new ArrayList<>();
     private Vector2 speed;
 
     private Rectangle player;

@@ -29,7 +29,7 @@ public class Collision {
         Vector2[] axes1 = a.getAxes(sAT);
         Vector2[] axes2 = b.getAxes(sBT);
 
-        Vector2 smallest = new Vector2();
+        Vector2 n = new Vector2();
         float overlap = Float.POSITIVE_INFINITY;//Really large value.
 
         int size = axes1.length;
@@ -58,7 +58,7 @@ public class Collision {
 
                 if (o < overlap) {
                     overlap = o;
-                    smallest = axis;
+                    n = axis;
                 }
             }
         }
@@ -85,18 +85,19 @@ public class Collision {
                 }
                 if (o < overlap) {
                     overlap = o;
-                    smallest = axis;
+                    n = axis;
                 }
             }
         }
+
         Penetration p = new Penetration();
         p.distance =  overlap;
-        p.normal = smallest;
+        p.normal = n;
         p.a = a;
         p.b = b;
 
         //If we make it here, there has been a collision.
-        return new Penetration(smallest, overlap, a, b);
+        return new Penetration(n, overlap, a, b);
     }
 
     private static Projection project(Shape a, Transform t, Vector2 axis) {
