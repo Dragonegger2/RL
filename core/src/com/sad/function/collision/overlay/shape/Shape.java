@@ -6,9 +6,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 public abstract class Shape {
     protected Fixture parent;
 
-    public abstract Vector2 getOrigin();
-    public abstract Vector2 getVertex(int i, Transform t, Vector2 axis);
-    public abstract Vector2[] getAxes(Transform transform);
+    public abstract Vector2[] getAxes(Vector2[] foci, Transform transform);
+    public abstract Vector2[] getFoci(Transform transform);
+
     public abstract int getNumberOfVertices();
 
 

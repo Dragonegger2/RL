@@ -6,15 +6,12 @@ import com.badlogic.gdx.math.Vector2;
  * All axis are stored in local coordinates.
  */
 public class Polygon extends Shape {
-    Vector2 origin; //TODO: Add a method to calculate the origin.
-    Vector2[] nodes;
+    final Vector2[] vertices;
+    final Vector2[] normals;
 
-    public Polygon(Vector2[] vertexes, boolean centered) {
-        nodes = new Vector2[vertexes.length];
-
-        for (int i = 0; i < vertexes.length; i++) {
-            nodes[i] = vertexes[i].cpy();
-        }
+    Polygon(Vector2 center, double radius, Vector2[] vertices, Vector2[] normals) {
+        this.vertices = vertices;
+        this.normals = normals;
     }
 
     /**
@@ -65,24 +62,71 @@ public class Polygon extends Shape {
         return res;
     }
 
-    @Override
-    public Vector2 getOrigin() {
-        return centerOfMass(this.nodes); //TODO: Make this actually calculated...
+    public Vector2[] getAxes(Vector2[] foci, Transform transform) {
+        int fociSize = foci != null ? foci.length : 0;
+        // get the number of vertices this polygon has
+        int size = this.vertices.length;
+        // the axes of a polygon are created from the normal of the edges
+        // plus the closest point to each focus
+        Vector2[] axes = new Vector2[size + fociSize];
+        int n = 0;
+        // loop over the edge normals and put them into world space
+        for (int i = 0; i < size; i++) {
+            // create references to the current points
+            Vector2 v = this.normals[i];
+            // transform it into world space and add it to the list
+            axes[n++] = transform.getTransformedR(v);
+        }
+        // loop over the focal points and find the closest
+        // points on the polygon to the focal points
+        for (int i = 0; i < fociSize; i++) {
+            // get the current focus
+            Vector2 f = foci[i];
+            // create a place for the closest point
+            Vector2 closest = transform.getTransformed(this.vertices[0]);
+//            double d = f.distanceSquared(closest);
+            float d = f.cpy().sub(closest).len2();
+            // find the minimum distance vertex
+            for (int j = 1; j < size; j++) {
+                // get the vertex
+                Vector2 p = this.vertices[j];
+                // transform it into world space
+                p = transform.getTransformed(p);
+                // get the squared distance to the focus
+//                double dt = f.distanceSquared(p);
+                float dt = f.cpy().sub(p).len2();
+                // compare with the last distance
+                if (dt < d) {
+                    // if its closer then save it
+                    closest = p;
+                    d = dt;
+                }
+            }
+            // once we have found the closest point create
+            // a vector from the focal point to the point
+            Vector2 axis = f.cpy().sub(closest);//Make sure a -> b
+            // normalize it
+//            axis.normalize();
+            axis.nor();
+            // add it to the array
+            axes[n++] = axis;
+        }
+        // return all the axes
+        return axes;
     }
 
     @Override
-    public Vector2 getVertex(int i, Transform t, Vector2 axis) {
-        return t.getTransformed(nodes[i]);
+    public Vector2[] getFoci(Transform transform) {
+        return null;
     }
 
-    @Override
-
+    //    @Override
     public Vector2[] getAxes(Transform transform) {
-        Vector2[] axes = new Vector2[nodes.length];
-        for (int i = 0; i < nodes.length; i++) {
-            int j = i + 1 == nodes.length ? 0 : i + 1;
+        Vector2[] axes = new Vector2[vertices.length];
+        for (int i = 0; i < vertices.length; i++) {
+            int j = i + 1 == vertices.length ? 0 : i + 1;
 
-            axes[i] = new Vector2(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+            axes[i] = new Vector2(vertices[i].x - vertices[j].x, vertices[i].y - vertices[j].y);
             axes[i].nor();
             axes[i] = normal(axes[i]);
         }
@@ -91,6 +135,21 @@ public class Polygon extends Shape {
 
     @Override
     public int getNumberOfVertices() {
-        return nodes.length;
+        return vertices.length;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Polygon[").append(super.toString())
+                .append("|Vertices={");
+        for (int i = 0; i < this.vertices.length; i++) {
+            if (i != 0) sb.append(",");
+            sb.append(this.vertices[i]);
+        }
+        sb.append("}")
+                .append("]");
+        return sb.toString();
+    }
+
 }

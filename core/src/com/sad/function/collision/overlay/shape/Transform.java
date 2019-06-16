@@ -25,4 +25,8 @@ public class Transform {
     public Vector2 getTransformed(Vector2 v) {
         return v.cpy().add(x, y);
     }
+
+    public Vector2 getTransformedR(Vector2 v) {
+        return null;
+    }
 }
