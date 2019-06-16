@@ -37,7 +37,7 @@ public class Collision {
             Vector2 axis = axes1[i];
 
             Projection p1 = project(a, sAT, axis);
-            Projection p2 = project(b, sAT, axis);
+            Projection p2 = project(b, sBT, axis);
 
             if (!p1.overlaps(p2)) {
                 return null;
