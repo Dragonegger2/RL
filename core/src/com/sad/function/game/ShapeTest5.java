@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.Body;
 import com.sad.function.collision.overlay.Collision;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.*;
@@ -33,7 +34,7 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     private List<Convex> staticBodies;
     private Penetration[] penetrations;
-
+    private Body p;
     @Override
     public void create() {
 
@@ -49,6 +50,10 @@ public class ShapeTest5 extends ApplicationAdapter {
         wall   = new Rectangle(1, 10);
 
         player.translate(1, 1);
+
+        Convex c = new Rectangle(1,1);
+        p.addFixture(c);
+
 
         staticBodies.add(wall);
         staticBodies.add(ground);

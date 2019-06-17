@@ -98,6 +98,7 @@ public class Body extends AbstractCollidable<BodyFixture> {
     //Apply force.
 
 
+    public Vector2 getVelocity() { return this.velocity; }
     private void setAsleep(boolean b) {
         this.asleep = b;
     }
