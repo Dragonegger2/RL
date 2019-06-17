@@ -84,7 +84,7 @@ public class ShapeTest3 extends ApplicationAdapter {
         r();
 
 
-        Gdx.graphics.setTitle(String.format("FPS: %s | Cam: (%s, %s) | Vel: (%s, %s)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, speed.x, speed.y));
+        Gdx.graphics.setTitle(String.format("FPS: %shape | Cam: (%shape, %shape) | Vel: (%shape, %shape)", Gdx.graphics.getFramesPerSecond(), camera.position.x, camera.position.y, speed.x, speed.y));
         //endregion
     }
 

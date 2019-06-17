@@ -22,20 +22,59 @@ public class Collision {
         return null;
     }
 
-    public static boolean detect(Shape a, Transform sAT, Shape b, Transform sBT, Penetration penetration) {
+    public static boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2) {
 
-        Vector2[] axes1 = a.getAxes(sAT);
-        Vector2[] axes2 = b.getAxes(sBT);
+        Vector2[] foci1 = convex1.getFoci(transform1);
+        Vector2[] foci2 = convex2.getFoci(transform2);
+
+        Vector2[] axes1 = convex1.getAxes(foci2, transform1);
+        Vector2[] axes2 = convex2.getAxes(foci1, transform2);
 
         Vector2 n = new Vector2();
+
+        int size = axes1.length;
+        for (int i = 0; i < size; i++) {
+            Vector2 axis = axes1[i];
+
+            Projection p1 = convex1.project(axis, transform1);
+            Projection p2 = convex2.project(axis, transform2);
+
+            if (!p1.overlaps(p2)) {
+                return false;
+            }
+        }
+        for (int i = 0; i < axes2.length; i++) {
+            Vector2 axis = axes2[i];
+
+            Projection p1 = convex1.project(axis, transform1);
+            Projection p2 = convex2.project(axis, transform2);
+
+            if (!p1.overlaps(p2)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2, Penetration penetration) {
+
+        Vector2[] foci1 = convex1.getFoci(transform1);
+        Vector2[] foci2 = convex2.getFoci(transform2);
+
+        Vector2[] axes1 = convex1.getAxes(foci2, transform1);
+        Vector2[] axes2 = convex2.getAxes(foci1, transform2);
+
+        Vector2 n = new Vector2();
+
         float overlap = Float.POSITIVE_INFINITY;//Really large value.
 
         int size = axes1.length;
         for (int i = 0; i < size; i++) {
             Vector2 axis = axes1[i];
 
-            Projection p1 = project(a, sAT, axis);
-            Projection p2 = project(b, sBT, axis);
+            Projection p1 = convex1.project(axis, transform1);
+            Projection p2 = convex2.project(axis, transform2);
 
             if (!p1.overlaps(p2)) {
                 return false;
@@ -63,8 +102,8 @@ public class Collision {
         for (int i = 0; i < axes2.length; i++) {
             Vector2 axis = axes2[i];
 
-            Projection p1 = project(a, sAT, axis);
-            Projection p2 = project(b, sBT, axis);
+            Projection p1 = convex1.project(axis, transform1);
+            Projection p2 = convex2.project(axis, transform2);
 
             if (!p1.overlaps(p2)) {
                 return false;
@@ -88,38 +127,19 @@ public class Collision {
             }
         }
 
+        Vector2 c1 = transform1.getTransformed(convex1.getCenter());
+        Vector2 c2 = transform2.getTransformed(convex2.getCenter());
+        Vector2 cToC = c2.cpy().sub(c1);
+
+        if(cToC.dot(n) < 0) {
+            n.scl(-1);
+        }
+
         penetration.distance = overlap;
         penetration.normal = n;
-        penetration.a = a;
-        penetration.b = b;
+        penetration.a = convex1;
+        penetration.b = convex2;
 
         return true;
-    }
-
-    private static Projection project(Shape a, Transform t, Vector2 axis) {
-        // Project the shapes along the axis
-        float min = axis.dot(a.getVertex(0, t, axis)); // Get the first min
-        float max = min;
-        for (int i = 1; i < a.getNumberOfVertices(); i++) {
-            float p = axis.dot(a.getVertex(i, t, axis)); // Get the dot product between the axis and the node
-            if (p < min) {
-                min = p;
-            } else if (p > max) {
-                max = p;
-            }
-        }
-        return new Projection(min, max);
-    }
-
-    public static Vector2[] concatenate(Vector2[] a, Vector2[] b) {
-        // Concatenate the two arrays of nodes
-        int aLen = a.length;
-        int bLen = b.length;
-
-        Vector2[] c = (Vector2[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
-        System.arraycopy(a, 0, c, 0, aLen);
-        System.arraycopy(b, 0, c, aLen, bLen);
-
-        return c;
     }
 }

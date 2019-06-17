@@ -48,7 +48,7 @@ public class Rectangle extends Polygon {
             Vector2 focus = foci[i];
             // create a place for the closest point
             Vector2 closest = transform.getTransformed(this.vertices[0]);
-            float d = focus.cpy().sub(closest).len2();
+            float d = closest.cpy().sub(focus).len2();
             // find the minimum distance vertex
             for (int j = 1; j < 4; j++) {
                 // get the vertex
@@ -56,7 +56,7 @@ public class Rectangle extends Polygon {
                 // transform it into world space
                 vertex = transform.getTransformed(vertex);
                 // get the squared distance to the focus
-                float dt = focus.cpy().sub(vertex).len2();
+                float dt = vertex.cpy().sub(focus).len2();//focus.cpy().sub(vertex).len2();
                 // compare with the last distance
                 if (dt < d) {
                     // if its closer then save it

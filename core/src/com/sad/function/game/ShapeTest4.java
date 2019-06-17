@@ -71,7 +71,7 @@
 //        player.getPosition().sub(0f, speed.y * delta);
 //        r();
 //
-//        Gdx.graphics.setTitle(String.format("P: {%s, %s) C: {%s, %s)", player.getPosition().x,
+//        Gdx.graphics.setTitle(String.format("P: {%shape, %shape) C: {%shape, %shape)", player.getPosition().x,
 //                player.getPosition().y,
 //                camera.position.x,
 //                camera.position.y));

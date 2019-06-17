@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.Collision;
 import com.sad.function.collision.overlay.data.Penetration;
-import com.sad.function.collision.overlay.shape.Circle;
-import com.sad.function.collision.overlay.shape.Rectangle;
-import com.sad.function.collision.overlay.shape.Shape;
-import com.sad.function.collision.overlay.shape.Transform;
+import com.sad.function.collision.overlay.shape.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +31,7 @@ public class ShapeTest5 extends ApplicationAdapter {
     private Rectangle ground;
     private Rectangle wall;
 
-    private List<Shape> staticBodies;
+    private List<Convex> staticBodies;
     private Penetration[] penetrations;
 
     @Override
@@ -47,10 +44,12 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         staticBodies = new ArrayList<>();
 
-        player = new Rectangle(new Vector2(3, 0), new Vector2(0.5f, 0.5f), true);
-        ground = new Rectangle(new Vector2(-2, -1f), new Vector2(10, .5f), true);
-        ground = new Rectangle(new Vector2(-2, -1f), new Vector2(10, .5f), true);
-        wall = new Rectangle(new Vector2(-2, -1f), new Vector2(1, 10), true);
+        player = new Rectangle(1, 1);
+        ground = new Rectangle(20, 1);
+        wall   = new Rectangle(1, 10);
+
+        player.translate(1, 1);
+
         staticBodies.add(wall);
         staticBodies.add(ground);
     }
@@ -83,19 +82,16 @@ public class ShapeTest5 extends ApplicationAdapter {
 //        player.getAxes(new Transform(player.getCenter()));
 
         //Calculate all collisions.
-        float minTranslationDistance = Float.MAX_VALUE;
-        Vector2 direction = new Vector2();
         penetrations = new Penetration[staticBodies.size()];
         for (int i = 0; i < staticBodies.size(); i++) {
-            //Naive way of doing this I beleive
+
             Transform t1 = new Transform(player.getCenter());
-            Transform t2 = new Transform(staticBodies.get(i).getCenter());
+            Transform t2 = new Transform(new Vector2(0,0));
 
             Penetration penetration = new Penetration();
 
             if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
                 Gdx.graphics.setTitle("Collision!");
-                player.getCenter().add(penetration.normal.scl(penetration.distance));
             } else {
                 Gdx.graphics.setTitle("Not colliding.");
             }
@@ -143,17 +139,9 @@ public class ShapeTest5 extends ApplicationAdapter {
     }
 
     public void renderRectangle(Rectangle r) {
-        shapeRenderer.setColor(Color.FIREBRICK);
-        if (r.isCentered()) {
-            shapeRenderer.rect(r.getCenter().x - r.getHalfsizeWidth(),
-                    r.getCenter().y - r.getHalfsizeHeight(),
-                    r.getHalfsizeWidth() * 2,
-                    r.getHalfsizeHeight() * 2);
-        } else {
-            shapeRenderer.rect(r.getCenter().x, r.getCenter().y,
-                    r.getHalfsizeWidth() * 2,
-                    r.getHalfsizeHeight() * 2);
-        }
+        Vector2 tOrigin = r.getCenter();
+
+        shapeRenderer.rect(tOrigin.x - r.getWidth()/2, tOrigin.y - r.getHeight()/2, r.getWidth(), r.getHeight());
     }
     //endregion
 }

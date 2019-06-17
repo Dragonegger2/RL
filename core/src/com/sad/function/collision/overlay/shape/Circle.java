@@ -2,7 +2,7 @@ package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class Circle extends Shape {
+public class Circle {
     private Vector2 origin;
     private float radius;
 
@@ -11,7 +11,7 @@ public class Circle extends Shape {
         this.radius = radius;
     }
 
-    @Override
+//    @Override
     public Vector2 getVertex(int i, Transform t, Vector2 axis) {
         return null;
 //        Vector2 norAxis = axis.cpy().nor();
@@ -30,7 +30,7 @@ public class Circle extends Shape {
      *
      * @return an empty set.
      */
-    @Override
+//    @Override
     public Vector2[] getAxes(Transform t) {
         return new Vector2[]{};
     }
@@ -38,9 +38,9 @@ public class Circle extends Shape {
     /**
      * A circle has two nodes.
      *
-     * @return 2. It's always 2.
+     * @return 2. It'shape always 2.
      */
-    @Override
+//    @Override
     public int getNumberOfVertices() {
         return 2;
     }

@@ -66,4 +66,14 @@ public class Transform {
         tv.y = -this.sint * tx + this.cost * ty;
         return tv;
     }
+
+    public void translate(float x, float y) {
+        this.x += x;
+        this.y += y;
+    }
+
+    public void translate(Vector2 vector) {
+        this.x += vector.x;
+        this.y += vector.y;
+    }
 }

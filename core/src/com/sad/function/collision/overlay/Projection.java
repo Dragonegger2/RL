@@ -15,7 +15,7 @@ public class Projection {
      * @return if the two projects overlap.
      */
     public boolean overlaps(Projection p2) {
-        return (!(p2.max < this.min || this.max < p2.min));
+        return !(this.min > p2.max || p2.min > this.max);
     }
 
     /**
