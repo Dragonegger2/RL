@@ -41,8 +41,9 @@ public class ShapeTest5 extends ApplicationAdapter {
         player.addFixture(c);
         player.translate(5,1.4f);
         ground = new Body();
-        Convex gs = new Rectangle(20, 1);
+        Convex gs = new Rectangle(20, 10);
         ground.addFixture(gs);
+        ground.translate(-10,0);
     }
 
     @Override
@@ -77,32 +78,15 @@ public class ShapeTest5 extends ApplicationAdapter {
         if (!Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             player.getVelocity().set(playerSpeed.x, 0);
         }
-        if(Collision.detect(player.getFixture(0).getShape(), player.getTransform(), ground.getFixture(0).getShape(), ground.getTransform())) {
+
+        player.getTransform().translate(player.getVelocity());
+        Penetration p = new Penetration();
+        if(Collision.detect(player.getFixture(0).getShape(), player.getTransform(), ground.getFixture(0).getShape(), ground.getTransform(), p)) {
             logger.info("Collision detected!");
+            player.getTransform().translate(p.normal.cpy().scl(-p.distance));
         }
 
 
-        player.getTransform().translate(player.getVelocity());
-//        Vector2 potentialPosition = player.getCenter().add(speed.x, speed.y);
-
-
-//        player.getAxes(new Transform(player.getCenter()));
-
-        //Calculate all collisions.
-//        penetrations = new Penetration[staticBodies.size()];
-//        for (int i = 0; i < staticBodies.size(); i++) {
-//
-//            Transform t1 = new Transform(player.getCenter());
-//            Transform t2 = new Transform(new Vector2(0,0));
-//
-//            Penetration penetration = new Penetration();
-//
-//            if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
-//                Gdx.graphics.setTitle("Collision!");
-//            } else {
-//                Gdx.graphics.setTitle("Not colliding.");
-//            }
-//        }
     }
 
     @Override
@@ -123,10 +107,10 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        shapeRenderer.setColor(Color.FIREBRICK);
-        renderBody(player);
         shapeRenderer.setColor(Color.GRAY);
         renderBody(ground);
+        shapeRenderer.setColor(Color.FIREBRICK);
+        renderBody(player);
 
         shapeRenderer.setColor(Color.BLUE);
 
