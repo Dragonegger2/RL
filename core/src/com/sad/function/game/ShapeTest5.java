@@ -15,7 +15,6 @@ import com.sad.function.collision.overlay.shape.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
@@ -26,37 +25,24 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
-    private Vector2 speed;
 
-    private Rectangle player;
-    private Rectangle ground;
-    private Rectangle wall;
-
-    private List<Convex> staticBodies;
+    private List<Body> staticB;
     private Penetration[] penetrations;
-    private Body p;
+    private Body player;
+    private Body ground;
     @Override
     public void create() {
 
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
 
-        speed = new Vector2();
-
-        staticBodies = new ArrayList<>();
-
-        player = new Rectangle(1, 1);
-        ground = new Rectangle(20, 1);
-        wall   = new Rectangle(1, 10);
-
-        player.translate(1, 1);
-
+        player = new Body(1);
         Convex c = new Rectangle(1,1);
-        p.addFixture(c);
-
-
-        staticBodies.add(wall);
-        staticBodies.add(ground);
+        player.addFixture(c);
+        player.translate(5,1.4f);
+        ground = new Body();
+        Convex gs = new Rectangle(20, 1);
+        ground.addFixture(gs);
     }
 
     @Override
@@ -70,49 +56,65 @@ public class ShapeTest5 extends ApplicationAdapter {
         float delta = 1f / 60f;   //TODO fix my timestep.
 
 
+        float speed = 0.125f;
+        Vector2 playerSpeed = player.getVelocity();
         //region Input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            speed.add(-0.125f, 0);
+            player.getVelocity().set(-speed, playerSpeed.y);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            speed.add(0.125f, 0);
+            player.getVelocity().set(speed, playerSpeed.y);
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            speed.set(0, speed.y);//Stop moving in the xdirection if no keys are pressed.
+            player.getVelocity().set(0, player.getVelocity().y);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            player.getVelocity().set(playerSpeed.x, speed);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            player.getVelocity().set(playerSpeed.x, -speed);
+        }
+        if (!Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            player.getVelocity().set(playerSpeed.x, 0);
+        }
+        if(Collision.detect(player.getFixture(0).getShape(), player.getTransform(), ground.getFixture(0).getShape(), ground.getTransform())) {
+            logger.info("Collision detected!");
         }
 
-        Vector2 potentialPosition = player.getCenter().add(speed.x, speed.y);
+
+        player.getTransform().translate(player.getVelocity());
+//        Vector2 potentialPosition = player.getCenter().add(speed.x, speed.y);
 
 
 //        player.getAxes(new Transform(player.getCenter()));
 
         //Calculate all collisions.
-        penetrations = new Penetration[staticBodies.size()];
-        for (int i = 0; i < staticBodies.size(); i++) {
-
-            Transform t1 = new Transform(player.getCenter());
-            Transform t2 = new Transform(new Vector2(0,0));
-
-            Penetration penetration = new Penetration();
-
-            if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
-                Gdx.graphics.setTitle("Collision!");
-            } else {
-                Gdx.graphics.setTitle("Not colliding.");
-            }
-        }
+//        penetrations = new Penetration[staticBodies.size()];
+//        for (int i = 0; i < staticBodies.size(); i++) {
+//
+//            Transform t1 = new Transform(player.getCenter());
+//            Transform t2 = new Transform(new Vector2(0,0));
+//
+//            Penetration penetration = new Penetration();
+//
+//            if(Collision.detect(player, t1, staticBodies.get(i), t2, penetration)) {
+//                Gdx.graphics.setTitle("Collision!");
+//            } else {
+//                Gdx.graphics.setTitle("Not colliding.");
+//            }
+//        }
     }
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
-        camera.position.x = player.getCenter().x;
-        camera.position.y = player.getCenter().y;
+        camera.position.x = player.getWorldCenter().x;
+        camera.position.y = player.getWorldCenter().y;
     }
 
     //region rendering logic
     public void r() {
-        camera.position.set(player.getCenter().x, player.getCenter().y, 0);
+        camera.position.set(player.getWorldCenter().x, player.getWorldCenter().y, 0);
         camera.update();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -121,9 +123,10 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        renderRectangle(wall);
-        renderRectangle(ground);
-        renderRectangle(player);
+        shapeRenderer.setColor(Color.FIREBRICK);
+        renderBody(player);
+        shapeRenderer.setColor(Color.GRAY);
+        renderBody(ground);
 
         shapeRenderer.setColor(Color.BLUE);
 
@@ -143,10 +146,22 @@ public class ShapeTest5 extends ApplicationAdapter {
                 15);
     }
 
-    public void renderRectangle(Rectangle r) {
-        Vector2 tOrigin = r.getCenter();
+    public void renderRectangle(Rectangle r, Transform t) {
+        Vector2 tOrigin = t.getTransformed(r.getCenter());
 
         shapeRenderer.rect(tOrigin.x - r.getWidth()/2, tOrigin.y - r.getHeight()/2, r.getWidth(), r.getHeight());
+    }
+
+    public void renderBody(Body b) {
+        Transform t = b.getTransform();
+        for(int i = 0; i < b.getFixtures().size(); i++) {
+            if(b.getFixtures().get(i).getShape() instanceof Rectangle) {
+                Rectangle r = (Rectangle)b.getFixtures().get(i).getShape();
+                renderRectangle(r, t);
+            } else {
+                logger.warn("Update the RenderBody method to support additional shapes if you wish to support {}.", b.getFixtures().get(i).getClass());
+            }
+        }
     }
     //endregion
 }

@@ -3,7 +3,7 @@ package com.sad.function.collision.overlay;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
 import com.sad.function.collision.overlay.shape.Convex;
-import org.dyn4j.geometry.Transform;
+import com.sad.function.collision.overlay.shape.Transform;
 
 import java.awt.peer.ListPeer;
 import java.util.ArrayList;
@@ -30,6 +30,9 @@ public class Body extends AbstractCollidable<BodyFixture> {
     private List<Force> forces;
     private boolean asleep;
 
+    public Body() {
+        this(1);
+    }
     public Body(int fixtureCount) {
         super(fixtureCount);
 
@@ -102,4 +105,6 @@ public class Body extends AbstractCollidable<BodyFixture> {
     private void setAsleep(boolean b) {
         this.asleep = b;
     }
+
+    public Vector2 getWorldCenter() { return new Vector2(transform0.x, transform0.y);}
 }
