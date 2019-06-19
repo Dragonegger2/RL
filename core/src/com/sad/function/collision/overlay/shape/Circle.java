@@ -1,6 +1,7 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.data.Transform;
 
 public class Circle {
     private Vector2 origin;

@@ -1,7 +1,8 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.Projection;
+import com.sad.function.collision.overlay.data.Projection;
+import com.sad.function.collision.overlay.data.Transform;
 
 import java.util.UUID;
 

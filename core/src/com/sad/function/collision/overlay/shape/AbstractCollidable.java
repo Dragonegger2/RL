@@ -1,7 +1,8 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.Fixture;
+import com.sad.function.collision.overlay.container.Fixture;
+import com.sad.function.collision.overlay.data.Transform;
 
 import java.util.ArrayList;
 import java.util.Collections;

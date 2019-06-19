@@ -1,4 +1,4 @@
-package com.sad.function.collision.overlay.shape;
+package com.sad.function.collision.overlay.data;
 
 import com.badlogic.gdx.math.Vector2;
 

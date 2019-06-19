@@ -1,12 +1,11 @@
-package com.sad.function.collision.overlay;
+package com.sad.function.collision.overlay.container;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.Force;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
 import com.sad.function.collision.overlay.shape.Convex;
-import com.sad.function.collision.overlay.shape.Transform;
+import com.sad.function.collision.overlay.data.Transform;
 
-import java.awt.peer.ListPeer;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Body extends AbstractCollidable<BodyFixture> {
@@ -106,5 +105,5 @@ public class Body extends AbstractCollidable<BodyFixture> {
         this.asleep = b;
     }
 
-    public Vector2 getWorldCenter() { return new Vector2(transform0.x, transform0.y);}
+    public Vector2 getWorldCenter() { return new Vector2(transform.x, transform.y);}
 }

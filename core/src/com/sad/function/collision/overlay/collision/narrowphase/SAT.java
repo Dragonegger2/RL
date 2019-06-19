@@ -1,20 +1,21 @@
-package com.sad.function.collision.overlay;
+package com.sad.function.collision.overlay.collision.narrowphase;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.collision.narrowphase.NarrowPhaseDetector;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Projection;
+import com.sad.function.collision.overlay.shape.Circle;
+import com.sad.function.collision.overlay.shape.Convex;
+import com.sad.function.collision.overlay.shape.Rectangle;
 import com.sad.function.collision.overlay.data.Transform;
-import com.sad.function.collision.overlay.shape.*;
 
 import static java.lang.Math.abs;
 
-public class Collision {
+public class SAT implements NarrowPhaseDetector {
 
     private static Penetration detect(Circle a, Circle b) {
-        Penetration p = new Penetration(null,0, null, null);
-
         //TODO: two circles collide if the distance between their origins is less than the sum of their radii.
-        return p;
+        return new Penetration(null,0, null, null);
     }
 
     private static Penetration detect(Rectangle r1, Rectangle r2) {
@@ -22,7 +23,8 @@ public class Collision {
         return null;
     }
 
-    public static boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2) {
+    @Override
+    public boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2) {
 
         Vector2[] foci1 = convex1.getFoci(transform1);
         Vector2[] foci2 = convex2.getFoci(transform2);
@@ -57,7 +59,9 @@ public class Collision {
         return true;
     }
 
-    public static boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2, Penetration penetration) {
+    @Override
+    public boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2, Penetration penetration) {
+        penetration = (penetration == null) ? new Penetration() : penetration.clear();
 
         Vector2[] foci1 = convex1.getFoci(transform1);
         Vector2[] foci2 = convex2.getFoci(transform2);

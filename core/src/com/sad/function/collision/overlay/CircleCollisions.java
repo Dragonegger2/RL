@@ -3,7 +3,7 @@ package com.sad.function.collision.overlay;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.Circle;
-import com.sad.function.collision.overlay.shape.Transform;
+import com.sad.function.collision.overlay.data.Transform;
 
 public class CircleCollisions {
 

@@ -1,7 +1,8 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.Projection;
+import com.sad.function.collision.overlay.data.Projection;
+import com.sad.function.collision.overlay.data.Transform;
 
 import java.util.UUID;
 
@@ -23,11 +24,6 @@ public interface Shape {
 
 
 
-
-
-
-
-
     /**
      * Returns the vector that is perpendicular to the provided one.
      * @return the perpendicular vector.
@@ -35,8 +31,4 @@ public interface Shape {
     static Vector2 normal(Vector2 v) {
         return new Vector2(-v.y, v.x);
     }
-
-//    public void setParentFixture(Fixture f) { this.parent = f; }
-//    public Fixture getParentFixture() { return parent; }
-//    public boolean hasParentFixture() { return parent != null; }
 }

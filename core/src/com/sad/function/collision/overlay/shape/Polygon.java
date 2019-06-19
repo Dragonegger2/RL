@@ -2,7 +2,8 @@ package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.Geometry;
-import com.sad.function.collision.overlay.Projection;
+import com.sad.function.collision.overlay.data.Projection;
+import com.sad.function.collision.overlay.data.Transform;
 
 /**
  * All axis are stored in local coordinates.
@@ -127,7 +128,7 @@ public class Polygon extends AbstractShape implements Convex, Shape {
 
     /**
      * Not pertinent to this shape.
-     * @param transform
+     * @param transform to calculate the new points for this shape. Not necessary.
      * @return null
      */
     @Override
@@ -163,4 +164,6 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         // transform the point into world space and return
         return transform.getTransformed(this.vertices[index]);
     }
+
+
 }
