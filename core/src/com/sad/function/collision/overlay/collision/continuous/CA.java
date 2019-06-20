@@ -112,7 +112,7 @@ public class CA {
 
         toi.setTime(l);
         toi.setSeparation(separation);
-        
+
         return true;
     }
 }

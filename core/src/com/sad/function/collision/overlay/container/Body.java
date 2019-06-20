@@ -106,4 +106,16 @@ public class Body extends AbstractCollidable<BodyFixture> {
     }
 
     public Vector2 getWorldCenter() { return new Vector2(transform.x, transform.y);}
+
+    public boolean isBullet() {
+        return (this.state & Body.BULLET) == Body.BULLET;
+    }
+
+    public void setBullet(boolean flag) {
+        if(flag) {
+            this.state |= Body.BULLET;
+        } else {
+            this.state &= ~Body.BULLET;
+        }
+    }
 }
