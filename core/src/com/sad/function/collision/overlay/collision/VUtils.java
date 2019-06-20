@@ -17,4 +17,8 @@ public class VUtils {
         v.y = temp;
         return v;
     }
+
+    public static float cross(Vector2 a, Vector2 b) {
+        return a.x * b.y - a.y * b.x;
+    }
 }

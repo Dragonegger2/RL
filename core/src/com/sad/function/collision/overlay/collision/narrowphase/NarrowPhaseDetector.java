@@ -26,4 +26,6 @@ public interface NarrowPhaseDetector {
      * @return
      */
     public abstract boolean detect(Convex convex1, Transform transform1, Convex convex2, Transform transform2);
+
+
 }

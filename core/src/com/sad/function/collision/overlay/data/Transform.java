@@ -76,4 +76,52 @@ public class Transform {
         this.x += vector.x;
         this.y += vector.y;
     }
+
+    public void lerp(Transform end, float alpha) {
+        float x = this.x + alpha * (end.x - this.x);
+        float y = this.y + alpha * (end.y - this.y);
+
+        float rs = this.getRotation();
+        float re = end.getRotation();
+
+        float diff = re - rs;
+        if (diff < -Math.PI) diff += Math.PI * 2;
+        if (diff > Math.PI) diff -= Math.PI * 2;
+
+        float a = diff * alpha + rs;
+
+        this.cost = (float) Math.cos(a);
+        this.sint = (float) Math.sin(a);
+        this.x = x;
+        this.y = y;
+    }
+
+    private float getRotation() {
+        return 0;
+    }
+
+    public void lerp(Vector2 dp, float da, float alpha, Transform result) {
+        result.set(this);
+        result.rotateOnly(da * alpha);
+        result.translate(dp.x * alpha, dp.y * alpha);
+    }
+
+    private void set(Transform transform) {
+        this.cost = transform.cost;
+        this.sint = transform.sint;
+        this.x = transform.x;
+        this.y = transform.y;
+    }
+
+    private void rotateOnly(float theta) {
+        float cos = (float)Math.cos(theta);
+        float sin = (float)Math.sin(theta);
+
+        float cost = cos * this.cost - sin * this.sint;
+        float sint = sin * this.cost + cos * this.sint;
+
+        this.cost = cost;
+        this.sint = sint;
+
+    }
 }
