@@ -2,13 +2,14 @@ package com.sad.function.collision.overlay.container;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.Force;
+import com.sad.function.collision.overlay.collision.broadphase.Collidable;
+import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
 import com.sad.function.collision.overlay.shape.Convex;
-import com.sad.function.collision.overlay.data.Transform;
 
 import java.util.List;
 
-public class Body extends AbstractCollidable<BodyFixture> {
+public class Body extends AbstractCollidable<BodyFixture> implements Collidable<BodyFixture> {
     public static final float DEFAULT_LINEAR_DAMPING = 0.0f;
     public static final float DEFAULT_ANGULAR_DAMPING = 0.01f;
 
@@ -22,16 +23,15 @@ public class Body extends AbstractCollidable<BodyFixture> {
     protected float gravityScale;
 
     Transform transform0;
-
-    private int state;
-
     Vector2 force;
+    private int state;
     private List<Force> forces;
     private boolean asleep;
 
     public Body() {
         this(1);
     }
+
     public Body(int fixtureCount) {
         super(fixtureCount);
 
@@ -63,7 +63,7 @@ public class Body extends AbstractCollidable<BodyFixture> {
     }
 
     public Body addFixture(BodyFixture fixture) {
-        if(fixture == null) throw new NullPointerException("BodyFixture can't be null!");
+        if (fixture == null) throw new NullPointerException("BodyFixture can't be null!");
         this.fixtures.add(fixture);
         /*
         if(this.world != null) {
@@ -83,6 +83,11 @@ public class Body extends AbstractCollidable<BodyFixture> {
         return super.removeFixture(fixture);
     }
 
+    @Override
+    public Vector2 getLocalCenter() {
+        return null;
+    }
+
     public BodyFixture removeBodyFixture(int index) {
         BodyFixture fixture = super.removeFixture(index);
         /*
@@ -100,22 +105,36 @@ public class Body extends AbstractCollidable<BodyFixture> {
     //Apply force.
 
 
-    public Vector2 getVelocity() { return this.velocity; }
+    public Vector2 getLinearVelocity() {
+        return this.velocity;
+    }
+
+    public void setLinearVelocity(Vector2 velocity) {
+        setLinearVelocity(velocity.x, velocity.y);
+    }
+    public void setLinearVelocity(float x, float y) { this.velocity.set(x, y); }
+
     private void setAsleep(boolean b) {
         this.asleep = b;
     }
 
-    public Vector2 getWorldCenter() { return new Vector2(transform.x, transform.y);}
+    public Vector2 getWorldCenter() {
+        return new Vector2(transform.x, transform.y);
+    }
 
     public boolean isBullet() {
         return (this.state & Body.BULLET) == Body.BULLET;
     }
 
     public void setBullet(boolean flag) {
-        if(flag) {
+        if (flag) {
             this.state |= Body.BULLET;
         } else {
             this.state &= ~Body.BULLET;
         }
     }
+
+    public boolean isActive() { return true; }
+
+    public boolean isDynamic() { return true; }
 }

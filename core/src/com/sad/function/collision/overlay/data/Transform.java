@@ -22,12 +22,6 @@ public class Transform {
         this.y = xy.y;
     }
 
-    /**
-     * Atomically safe, does not modify the source.
-     *
-     * @param v
-     * @return
-     */
     public Vector2 getTransformed(Vector2 v) {
         Vector2 tv = new Vector2();
         float x = v.x;
@@ -97,7 +91,7 @@ public class Transform {
     }
 
     private float getRotation() {
-        return 0;
+        return (float)Math.atan2(sint, cost);
     }
 
     public void lerp(Vector2 dp, float da, float alpha, Transform result) {
@@ -123,5 +117,44 @@ public class Transform {
         this.cost = cost;
         this.sint = sint;
 
+    }
+
+    public void rotate(float theta) {
+        float cos = (float)Math.cos(theta);
+        float sin = (float)Math.sin(theta);
+
+        // perform an optimized version of matrix multiplication
+        float cost = cos * this.cost - sin * this.sint;
+        float sint = sin * this.cost + cos * this.sint;
+        float x   = cos * this.x - sin * this.y;
+        float y   = sin * this.x + cos * this.y;
+
+        // set the new values
+        this.cost = cost;
+        this.sint = sint;
+        this.x   = x;
+        this.y   = y;
+    }
+
+    public void rotate(float theta, float x, float y) {
+        // pre-compute cos/sin of the given angle
+        float cos = (float)Math.cos(theta);
+        float sin = (float)Math.sin(theta);
+
+        // perform an optimized version of the matrix multiplication:
+        // M(new) = inverse(T) * R * T * M(old)
+        float cost = cos * this.cost - sin * this.sint;
+        float sint = sin * this.cost + cos * this.sint;
+        this.cost = cost;
+        this.sint = sint;
+
+        float cx = this.x - x;
+        float cy = this.y - y;
+        this.x = cos * cx - sin * cy + x;
+        this.y = sin * cx + cos * cy + y;
+    }
+
+    public void rotate(float theta, Vector2 point) {
+        rotate(theta, point.x, point.y);
     }
 }

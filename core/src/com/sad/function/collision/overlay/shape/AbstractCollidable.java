@@ -1,6 +1,9 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.collision.AABB;
+import com.sad.function.collision.overlay.collision.Translateable;
+import com.sad.function.collision.overlay.collision.broadphase.Collidable;
 import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.data.Transform;
 
@@ -9,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractCollidable<T extends Fixture> {
+public abstract class AbstractCollidable<T extends Fixture> implements Collidable<T>, Translateable {
     protected final UUID id;
     protected Transform transform;
     protected List<T> fixtures;
@@ -27,6 +30,7 @@ public abstract class AbstractCollidable<T extends Fixture> {
         this.transform = new Transform();
     }
 
+    //region Fixture Manipulation Logic
     public boolean removeFixture(T fixture) {
         if (fixture == null)
             return false;
@@ -56,10 +60,14 @@ public abstract class AbstractCollidable<T extends Fixture> {
         return this.fixtures.contains(fixture);
     }
 
+    //region Translation
+    @Override
     public void translate(float x, float y) {
         this.transform.translate(x, y);
     }
+    //endregion
 
+    @Override
     public void translate(Vector2 vector) {
         this.transform.translate(vector);
     }
@@ -72,6 +80,7 @@ public abstract class AbstractCollidable<T extends Fixture> {
     public T getFixture(int index) {
         return this.fixtures.get(index);
     }
+    //endregion
 
     public int getFixtureCount() {
         return this.fixtures.size();
@@ -85,7 +94,72 @@ public abstract class AbstractCollidable<T extends Fixture> {
         return this.transform;
     }
 
+    @Override
+    public void setTransform(Transform transform) {
+        this.transform = transform;
+    }
+
+    @Override
+    public AABB createAABB() {
+        return createAABB(this.transform);
+    }
+
+    @Override
+    public AABB createAABB(Transform transform) {
+        int size = fixtures.size();
+        if (size > 0) {
+            AABB aabb = fixtures.get(0).getShape().createAABB(transform);
+
+            for (int i = 1; i < size; i++) {
+                AABB faabb = fixtures.get(i).getShape().createAABB(transform);
+                aabb.union(faabb);
+            }
+
+            return aabb;
+        }
+
+        return new AABB(0, 0, 0, 0);
+    }
+
     public UUID getId() {
         return this.id;
+    }
+
+    @Override
+    public float getRotationDiscRadius() {
+        return this.radius;
+    }
+
+    @Override
+    public Vector2 getLocalPoint(Vector2 worldPoint) {
+        return transform.getInverseTransformed(worldPoint);
+    }
+
+    @Override
+    public Vector2 getWorldPoint(Vector2 localPoint) {
+        return transform.getTransformed(localPoint);
+    }
+
+    @Override
+    public Vector2 getLocalVector(Vector2 worldVector) {
+        return transform.getInverseTransformedR(worldVector);
+    }
+
+    @Override
+    public Vector2 getWorldVector(Vector2 localVector) {
+        return transform.getTransformedR(localVector);
+    }
+
+    public void rotateAboutCenter(float theta) {
+        Vector2 center = this.getWorldCenter();
+        rotate(theta, center);
+    }
+
+    public void rotate(float theta, Vector2 point) {
+        transform.rotate(theta, point);
+    }
+
+    public void rotate(float theta) {
+        transform.rotate(theta);
     }
 }

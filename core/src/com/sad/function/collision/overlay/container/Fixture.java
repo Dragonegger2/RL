@@ -1,5 +1,6 @@
 package com.sad.function.collision.overlay.container;
 
+import com.sad.function.collision.overlay.collision.Filter;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class Fixture {
     protected final UUID id;
     protected final Convex shape;
     protected boolean sensor;
+    protected Filter filter;
 
     /**
      * Fixture without offset.
@@ -21,8 +23,16 @@ public class Fixture {
         if (shape == null) throw new NullPointerException("Shapes being past into fixtures can't be null");
         this.id = UUID.randomUUID();
         this.shape = shape;
-        //this.filter = Filter.DEFAULT_FILTER;
+        this.filter = Filter.DEFAULT_FILTER;
         this.sensor = false;
+    }
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 
     public UUID getId() {

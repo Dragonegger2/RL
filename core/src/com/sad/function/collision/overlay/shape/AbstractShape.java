@@ -1,6 +1,7 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.collision.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
 
@@ -65,4 +66,9 @@ public abstract class AbstractShape implements Shape {
 
     public abstract Vector2[] getVertices();
     public abstract Vector2[] getNormals();
+
+    @Override
+    public AABB createAABB() {
+        return this.createAABB(Transform.IDENTITY);
+    }
 }

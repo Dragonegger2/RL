@@ -1,6 +1,7 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.collision.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
 
@@ -18,11 +19,8 @@ public interface Shape {
     boolean contains(Vector2 point);
     boolean contains(Vector2 point, Transform transform);
 
-//    float createMass(float density); TODO Don't need this yet.
-
-//    Vector2[] getAxes(Transform transform);
-
-
+    AABB createAABB();
+    AABB createAABB(Transform transform);
 
     /**
      * Returns the vector that is perpendicular to the provided one.

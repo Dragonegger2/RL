@@ -35,6 +35,7 @@ public class ShapeTest5 extends ApplicationAdapter {
     private Body player;
     private Body ground;
 
+    private Body[] statics = new Body[3];
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
@@ -74,28 +75,28 @@ public class ShapeTest5 extends ApplicationAdapter {
 
 
         float speed = 0.125f;
-        Vector2 playerSpeed = player.getVelocity();
+        Vector2 playerSpeed = player.getLinearVelocity();
         //region Input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player.getVelocity().set(-speed, playerSpeed.y);
+            player.getLinearVelocity().set(-speed, playerSpeed.y);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.getVelocity().set(speed, playerSpeed.y);
+            player.getLinearVelocity().set(speed, playerSpeed.y);
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.getVelocity().set(0, player.getVelocity().y);
+            player.getLinearVelocity().set(0, player.getLinearVelocity().y);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.getVelocity().set(playerSpeed.x, speed);
+            player.getLinearVelocity().set(playerSpeed.x, speed);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.getVelocity().set(playerSpeed.x, -speed);
+            player.getLinearVelocity().set(playerSpeed.x, -speed);
         }
 
         //TODO Cast a ray to see if we're hitting the ground later.
-        player.getVelocity().add(0, -9.8f * delta);
+        player.getLinearVelocity().add(0, -9.8f * delta);
 
-        player.getTransform().translate(player.getVelocity().cpy().scl(delta));
+        player.getTransform().translate(player.getLinearVelocity().cpy().scl(delta));
 
         Penetration p = new Penetration();
         for (int i = 0; i < staticB.size(); i++) {
@@ -106,7 +107,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
 
 
-        Gdx.graphics.setTitle(String.format("V: %s", player.getVelocity()));
+        Gdx.graphics.setTitle(String.format("V: %s", player.getLinearVelocity()));
     }
 
     @Override
