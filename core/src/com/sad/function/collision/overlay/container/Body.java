@@ -231,4 +231,15 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     public Transform getInitialTransform() {
         return this.transform0;
     }
+
+    public Body applyImpulse(float x, float y) {
+        this.velocity.add(x * mass, y * mass );
+        this.setAsleep(false);
+
+        return this;
+    }
+    public Body applyImpulse(Vector2 impulse) {
+        return applyImpulse(impulse.x, impulse.y);
+
+    }
 }

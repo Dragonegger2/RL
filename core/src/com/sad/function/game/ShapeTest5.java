@@ -87,26 +87,32 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         float delta = 1f / 60f;   //TODO fix my timestep.
 
-        //region Input
-//        float speed = 0.125f;
-//        Vector2 playerSpeed = player.getLinearVelocity();
+//        region Input
+        float speed = 0.125f;
+        Vector2 playerSpeed = player.getLinearVelocity();
 
-//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 //            player.getLinearVelocity().set(-speed, playerSpeed.y);
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            player.applyImpulse(new Vector2(-speed, 0));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 //            player.getLinearVelocity().set(speed, playerSpeed.y);
-//        }
-//        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-//            player.getLinearVelocity().set(0, player.getLinearVelocity().y);
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//            player.getLinearVelocity().set(playerSpeed.x, speed);
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-//            player.getLinearVelocity().set(playerSpeed.x, -speed);
-//        }
-        //endregion
+            player.applyImpulse(new Vector2(speed, 0));
+        }
+        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            float x = player.getLinearVelocity().x;
+            if(Math.abs(x) < speed/2) {
+                player.setLinearVelocity(0, player.getLinearVelocity().y);
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            player.applyImpulse(new Vector2(0, speed));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            player.applyImpulse(new Vector2(0, -speed));
+        }
+//        endregion
+//        player.appl
 
         world.step(delta);
         world.detect();
