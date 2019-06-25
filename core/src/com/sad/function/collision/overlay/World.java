@@ -13,6 +13,7 @@ import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.narrowphase.NarrowPhase;
 import com.sad.function.collision.overlay.narrowphase.NarrowPhaseDetector;
+import com.sad.function.collision.overlay.narrowphase.SAT;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 public class World {
     private final AbstractBroadphase<Body, com.sad.function.collision.overlay.container.BodyFixture> broad;
     private final NarrowPhase narrow;
-    private NarrowPhaseDetector narrowPhaseDetector = new GJK();
+    private NarrowPhaseDetector narrowPhaseDetector = new SAT();
     private CA timeOfImpactSolver = new CA();
     private List<Body> bodies;
     private Vector2 gravity = new Vector2(0, -9.8f);

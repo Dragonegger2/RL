@@ -33,12 +33,13 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
     }
 
     public static Vector2 getSupportPoint(Convex c1, Transform t1, Convex c2, Transform t2, Vector2 d) {
-        Vector2 point1 = c1.getFarthestPoint(d, t1);
+        Vector2 point1 = c1.getFarthestPoint(d, t1).cpy();
         d.scl(-1);      //Flip search direction
         Vector2 point2 = c2.getFarthestPoint(d, t2);
         d.scl(-1);      //Return search direction to original orientation.
 
-        return point2.cpy().sub(point1); //TODO Verify this damn thing again.
+        return point1.sub(point2);
+//        return point2.cpy().sub(point1); //TODO Verify this damn thing again.
     }
 
     public static boolean containsOrigin(Vector2 a, Vector2 b, Vector2 c) {

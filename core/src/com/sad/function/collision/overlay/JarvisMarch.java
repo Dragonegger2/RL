@@ -10,7 +10,6 @@ import java.util.List;
  * Jarvis's March algorithm.
  */
 public class JarvisMarch {
-
     /**
      * Calculates the polar angle between the points.
      * @param p

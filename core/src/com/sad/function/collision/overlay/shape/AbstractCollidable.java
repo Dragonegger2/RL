@@ -2,7 +2,7 @@ package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.AABB;
-import com.sad.function.collision.overlay.Translateable;
+import com.sad.function.collision.overlay.Translatable;
 import com.sad.function.collision.overlay.broadphase.Collidable;
 import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.data.Transform;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractCollidable<T extends Fixture> implements Collidable<T>, Translateable {
+public abstract class AbstractCollidable<T extends Fixture> implements Collidable<T>, Translatable {
     protected final UUID id;
     protected Transform transform;
     protected List<T> fixtures;

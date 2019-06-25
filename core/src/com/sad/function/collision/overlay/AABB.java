@@ -2,7 +2,7 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class AABB implements Translateable {
+public class AABB implements Translatable {
     float minX, minY;
     float maxX, maxY;
 

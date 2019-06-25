@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Object that can be moved about the X-Y plane.
  */
-public interface Translateable {
+public interface Translatable {
     /**
      * Move the object in given amounts in their respective directions.
      * @param x change in the x direction.
