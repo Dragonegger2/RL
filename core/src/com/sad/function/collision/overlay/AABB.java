@@ -62,6 +62,22 @@ public class AABB implements Translateable {
         return new AABB(point1x, point1y, point2x, point2y);
     }
 
+    public float getMinX() {
+        return minX;
+    }
+
+    public float getMinY() {
+        return minY;
+    }
+
+    public float getMaxX() {
+        return maxX;
+    }
+
+    public float getMaxY() {
+        return maxY;
+    }
+
     public AABB set(AABB aabb) {
         this.minX = aabb.minX;
         this.maxX = aabb.maxX;
@@ -109,11 +125,19 @@ public class AABB implements Translateable {
      * @return {@link AABB}
      */
     public AABB union(AABB aabb) {
-        this.minX = Math.min(minX, aabb.minX);
-        this.minY = Math.min(minY, aabb.minY);
-        this.maxX = Math.max(maxX, aabb.maxX);
-        this.maxY = Math.max(maxY, aabb.maxY);
+        this.minX = Math.min(this.minX, aabb.minX);
+        this.minY = Math.min(this.minY, aabb.minY);
+        this.maxX = Math.max(this.maxX, aabb.maxX);
+        this.maxY = Math.max(this.maxY, aabb.maxY);
         return this;
+    }
+
+    public AABB getUnion(AABB aabb) {
+        return new AABB(
+                Math.min(this.minX, aabb.minX),
+                Math.min(this.minY, aabb.minY),
+                Math.max(this.maxX, aabb.maxX),
+                Math.max(this.maxY, aabb.maxY));
     }
 
     public boolean overlaps(AABB aabb) {

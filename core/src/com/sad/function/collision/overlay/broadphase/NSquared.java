@@ -1,19 +1,20 @@
 package com.sad.function.collision.overlay.broadphase;
 
 import com.sad.function.collision.overlay.AABB;
-import com.sad.function.collision.overlay.filter.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
+import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
 
 import java.util.*;
 
 /**
- * Naive implementation of AbstractBroadphase collision such as discussed here:
+ * Naive implementation of AbstractBroadphaseDetector collision such as discussed here:
  * http://allenchou.net/2013/12/game-physics-broadphase/
  */
-public class NSquared extends AbstractBroadphase<Body, BodyFixture> {
+public class NSquared extends AbstractBroadphaseDetector<Body, BodyFixture> {
 
-    protected final IBroadphaseFilter<Body, BodyFixture> defaultFilter = new BroadphaseFilter();
+    protected final BroadphaseFilter<Body, BodyFixture> defaultFilter = new DetectBroadphaseFilter();
     public Map<Integer, BruteForceBroadphaseNode<Body, BodyFixture>> map;
 
     public NSquared() {
@@ -72,13 +73,14 @@ public class NSquared extends AbstractBroadphase<Body, BodyFixture> {
         map.clear();
     }
 
+    //region Detection Methods
+
     @Override
     public List<BroadphasePair<Body, BodyFixture>> detect() {
         return this.detect(defaultFilter);
     }
-
     @Override
-    public List<BroadphasePair<Body, BodyFixture>> detect(IBroadphaseFilter<Body, BodyFixture> filter) {
+    public List<BroadphasePair<Body, BodyFixture>> detect(BroadphaseFilter<Body, BodyFixture> filter) {
         List<BroadphasePair<Body, BodyFixture>> pairs = new ArrayList<>();
 
         Collection<BruteForceBroadphaseNode<Body, BodyFixture>> nodes = this.map.values();
@@ -101,4 +103,21 @@ public class NSquared extends AbstractBroadphase<Body, BodyFixture> {
 
         return pairs;
     }
+
+    @Override
+    public List<BroadphaseItem<Body, BodyFixture>> detect(AABB aabb, BroadphaseFilter<Body, BodyFixture> filter) {
+        List<BroadphaseItem<Body, BodyFixture>> list = new ArrayList<>();
+        Collection<BruteForceBroadphaseNode<Body, BodyFixture>> nodes = map.values();
+
+        for(BruteForceBroadphaseNode<Body, BodyFixture> node : nodes) {
+            if(aabb.overlaps(node.aabb)) {
+                if(filter.isAllowed(aabb, node.collidable, node.fixture)) {
+                    list.add(new BroadphaseItem<>(node.collidable, node.fixture));
+                }
+            }
+        }
+        return list;
+    }
+
+    //endregion
 }

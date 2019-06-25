@@ -2,7 +2,7 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.broadphase.AbstractBroadphase;
+import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.continuous.CA;
@@ -26,7 +26,7 @@ public class World2 {
         narrow = new NarrowPhase();//TODO: Add ability to set detection type.
     }
 
-    public World2(AbstractBroadphase broad, NarrowPhase narrow) {
+    public World2(AbstractBroadphaseDetector broad, NarrowPhase narrow) {
         this.narrow = narrow;
 
     }

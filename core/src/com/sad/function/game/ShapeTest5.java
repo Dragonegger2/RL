@@ -72,6 +72,9 @@ public class ShapeTest5 extends ApplicationAdapter {
         world.addBody(wall);
         world.addBody(ground);
         world.addBody(player);
+
+        CategoryFilter player = new CategoryFilter(Category.PLAYER, Category.ALL);
+        CategoryFilter solid = new CategoryFilter(Category.ALL, Category.ALL);
     }
 
     @Override
@@ -104,8 +107,9 @@ public class ShapeTest5 extends ApplicationAdapter {
 //            player.getLinearVelocity().set(playerSpeed.x, -speed);
 //        }
         //endregion
+
         world.step(delta);
-        world.detect(delta);
+        world.detect();
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
     }

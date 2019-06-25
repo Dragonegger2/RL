@@ -1,11 +1,12 @@
 package com.sad.function.collision.overlay.broadphase;
 
 import com.sad.function.collision.overlay.AABB;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Fixture;
 
 import java.util.List;
 
-public interface IBroadphaseCD<E extends Collidable<T>, T extends Fixture> {
+public interface BroadphaseDetector<E extends Collidable<T>, T extends Fixture> {
 
     static int createKey(Collidable c1, Fixture fixture) {
         int hash = 17;
@@ -56,7 +57,7 @@ public interface IBroadphaseCD<E extends Collidable<T>, T extends Fixture> {
     void clear();
 
     List<BroadphasePair<E, T>> detect();
-    List<BroadphasePair<E, T>> detect(IBroadphaseFilter<E, T> filter);
-
+    List<BroadphasePair<E, T>> detect(BroadphaseFilter<E, T> filter);
+    List<BroadphaseItem<E, T>> detect(AABB aabb, BroadphaseFilter<E, T> filter);
     //method to return collision methods for the provided AABB.
 }

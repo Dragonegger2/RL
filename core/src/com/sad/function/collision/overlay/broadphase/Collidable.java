@@ -17,12 +17,9 @@ public interface Collidable<T extends Fixture> {
     T addFixture(Convex convex);
     T getFixture(int index);
     boolean containsFixture(T fixture);
-//    T getFixture(Vector2 point);
-//    List<T> getFixtures(Vector2 point);
     boolean removeFixture(T fixture);
     T removeFixture(int index);
     List<T> removeAllFixtures();
-//    T removeFixtures(Vector2 point);
     int getFixtureCount();
     List<T> getFixtures();
     Vector2 getLocalCenter();

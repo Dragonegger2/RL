@@ -2,7 +2,7 @@
 //
 //import com.badlogic.gdx.math.MathUtils;
 //import com.badlogic.gdx.math.Vector2;
-//import com.sad.function.collision.overlay.broadphase.AbstractBroadphase;
+//import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
 //import com.sad.function.collision.overlay.broadphase.BroadphasePair;
 //import com.sad.function.collision.overlay.broadphase.NSquared;
 //import com.sad.function.collision.overlay.container.Body;
@@ -18,7 +18,7 @@
 //import java.util.List;
 //
 //public class World3 {
-//    private final AbstractBroadphase<Body, BodyFixture> broad;
+//    private final AbstractBroadphaseDetector<Body, BodyFixture> broad;
 //    private final NarrowPhase narrow;
 //    private CA timeOfImpactSolver = new CA();
 //    private List<Body> bodies;
@@ -30,7 +30,7 @@
 //        narrow = new NarrowPhase();//TODO: Add ability to set detection type.
 //    }
 //
-//    public World3(AbstractBroadphase broad, NarrowPhase narrow) {
+//    public World3(AbstractBroadphaseDetector broad, NarrowPhase narrow) {
 //        this.broad = broad;
 //        this.narrow = narrow;
 //

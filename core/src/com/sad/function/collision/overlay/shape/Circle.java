@@ -12,20 +12,6 @@ public class Circle {
         this.radius = radius;
     }
 
-//    @Override
-    public Vector2 getVertex(int i, Transform t, Vector2 axis) {
-        return null;
-//        Vector2 norAxis = axis.cpy().nor();
-//
-//        if (i == 0) {
-//            return new Vector2(origin.x + (-norAxis.y * radius),
-//                    origin.y + (norAxis.x * radius));
-//        } else {
-//            return new Vector2(origin.x + (norAxis.y * radius),
-//                    origin.y + (-norAxis.x * radius));
-//        }
-    }
-
     /**
      * A circle has no normals.
      *

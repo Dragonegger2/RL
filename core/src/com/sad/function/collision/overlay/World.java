@@ -2,40 +2,34 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.broadphase.AbstractBroadphase;
+import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
 import com.sad.function.collision.overlay.broadphase.BroadphasePair;
-import com.sad.function.collision.overlay.broadphase.NSquared;
+import com.sad.function.collision.overlay.broadphase.Sap;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.continuous.CA;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
-import com.sad.function.collision.overlay.narrowphase.GJK;
-import com.sad.function.collision.overlay.narrowphase.NarrowPhase;
+import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
+import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.NarrowPhaseDetector;
+import com.sad.function.collision.overlay.narrowphase.SAT;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class World {
-    private final AbstractBroadphase<Body, com.sad.function.collision.overlay.container.BodyFixture> broad;
-    private final NarrowPhase narrow;
-    private NarrowPhaseDetector narrowPhaseDetector = new GJK();
+    private final AbstractBroadphaseDetector<Body, BodyFixture> broad = new Sap<>();
+    private NarrowPhaseDetector narrowPhaseDetector = new SAT();
     private CA timeOfImpactSolver = new CA();
     private List<Body> bodies;
     private Vector2 gravity = new Vector2(0, -9.8f);
 
+    protected BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
     public World() {
         bodies = new ArrayList<>(65);
-        broad = new NSquared();
-        narrow = new NarrowPhase();//TODO: Add ability to set detection type.
-    }
-
-    public World(AbstractBroadphase broad, NarrowPhase narrow) {
-        this.broad = broad;
-        this.narrow = narrow;
-
     }
 
     /**
@@ -62,42 +56,44 @@ public class World {
         updateBodies(delta);
     }
 
-    public void detect(float delta) {
-        int size = bodies.size();
+    public void detect() {
+        for(int i = 0; i < bodies.size(); i++) {
+            broad.update(bodies.get(i));
+        }
+        List<BroadphasePair<Body, BodyFixture>> pairs = broad.detect(detectBroadphaseFilter);
+        int pSize = pairs.size();
 
-        if(size > 0) {
-            List<BroadphasePair<Body, BodyFixture>> pairs = broad.detect();
+        ArrayList<CollisionManifold> manifolds = new ArrayList<>();
 
-            int pSize = pairs.size();
-            boolean allow = true;
+        for (int i = 0; i < pSize; i++) {
+            BroadphasePair<Body, BodyFixture> pair = pairs.get(i);
 
-            for(int i = 0; i < pSize; i++) {
-                BroadphasePair<Body, BodyFixture> pair = pairs.get(i);
+            Body body1 = pair.getCollidable1();
+            Body body2 = pair.getCollidable2();
+            BodyFixture fixture1 = pair.getFixture1();
+            BodyFixture fixture2 = pair.getFixture2();
 
-                Body body1 = pair.getCollidable1();
-                Body body2 = pair.getCollidable2();
-                BodyFixture fixture1 = pair.getFixture1();
-                BodyFixture fixture2 = pair.getFixture2();
+            Transform transform1 = body1.getTransform();
+            Transform transform2 = body2.getTransform();
 
-                Transform transform1 = body1.getTransform();
-                Transform transform2 = body2.getTransform();
+            Convex convex2 = fixture2.getShape();
+            Convex convex1 = fixture1.getShape();
 
-                Convex convex2 = fixture2.getShape();
-                Convex convex1 = fixture1.getShape();
+            Penetration penetration = new Penetration();
 
-                Penetration penetration = new Penetration();
-                if(!fixture1.getFilter().isAllowed(fixture2.getFilter())) continue;
-
-                if(this.narrowPhaseDetector.detect(convex1, transform1, convex2, transform2, penetration)) {
-                    if(penetration.getDepth() == 0.0f) {
-                        continue;
-                    }
-
-                    Body b = body1.isStatic() ? body2 : body1;
-                    b.translate(penetration.normal.scl(penetration.distance));
+            if (this.narrowPhaseDetector.detect(convex1, transform1, convex2, transform2, penetration)) {
+                if (penetration.getDepth() == 0.0f) {
+                    continue;
                 }
+
+                manifolds.add(new CollisionManifold(penetration.normal.cpy(), penetration.distance, body1, fixture1, body2, fixture2));
             }
 
+            for(CollisionManifold manifold : manifolds) {
+                Body b = manifold.body1.isStatic() ? body2 : body1;
+
+                b.translate(manifold.normal.scl(manifold.distance));
+            }
         }
     }
 
