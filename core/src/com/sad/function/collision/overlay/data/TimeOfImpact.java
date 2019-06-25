@@ -12,6 +12,7 @@ public class TimeOfImpact {
     protected float time;
     protected Separation separation;
 
+    public TimeOfImpact() {}
     public TimeOfImpact(float time, Separation separation) {
         this.time = time;
         this.separation = separation;

@@ -2,6 +2,7 @@ package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.Geometry;
+import com.sad.function.collision.overlay.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
 
@@ -18,7 +19,7 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         this.normals = normals;
     }
 
-    Polygon(Vector2[] vertices, Vector2 center) {
+    private Polygon(Vector2[] vertices, Vector2 center) {
         super(center, Geometry.getRotationRadius(center, vertices));
 
         this.vertices = vertices;
@@ -37,6 +38,7 @@ public class Polygon extends AbstractShape implements Convex, Shape {
     public float getRadius(Vector2 center) {
         return Geometry.getRotationRadius(center, this.vertices);
     }
+
 
     @Override
     public Vector2[] getAxes(Vector2[] foci, Transform transform) {
@@ -165,5 +167,37 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         return transform.getTransformed(this.vertices[index]);
     }
 
-
+    @Override
+    public AABB createAABB(Transform transform) {
+        // get the first point
+        Vector2 p = transform.getTransformed(this.vertices[0]);
+        // project the point onto the vector
+        float minX = p.x;
+        float maxX = p.x;
+        float minY = p.y;
+        float maxY = p.y;
+        // loop over the rest of the vertices
+        int size = this.vertices.length;
+        for(int i = 1; i < size; i++) {
+            // get the next point
+            p = transform.getTransformed(this.vertices[i]);
+            // project it onto the vector
+            float vx = p.x;
+            float vy = p.y;
+            // compare the x values
+            if (vx < minX) {
+                minX = vx;
+            } else if (vx > maxX) {
+                maxX = vx;
+            }
+            // compare the y values
+            if (vy < minY) {
+                minY = vy;
+            } else if (vy > maxY) {
+                maxY = vy;
+            }
+        }
+        // create the aabb
+        return new AABB(minX, minY, maxX, maxY);
+    }
 }

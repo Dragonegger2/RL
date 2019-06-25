@@ -1,9 +1,9 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.collision.AABB;
-import com.sad.function.collision.overlay.collision.Translateable;
-import com.sad.function.collision.overlay.collision.broadphase.Collidable;
+import com.sad.function.collision.overlay.AABB;
+import com.sad.function.collision.overlay.Translateable;
+import com.sad.function.collision.overlay.broadphase.Collidable;
 import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.data.Transform;
 
@@ -17,6 +17,8 @@ public abstract class AbstractCollidable<T extends Fixture> implements Collidabl
     protected Transform transform;
     protected List<T> fixtures;
     protected float radius;
+    protected float angularVelocity;
+    protected String tag;
 
     public AbstractCollidable() {
         this(1);
@@ -28,6 +30,14 @@ public abstract class AbstractCollidable<T extends Fixture> implements Collidabl
         this.fixtures = new ArrayList<>(size);
         this.radius = 0.0f;
         this.transform = new Transform();
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     //region Fixture Manipulation Logic

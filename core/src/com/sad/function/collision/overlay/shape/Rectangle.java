@@ -5,8 +5,8 @@ import com.sad.function.collision.overlay.Geometry;
 import com.sad.function.collision.overlay.data.Transform;
 
 public class Rectangle extends Polygon {
-    final float width;
-    final float height;
+    private final float width;
+    private final float height;
 
     public Rectangle(float width, float height, Vector2[] vertices) {
         super(new Vector2(), vertices[0].len(), vertices, new Vector2[] {

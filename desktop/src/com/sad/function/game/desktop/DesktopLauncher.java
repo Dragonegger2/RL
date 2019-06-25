@@ -9,6 +9,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.forceExit = true;
+		config.foregroundFPS= 90;
 //		new LwjglApplication(new ApocalypticGame(), config);
 		new LwjglApplication(new ShapeTest5(), config);
 //		new LwjglApplication(new ShapeTest(), config);

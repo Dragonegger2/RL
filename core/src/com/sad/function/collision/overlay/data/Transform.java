@@ -100,7 +100,7 @@ public class Transform {
         result.translate(dp.x * alpha, dp.y * alpha);
     }
 
-    private void set(Transform transform) {
+    public void set(Transform transform) {
         this.cost = transform.cost;
         this.sint = transform.sint;
         this.x = transform.x;
@@ -156,5 +156,44 @@ public class Transform {
 
     public void rotate(float theta, Vector2 point) {
         rotate(theta, point.x, point.y);
+    }
+
+    public void lerp(Transform end, float alpha, Transform result) {
+        // interpolate the position
+        float x = this.x + alpha * (end.x - this.x);
+        float y = this.y + alpha * (end.y - this.y);
+
+        // compute the angle
+        // get the start and end rotations
+        // its key that these methods use atan2 because
+        // it ensures that the angles are always within
+        // the range -pi < theta < pi therefore no
+        // normalization has to be done
+        float rs = this.getRotation();
+        float re = end.getRotation();
+        // make sure we use the smallest rotation
+        // as described in the comments above, there
+        // are two possible rotations depending on the
+        // direction, we always choose the smaller
+        float diff = re - rs;
+        if (diff < -Math.PI) diff += Math.PI*2;
+        if (diff > Math.PI) diff -= Math.PI*2;
+        // interpolate
+        // its ok if this method produces an angle
+        // outside the range of -pi < theta < pi
+        // since the rotate method uses sin and cos
+        // which are not bounded
+        float a = diff * alpha + rs;
+
+        // set the result transform to the interpolated transform
+        // the following performs the following calculations:
+        // result.identity();
+        // result.rotate(a);
+        // result.translate(x, y);
+
+        result.cost = (float)Math.cos(a);
+        result.sint = (float)Math.sin(a);
+        result.x   = x;
+        result.y   = y;
     }
 }

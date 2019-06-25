@@ -8,17 +8,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.Collision;
+import com.sad.function.collision.overlay.World;
 import com.sad.function.collision.overlay.container.Body;
-import com.sad.function.collision.overlay.data.Penetration;
+import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.filter.Category;
+import com.sad.function.collision.overlay.filter.CategoryFilter;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.collision.overlay.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
@@ -30,12 +31,11 @@ public class ShapeTest5 extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
 
-    private List<Body> staticB;
-    private Penetration[] penetrations;
     private Body player;
     private Body ground;
 
-    private Body[] statics = new Body[3];
+    World world = new World();
+
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
@@ -43,13 +43,16 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         player = new Body(1);
         Convex c = new Rectangle(1, 1);
-        player.addFixture(c);
-        player.translate(-3, 1.4f);
+        BodyFixture playerFixture = player.addFixture(c);
+        playerFixture.setFilter(new CategoryFilter(Category.PLAYER, Category.ALL));
+        player.translate(-3, 3);
         player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (CA/CCD)
 
         ground = new Body();
         Convex gs = new Rectangle(15f, .5f);
-        ground.addFixture(gs);
+
+        BodyFixture groundFixture = ground.addFixture(gs);
+        groundFixture.setFilter(new CategoryFilter(Category.SOLID, Category.ALL));
         ground.translate(-10, 0);
 
         Convex w = new Rectangle(1, 10);
@@ -57,9 +60,20 @@ public class ShapeTest5 extends ApplicationAdapter {
         wall.addFixture(w);
         wall.translate(-10, 0);
 
-        staticB = new ArrayList<>(2);
-        staticB.add(ground);
-        staticB.add(wall);
+        player.setDynamic(true);
+
+        wall.setActive(false);
+        ground.setActive(false);
+
+        wall.setTag("SOLID");
+        ground.setTag("GROUND");
+        player.setTag("PLAYER");
+
+        world.addBody(wall);
+        world.addBody(ground);
+        world.addBody(player);
+
+
 
     }
 
@@ -73,9 +87,9 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         float delta = 1f / 60f;   //TODO fix my timestep.
 
-
         float speed = 0.125f;
         Vector2 playerSpeed = player.getLinearVelocity();
+
         //region Input
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             player.getLinearVelocity().set(-speed, playerSpeed.y);
@@ -92,22 +106,11 @@ public class ShapeTest5 extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             player.getLinearVelocity().set(playerSpeed.x, -speed);
         }
+        //endregion
 
-        //TODO Cast a ray to see if we're hitting the ground later.
-        player.getLinearVelocity().add(0, -9.8f * delta);
+        world.detect(delta);
 
-        player.getTransform().translate(player.getLinearVelocity().cpy().scl(delta));
-
-        Penetration p = new Penetration();
-        for (int i = 0; i < staticB.size(); i++) {
-            if (Collision.detect(player.getFixture(0).getShape(), player.getTransform(), staticB.get(i).getFixture(0).getShape(), staticB.get(i).getTransform(), p)) {
-                logger.info("Collision detected!");
-                player.getTransform().translate(p.normal.cpy().scl(-p.distance));
-            }
-        }
-
-
-        Gdx.graphics.setTitle(String.format("V: %s", player.getLinearVelocity()));
+        Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
     }
 
     @Override
@@ -128,15 +131,12 @@ public class ShapeTest5 extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        List<Body> bodies = world.getBodies();
+
         shapeRenderer.setColor(Color.GRAY);
-        for (int i = 0; i < staticB.size(); i++) {
-            renderBody(staticB.get(i));
+        for (int i = 0; i < bodies.size(); i++) {
+            renderBody(bodies.get(i));
         }
-
-        shapeRenderer.setColor(Color.FIREBRICK);
-        renderBody(player);
-
-        shapeRenderer.setColor(Color.BLUE);
 
         shapeRenderer.end();
     }
