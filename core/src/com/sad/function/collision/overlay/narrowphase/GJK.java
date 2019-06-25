@@ -38,7 +38,7 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
         Vector2 point2 = c2.getFarthestPoint(d, t2);
         d.scl(-1);      //Return search direction to original orientation.
 
-        return point2.cpy().sub(point1); //TODO Verify this damn thing again.
+        return point1.sub(point2);
     }
 
     public static boolean containsOrigin(Vector2 a, Vector2 b, Vector2 c) {
