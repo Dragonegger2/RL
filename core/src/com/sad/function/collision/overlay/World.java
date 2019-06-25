@@ -8,10 +8,11 @@ import com.sad.function.collision.overlay.broadphase.NSquared;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.continuous.CA;
-import com.sad.function.collision.overlay.data.TimeOfImpact;
+import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
-import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
+import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.narrowphase.NarrowPhase;
+import com.sad.function.collision.overlay.narrowphase.NarrowPhaseDetector;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 public class World {
     private final AbstractBroadphase<Body, com.sad.function.collision.overlay.container.BodyFixture> broad;
     private final NarrowPhase narrow;
+    private NarrowPhaseDetector narrowPhaseDetector = new GJK();
     private CA timeOfImpactSolver = new CA();
     private List<Body> bodies;
     private Vector2 gravity = new Vector2(0, -9.8f);
@@ -56,35 +58,51 @@ public class World {
         return bodies.remove(body);
     }
 
-    public void detect(float delta) {
-
-//      CCD:
-//      solveTOI(delta);
-
+    public void step(float delta) {
         updateBodies(delta);
+    }
 
-        List<BroadphasePair<Body, BodyFixture>> pairs = broad.detect();
+    public void detect(float delta) {
+        int size = bodies.size();
 
-        List<CollisionManifold> manifolds;
-        if (pairs.size() > 0) {
-            manifolds = narrow.solve(pairs);
-            for (int i = 0; i < manifolds.size(); i++) {
-                //TODO Need to fix this so that it creates A as the non-static value.
-                CollisionManifold manifold = manifolds.get(i);
-//                if(!manifold.body1.isStatic() && !manifold.body2.isStatic()) {}//Dynamic to dynamic collision
+        if(size > 0) {
+            List<BroadphasePair<Body, BodyFixture>> pairs = broad.detect();
 
-                Body d = manifold.body1.isStatic() ? manifold.body2 : manifold.body1;
+            int pSize = pairs.size();
+            boolean allow = true;
 
-                d.translate(manifold.normal.scl(-manifold.distance));
+            for(int i = 0; i < pSize; i++) {
+                BroadphasePair<Body, BodyFixture> pair = pairs.get(i);
 
-                d.velocity.y = 0f;
+                Body body1 = pair.getCollidable1();
+                Body body2 = pair.getCollidable2();
+                BodyFixture fixture1 = pair.getFixture1();
+                BodyFixture fixture2 = pair.getFixture2();
+
+                Transform transform1 = body1.getTransform();
+                Transform transform2 = body2.getTransform();
+
+                Convex convex2 = fixture2.getShape();
+                Convex convex1 = fixture1.getShape();
+
+                Penetration penetration = new Penetration();
+                if(!fixture1.getFilter().isAllowed(fixture2.getFilter())) continue;
+
+                if(this.narrowPhaseDetector.detect(convex1, transform1, convex2, transform2, penetration)) {
+                    if(penetration.getDepth() == 0.0f) {
+                        continue;
+                    }
+
+                    Body b = body1.isStatic() ? body2 : body1;
+                    b.translate(penetration.normal.scl(penetration.distance));
+                }
             }
+
         }
     }
 
 
     private void updateBodies(float delta) {
-
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             body.transform0.set(body.getTransform());
@@ -124,102 +142,6 @@ public class World {
 
         body.translate(translationX, translationY);
         body.rotateAboutCenter(rotation);
-    }
-
-
-    private void solveTOI(float delta) {
-        int size = bodies.size();
-
-        for (int i = 0; i < size; i++) {
-            Body body = bodies.get(i);
-
-            if (!body.isBullet()) continue;
-
-            solveToi(body, delta);
-        }
-
-    }
-
-    private void solveToi(Body body1, float delta) {
-        int size = bodies.size();
-
-        AABB aabb1 = body1.createSweptAABB();
-        boolean bullet = body1.isBullet();
-
-        float t1 = 0.0f;
-        float t2 = 1.0f;
-
-        TimeOfImpact minToi = null;
-        Body minBody = null;
-
-        for (int i = 0; i < size; i++) {
-            Body body2 = bodies.get(i);
-
-            if (body1 == body2) continue;
-
-            if (!body2.isActive()) continue;
-
-            if (body2.isDynamic() && !bullet) continue;
-
-            AABB aabb2 = body2.createSweptAABB();
-
-            if (!aabb1.overlaps(aabb2)) continue;
-
-            TimeOfImpact toi = new TimeOfImpact();
-            int fc1 = body1.getFixtureCount();
-            int fc2 = body2.getFixtureCount();
-
-            Vector2 v1 = body1.getLinearVelocity().cpy().scl(delta);
-            Vector2 v2 = body2.getLinearVelocity().cpy().scl(delta);
-            float av1 = body1.getAngularVelocity() * delta;
-            float av2 = body2.getAngularVelocity() * delta;
-
-            Transform tx1 = body1.getInitialTransform();
-            Transform tx2 = body2.getInitialTransform();
-
-            for (int j = 0; j < fc1; j++) {
-                BodyFixture f1 = body1.getFixture(j);
-
-                if(f1.isSensor()) continue;
-
-                for(int k = 0; k < fc2; k++) {
-                    BodyFixture f2 = body2.getFixture(k);
-                    if (f2.isSensor()) continue;
-
-                    Filter filter1 = f1.getFilter();
-                    Filter filter2 = f2.getFilter();
-
-                    if(!filter1.isAllowed(filter2)) {
-                        continue;
-                    }
-
-                    Convex c1 = f1.getShape();
-                    Convex c2 = f2.getShape();
-
-                    if(timeOfImpactSolver.solve(c1, tx1, v1, av1, c2, tx2, v2, av2, t1, t2, toi)) {
-                        float t = toi.getTime();
-
-                        if(t < t2) {
-                            t2 = t;
-                            minToi = toi;
-                            minBody = body2;
-
-                        }
-                    }
-                }
-            }
-
-            if(minToi != null) {
-                float t = minToi.getTime();
-
-                body1.transform0.lerp(body1.getTransform(), t, body1.getTransform());
-                if(minBody.isDynamic()) {
-                    minBody.transform0.lerp(minBody.getTransform(), t, minBody.getTransform());
-                }
-
-                //TODO SOMETHING. https://github.com/dyn4j/dyn4j/blob/128bfd8b48c36b6e84446a0203b2dd55b67a1d94/src/main/java/org/dyn4j/dynamics/World.java#L1089
-            }
-        }
     }
 
     public List<Body> getBodies() {

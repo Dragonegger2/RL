@@ -35,4 +35,8 @@ public class Penetration {
 
         return clone;
     }
+
+    public float getDepth() {
+        return distance;
+    }
 }

@@ -44,7 +44,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         player = new Body(1);
         Convex c = new Rectangle(1, 1);
         BodyFixture playerFixture = player.addFixture(c);
-        playerFixture.setFilter(new CategoryFilter(Category.PLAYER, Category.ALL));
+//        playerFixture.setFilter(new CategoryFilter(Category.PLAYER, Category.ALL));
         player.translate(-3, 3);
         player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (CA/CCD)
 
@@ -52,7 +52,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         Convex gs = new Rectangle(15f, .5f);
 
         BodyFixture groundFixture = ground.addFixture(gs);
-        groundFixture.setFilter(new CategoryFilter(Category.SOLID, Category.ALL));
+//        groundFixture.setFilter(new CategoryFilter(Category.DEFAULT, Category.ALL));
         ground.translate(-10, 0);
 
         Convex w = new Rectangle(1, 10);
@@ -65,7 +65,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         wall.setActive(false);
         ground.setActive(false);
 
-        wall.setTag("SOLID");
+        wall.setTag("WALL");
         ground.setTag("GROUND");
         player.setTag("PLAYER");
 
@@ -104,7 +104,7 @@ public class ShapeTest5 extends ApplicationAdapter {
 //            player.getLinearVelocity().set(playerSpeed.x, -speed);
 //        }
         //endregion
-
+        world.step(delta);
         world.detect(delta);
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
