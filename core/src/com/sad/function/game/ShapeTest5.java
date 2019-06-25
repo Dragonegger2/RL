@@ -72,9 +72,6 @@ public class ShapeTest5 extends ApplicationAdapter {
         world.addBody(wall);
         world.addBody(ground);
         world.addBody(player);
-
-
-
     }
 
     @Override
@@ -87,25 +84,25 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         float delta = 1f / 60f;   //TODO fix my timestep.
 
-        float speed = 0.125f;
-        Vector2 playerSpeed = player.getLinearVelocity();
-
         //region Input
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player.getLinearVelocity().set(-speed, playerSpeed.y);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.getLinearVelocity().set(speed, playerSpeed.y);
-        }
-        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.getLinearVelocity().set(0, player.getLinearVelocity().y);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.getLinearVelocity().set(playerSpeed.x, speed);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.getLinearVelocity().set(playerSpeed.x, -speed);
-        }
+//        float speed = 0.125f;
+//        Vector2 playerSpeed = player.getLinearVelocity();
+
+//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+//            player.getLinearVelocity().set(-speed, playerSpeed.y);
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            player.getLinearVelocity().set(speed, playerSpeed.y);
+//        }
+//        if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            player.getLinearVelocity().set(0, player.getLinearVelocity().y);
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//            player.getLinearVelocity().set(playerSpeed.x, speed);
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+//            player.getLinearVelocity().set(playerSpeed.x, -speed);
+//        }
         //endregion
 
         world.detect(delta);
@@ -129,7 +126,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         List<Body> bodies = world.getBodies();
 
@@ -171,5 +168,6 @@ public class ShapeTest5 extends ApplicationAdapter {
             }
         }
     }
+
     //endregion
 }
