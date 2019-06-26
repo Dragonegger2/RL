@@ -1,6 +1,8 @@
-package com.sad.function.collision.overlay.collision.narrowphase;
+package com.sad.function.collision.overlay.narrowphase;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.NarrowPhaseDetector;
+import com.sad.function.collision.overlay.collision.DistanceDetector;
 import com.sad.function.collision.overlay.data.VUtils;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Separation;

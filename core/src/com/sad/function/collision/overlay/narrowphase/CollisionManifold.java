@@ -1,4 +1,4 @@
-package com.sad.function.collision.overlay.collision.narrowphase;
+package com.sad.function.collision.overlay.narrowphase;
 
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.container.Body;

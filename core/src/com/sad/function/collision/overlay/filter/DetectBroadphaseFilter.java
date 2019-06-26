@@ -1,7 +1,7 @@
 package com.sad.function.collision.overlay.filter;
 
-import com.sad.function.collision.overlay.collision.broadphase.DefaultFilter;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.DefaultFilter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 

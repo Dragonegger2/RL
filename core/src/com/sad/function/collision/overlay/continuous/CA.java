@@ -1,7 +1,7 @@
-package com.sad.function.collision.overlay.collision.continuous;
+package com.sad.function.collision.overlay.continuous;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.collision.narrowphase.GJK;
+import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.data.Separation;
 import com.sad.function.collision.overlay.data.TimeOfImpact;
 import com.sad.function.collision.overlay.data.Transform;

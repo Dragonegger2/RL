@@ -1,10 +1,12 @@
-package com.sad.function.collision.overlay.collision.broadphase;
+package com.sad.function.collision.overlay.broadphase;
 
+import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.data.AABB;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Fixture;
 
 import java.util.List;
+
 
 public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T extends Fixture> implements BroadphaseDetector<E,T> {
     protected final BroadphaseFilter<E, T> defaultFilter = new DefaultBroadphaseFilter<>();

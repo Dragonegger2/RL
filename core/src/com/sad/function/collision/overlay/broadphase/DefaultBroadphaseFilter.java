@@ -1,8 +1,9 @@
-package com.sad.function.collision.overlay.collision.broadphase;
+package com.sad.function.collision.overlay.broadphase;
 
+import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.filter.Filter;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilterAdapter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilterAdapter;
 import com.sad.function.collision.overlay.container.Fixture;
 
 public class DefaultBroadphaseFilter<E extends Collidable<T>, T extends Fixture> extends BroadphaseFilterAdapter<E, T> implements BroadphaseFilter<E, T> {

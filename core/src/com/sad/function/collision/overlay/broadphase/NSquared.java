@@ -1,7 +1,7 @@
-package com.sad.function.collision.overlay.collision.broadphase;
+package com.sad.function.collision.overlay.broadphase;
 
 import com.sad.function.collision.overlay.data.AABB;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;

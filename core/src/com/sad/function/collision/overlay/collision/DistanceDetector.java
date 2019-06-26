@@ -1,4 +1,4 @@
-package com.sad.function.collision.overlay.collision.narrowphase;
+package com.sad.function.collision.overlay.collision;
 
 import com.sad.function.collision.overlay.data.Separation;
 import com.sad.function.collision.overlay.data.Transform;

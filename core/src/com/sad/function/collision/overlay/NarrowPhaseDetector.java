@@ -1,4 +1,4 @@
-package com.sad.function.collision.overlay.collision.narrowphase;
+package com.sad.function.collision.overlay;
 
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.shape.Convex;

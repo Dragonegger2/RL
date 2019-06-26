@@ -1,8 +1,8 @@
-package com.sad.function.collision.overlay.collision.broadphase.filters;
+package com.sad.function.collision.overlay.broadphase.filters;
 
 import com.badlogic.gdx.math.collision.Ray;
 import com.sad.function.collision.overlay.data.AABB;
-import com.sad.function.collision.overlay.collision.broadphase.Collidable;
+import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.container.Fixture;
 
 /**

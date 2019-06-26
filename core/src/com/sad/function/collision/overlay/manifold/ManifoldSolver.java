@@ -2,7 +2,7 @@ package com.sad.function.collision.overlay.manifold;
 
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
-import com.sad.function.collision.overlay.collision.narrowphase.CollisionManifold;
+import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.shape.Convex;
 
 public interface ManifoldSolver {

@@ -2,19 +2,18 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.collision.broadphase.AbstractBroadphaseDetector;
-import com.sad.function.collision.overlay.collision.broadphase.BroadphasePair;
-import com.sad.function.collision.overlay.collision.broadphase.Sap;
-import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
+import com.sad.function.collision.overlay.broadphase.BroadphasePair;
+import com.sad.function.collision.overlay.broadphase.Sap;
+import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
-import com.sad.function.collision.overlay.collision.continuous.CA;
+import com.sad.function.collision.overlay.continuous.CA;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
-import com.sad.function.collision.overlay.collision.narrowphase.CollisionManifold;
-import com.sad.function.collision.overlay.collision.narrowphase.NarrowPhaseDetector;
-import com.sad.function.collision.overlay.collision.narrowphase.SAT;
+import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
+import com.sad.function.collision.overlay.narrowphase.SAT;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.ArrayList;

@@ -1,6 +1,7 @@
-package com.sad.function.collision.overlay.collision.narrowphase;
+package com.sad.function.collision.overlay.narrowphase;
 
-import com.sad.function.collision.overlay.collision.broadphase.BroadphasePair;
+import com.sad.function.collision.overlay.NarrowPhaseDetector;
+import com.sad.function.collision.overlay.broadphase.BroadphasePair;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.data.Penetration;

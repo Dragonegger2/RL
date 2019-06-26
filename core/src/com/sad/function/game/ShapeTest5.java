@@ -110,9 +110,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         //endregion
 
-        world.step = delta;
-        world.step();
-        world.detect();
+        world.update(delta);
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
     }

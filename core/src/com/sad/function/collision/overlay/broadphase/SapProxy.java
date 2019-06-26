@@ -1,5 +1,6 @@
-package com.sad.function.collision.overlay.collision.broadphase;
+package com.sad.function.collision.overlay.broadphase;
 
+import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.container.Fixture;
 

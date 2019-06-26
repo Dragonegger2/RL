@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.data.Force;
 import com.sad.function.collision.overlay.World;
-import com.sad.function.collision.overlay.collision.broadphase.Collidable;
+import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
 import com.sad.function.collision.overlay.shape.Convex;
