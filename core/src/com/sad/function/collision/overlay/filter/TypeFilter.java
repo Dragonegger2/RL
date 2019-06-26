@@ -1,8 +1,6 @@
 package com.sad.function.collision.overlay.filter;
 
 
-import com.sad.function.collision.overlay.Filter;
-
 public class TypeFilter implements Filter {
     @Override
     public boolean isAllowed(Filter filter) {

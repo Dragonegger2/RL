@@ -2,19 +2,19 @@ package com.sad.function.collision.overlay;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
-import com.sad.function.collision.overlay.broadphase.BroadphasePair;
-import com.sad.function.collision.overlay.broadphase.Sap;
-import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
+import com.sad.function.collision.overlay.collision.broadphase.AbstractBroadphaseDetector;
+import com.sad.function.collision.overlay.collision.broadphase.BroadphasePair;
+import com.sad.function.collision.overlay.collision.broadphase.Sap;
+import com.sad.function.collision.overlay.collision.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
-import com.sad.function.collision.overlay.continuous.CA;
+import com.sad.function.collision.overlay.collision.continuous.CA;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
-import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
-import com.sad.function.collision.overlay.narrowphase.NarrowPhaseDetector;
-import com.sad.function.collision.overlay.narrowphase.SAT;
+import com.sad.function.collision.overlay.collision.narrowphase.CollisionManifold;
+import com.sad.function.collision.overlay.collision.narrowphase.NarrowPhaseDetector;
+import com.sad.function.collision.overlay.collision.narrowphase.SAT;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ public class World {
     private CA timeOfImpactSolver = new CA();
     private List<Body> bodies;
     private Vector2 gravity = new Vector2(0, -9.8f);
+    public float step = 0;
 
     protected BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
     public World() {
@@ -52,11 +53,17 @@ public class World {
         return bodies.remove(body);
     }
 
-    public void step(float delta) {
-        updateBodies(delta);
+    public void update(float delta) {
+        this.step = delta;
+        step();
+        detect();
     }
 
-    public void detect() {
+    private void step() {
+        updateBodies();
+    }
+
+    private void detect() {
         for(int i = 0; i < bodies.size(); i++) {
             broad.update(bodies.get(i));
         }
@@ -98,15 +105,15 @@ public class World {
     }
 
 
-    private void updateBodies(float delta) {
+    private void updateBodies() {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             body.transform0.set(body.getTransform());
-            accumulateBodyVelocity(body, delta);
+            accumulateBodyVelocity(body, step);
         }
 
         for (int i = 0; i < bodies.size(); i++) {
-            translateBodies(bodies.get(i), delta);
+            translateBodies(bodies.get(i));
         }
     }
 
@@ -128,13 +135,13 @@ public class World {
         body.angularVelocity *= angular;
     }
 
-    private void translateBodies(Body body, float delta) {
+    private void translateBodies(Body body) {
         if (body.isStatic()) return;
 
-        float translationX = body.velocity.x * delta;
-        float translationY = body.velocity.y * delta;
+        float translationX = body.velocity.x * step;
+        float translationY = body.velocity.y * step;
 
-        float rotation = body.angularVelocity * delta;
+        float rotation = body.angularVelocity * step;
 
         body.translate(translationX, translationY);
         body.rotateAboutCenter(rotation);

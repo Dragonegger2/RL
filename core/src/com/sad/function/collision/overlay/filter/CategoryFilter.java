@@ -24,8 +24,6 @@
  */
 package com.sad.function.collision.overlay.filter;
 
-import com.sad.function.collision.overlay.Filter;
-
 /**
  * A {@link Filter} for categorized fixtures.
  * <p>

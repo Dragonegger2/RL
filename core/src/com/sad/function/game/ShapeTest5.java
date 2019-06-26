@@ -34,6 +34,7 @@ public class ShapeTest5 extends ApplicationAdapter {
     private Body player;
     private Body ground;
 
+
     World world = new World();
 
     @Override
@@ -44,7 +45,6 @@ public class ShapeTest5 extends ApplicationAdapter {
         player = new Body(1);
         Convex c = new Rectangle(1, 1);
         BodyFixture playerFixture = player.addFixture(c);
-//        playerFixture.setFilter(new CategoryFilter(Category.PLAYER, Category.ALL));
         player.translate(-3, 3);
         player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (CA/CCD)
 
@@ -52,7 +52,6 @@ public class ShapeTest5 extends ApplicationAdapter {
         Convex gs = new Rectangle(15f, .5f);
 
         BodyFixture groundFixture = ground.addFixture(gs);
-//        groundFixture.setFilter(new CategoryFilter(Category.DEFAULT, Category.ALL));
         ground.translate(-10, 0);
 
         Convex w = new Rectangle(1, 10);
@@ -87,16 +86,14 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         float delta = 1f / 60f;   //TODO fix my timestep.
 
-//        region Input
+        //region Input Handling
         float speed = 0.125f;
         Vector2 playerSpeed = player.getLinearVelocity();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-//            player.getLinearVelocity().set(-speed, playerSpeed.y);
             player.applyImpulse(new Vector2(-speed, 0));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-//            player.getLinearVelocity().set(speed, playerSpeed.y);
             player.applyImpulse(new Vector2(speed, 0));
         }
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
@@ -111,9 +108,10 @@ public class ShapeTest5 extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             player.applyImpulse(new Vector2(0, -speed));
         }
-//        endregion
+        //endregion
 
-        world.step(delta);
+        world.step = delta;
+        world.step();
         world.detect();
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
@@ -169,13 +167,19 @@ public class ShapeTest5 extends ApplicationAdapter {
     public void renderBody(Body b) {
         Transform t = b.getTransform();
         for (int i = 0; i < b.getFixtures().size(); i++) {
+            shapeRenderer.setColor(Color.FIREBRICK);
             if (b.getFixtures().get(i).getShape() instanceof Rectangle) {
                 Rectangle r = (Rectangle) b.getFixtures().get(i).getShape();
                 renderRectangle(r, t);
             } else {
                 logger.warn("Update the RenderBody method to support additional shapes if you wish to support {}.", b.getFixtures().get(i).getClass());
             }
+//            shapeRenderer.setColor(Color.RED);
+//            renderPoint(b.getFixtures().get(i).);
+
         }
+        shapeRenderer.setColor(Color.LIME);
+        renderPoint(b.getWorldCenter());
     }
 
     //endregion

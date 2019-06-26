@@ -1,6 +1,6 @@
 package com.sad.function.collision.overlay.container;
 
-import com.sad.function.collision.overlay.Filter;
+import com.sad.function.collision.overlay.filter.Filter;
 import com.sad.function.collision.overlay.shape.Convex;
 
 import java.util.UUID;

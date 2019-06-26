@@ -1,8 +1,8 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.Geometry;
-import com.sad.function.collision.overlay.AABB;
+import com.sad.function.collision.overlay.geometry.Geometry;
+import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
 
