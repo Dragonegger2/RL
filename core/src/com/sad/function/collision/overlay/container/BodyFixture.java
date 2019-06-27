@@ -1,12 +1,14 @@
 package com.sad.function.collision.overlay.container;
 
 
+import com.sad.function.collision.overlay.data.UserData;
 import com.sad.function.collision.overlay.shape.Convex;
 
-public class BodyFixture extends Fixture {
+public class BodyFixture extends Fixture implements UserData {
     public static final float default_friction = 0.2f;
     public static final float default_restitution = 0.0f;
     public static final float default_density = 1.0f;
+    public static Object userData;
 
     protected float density;
     protected float friction;
@@ -48,5 +50,15 @@ public class BodyFixture extends Fixture {
         if (restitution < 0)
             throw new IllegalArgumentException("Illegal value for restitution.");
         this.restitution = restitution;
+    }
+
+    @Override
+    public Object getUserData() {
+        return userData;
+    }
+
+    @Override
+    public void setUserData(Object userData) {
+        this.userData = userData;
     }
 }

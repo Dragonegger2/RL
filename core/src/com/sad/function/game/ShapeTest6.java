@@ -8,20 +8,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.shape.Circle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dyn4j.collision.manifold.Manifold;
-import org.dyn4j.collision.narrowphase.Penetration;
 import org.dyn4j.dynamics.*;
 import org.dyn4j.dynamics.contact.ContactAdapter;
-import org.dyn4j.dynamics.contact.ContactConstraint;
 import org.dyn4j.dynamics.contact.ContactPoint;
 import org.dyn4j.dynamics.contact.PersistedContactPoint;
+import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Transform;
-
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,6 +38,7 @@ public class ShapeTest6 extends ApplicationAdapter {
 
     private static final Object FLOOR_BODY = new Object();
     private static final Object PLAYER = new Object();
+    private static final Object FOOT = new Object();
 
     private final AtomicBoolean isOnGround = new AtomicBoolean(false);
 
@@ -50,68 +47,58 @@ public class ShapeTest6 extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
 
+        double playerWidth = 1;
+        double playerHeight = 1;
+
         player = new Body();
-        player.addFixture(new Rectangle(1, 1));
+        player.addFixture(new Rectangle(playerWidth, playerHeight));
         player.setMass(MassType.NORMAL);
         player.translate(0, 3);
         player.translate(0,0);
         player.setUserData(PLAYER);
+        BodyFixture foot = new BodyFixture(new Rectangle(playerWidth/2, playerHeight/2));
+        foot.setSensor(true);
+        foot.getShape().getCenter().set(0, -0.5);
+        foot.setUserData(FOOT);
+        player.addFixture(foot);
 
         ground = new Body();
         ground.addFixture(new Rectangle(100, 1));
         ground.setMass(MassType.INFINITE);
         ground.setUserData(FLOOR_BODY);
 
+        Body wall = new Body();
+        wall.addFixture(new Rectangle(1, 10));
+        ground.setMass(MassType.INFINITE);
+        ground.setUserData(FLOOR_BODY);
 
         world.addBody(player);
         world.addBody(ground);
 
         world.setGravity(new org.dyn4j.geometry.Vector2(0, -9.8));
 
-        world.addListener(new StepAdapter() {
-            @Override
-            public void begin(Step step, World world) {
-                // at the beginning of each world step, check if the body is in
-                // contact with any of the floor bodies
-                boolean isGround = false;
-                List<Body> bodies =  player.getInContactBodies(false);
-                for (int i = 0; i < bodies.size(); i++) {
-                    if (bodies.get(i).getUserData() == FLOOR_BODY) {
-                        isGround = true;
-                        break;
-                    }
-                }
-
-                if (!isGround) {
-                    // if not, then set the flag, and update the color
-                    isOnGround.set(false);
-                }
-            }
-        });
-
         world.addListener(new ContactAdapter() {
-            private boolean isContactWithFloor(ContactPoint point) {
-                if ((point.getBody1().getUserData() == PLAYER || point.getBody2().getUserData() == PLAYER) &&
-                        (point.getBody1().getUserData() == FLOOR_BODY || point.getBody2().getUserData() == FLOOR_BODY)) {
-                    return true;
-                }
-                return false;
-            }
-
             @Override
-            public boolean persist(PersistedContactPoint point) {
-                if (isContactWithFloor(point)) {
-                    isOnGround.set(true);
-                }
-                return super.persist(point);
+            public void sensed(ContactPoint point) {
+                logger.info("SENSED");
             }
-
+            //In this case I need to be checking to see if the fixtures actually have data.
             @Override
             public boolean begin(ContactPoint point) {
-                if (isContactWithFloor(point)) {
+                if ((point.getFixture1().getUserData() == FOOT || point.getFixture2().getUserData() == FOOT) &&
+                        (point.getBody1().getUserData() == FLOOR_BODY || point.getBody2().getUserData() == FLOOR_BODY)) {
                     isOnGround.set(true);
                 }
+
                 return super.begin(point);
+            }
+
+            @Override
+            public void end(ContactPoint point) {
+                if ((point.getBody1().getUserData() == FOOT || point.getBody2().getUserData() == FOOT) &&
+                        (point.getBody1().getUserData() == FLOOR_BODY || point.getBody2().getUserData() == FLOOR_BODY)) {
+                    isOnGround.set(false);
+                }
             }
         });
     }
@@ -190,13 +177,13 @@ public class ShapeTest6 extends ApplicationAdapter {
         shapeRenderer.circle(p.x, p.y, 0.125f, 15);
     }
 
-    public void renderCircle(Circle c) {
-        shapeRenderer.setColor(Color.BLUE);
-        shapeRenderer.circle(c.getCenter().x,
-                c.getCenter().y,
-                c.getRadius(),
-                15);
-    }
+//    public void renderCircle(Circle c) {
+//        shapeRenderer.setColor(Color.BLUE);
+//        shapeRenderer.circle(c.getCenter().x,
+//                c.getCenter().y,
+//                c.getRadius(),
+//                15);
+//    }
 
     public void renderRectangle(Rectangle r, Transform t) {
         Vector2 position = convert(t.getTransformed(r.getCenter()));

@@ -5,19 +5,21 @@ import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.data.UserData;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractCollidable<T extends Fixture> implements Collidable<T>, Translateable {
+public abstract class AbstractCollidable<T extends Fixture> implements Collidable<T>, Translateable, UserData {
     protected final UUID id;
     protected Transform transform;
     protected List<T> fixtures;
     protected float radius;
     protected float angularVelocity;
     protected String tag;
+    private Object userData;
 
     public AbstractCollidable() {
         this(1);
@@ -171,4 +173,12 @@ public abstract class AbstractCollidable<T extends Fixture> implements Collidabl
     public void rotate(float theta) {
         transform.rotate(theta);
     }
+
+    @Override
+    public void setUserData(Object userData) {
+        this.userData = userData;
+    }
+
+    @Override
+    public Object getUserData() { return this.userData; }
 }

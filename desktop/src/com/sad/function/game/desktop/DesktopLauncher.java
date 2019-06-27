@@ -12,8 +12,8 @@ public class DesktopLauncher {
 		config.forceExit = true;
 		config.foregroundFPS= 90;
 //		new LwjglApplication(new ApocalypticGame(), config);
-//		new LwjglApplication(new ShapeTest5(), config);
-		new LwjglApplication(new ShapeTest6(), config);
+		new LwjglApplication(new ShapeTest5(), config);
+//		new LwjglApplication(new ShapeTest6(), config);
 //		new LwjglApplication(new ShapeTest(), config);
 	}
 }
