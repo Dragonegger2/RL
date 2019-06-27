@@ -78,7 +78,6 @@ public class ShapeTest5 extends ApplicationAdapter {
 
     @Override
     public void render() {
-
         r();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -112,7 +111,7 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         world.update(delta);
 
-        Gdx.graphics.setTitle(String.format("FPS: %s V: %s", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity()));
+        Gdx.graphics.setTitle(String.format("FPS: %s V: %s P:{%s, %s}", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity(),player.getWorldCenter().x, player.getWorldCenter().y));
     }
 
     @Override

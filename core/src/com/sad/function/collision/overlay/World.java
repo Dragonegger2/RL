@@ -20,16 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class World {
-    private final AbstractBroadphaseDetector<Body, BodyFixture> broad = new Sap<>();
-    private NarrowPhaseDetector narrowPhaseDetector = new SAT();
     private CA timeOfImpactSolver = new CA();
-    private List<Body> bodies;
     private Vector2 gravity = new Vector2(0, -9.8f);
     public float step = 0;
+
+    private final List<Body> bodies;
+    private final List<Joint> joints;
+
+    private NarrowPhaseDetector narrowphase = new SAT();
+    private final AbstractBroadphaseDetector<Body, BodyFixture> broadphase = new Sap<>();
+
+
 
     protected BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
     public World() {
         bodies = new ArrayList<>(65);
+        joints = new ArrayList<>();
     }
 
     /**
@@ -40,7 +46,7 @@ public class World {
     public void addBody(Body body) {
         bodies.add(body);
         body.world = this;
-        broad.add(body);
+        broadphase.add(body);
     }
 
     /**
@@ -48,7 +54,7 @@ public class World {
      * @return if the bodies were removed.
      */
     public boolean removeBody(Body body) {
-        broad.remove(body);
+        broadphase.remove(body);
         return bodies.remove(body);
     }
 
@@ -64,9 +70,9 @@ public class World {
 
     private void detect() {
         for(int i = 0; i < bodies.size(); i++) {
-            broad.update(bodies.get(i));
+            broadphase.update(bodies.get(i));
         }
-        List<BroadphasePair<Body, BodyFixture>> pairs = broad.detect(detectBroadphaseFilter);
+        List<BroadphasePair<Body, BodyFixture>> pairs = broadphase.detect(detectBroadphaseFilter);
         int pSize = pairs.size();
 
         ArrayList<CollisionManifold> manifolds = new ArrayList<>();
@@ -87,7 +93,7 @@ public class World {
 
             Penetration penetration = new Penetration();
 
-            if (this.narrowPhaseDetector.detect(convex1, transform1, convex2, transform2, penetration)) {
+            if (this.narrowphase.detect(convex1, transform1, convex2, transform2, penetration)) {
                 if (penetration.getDepth() == 0.0f) {
                     continue;
                 }

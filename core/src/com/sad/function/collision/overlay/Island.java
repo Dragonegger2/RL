@@ -1,7 +1,10 @@
 package com.sad.function.collision.overlay;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.sad.function.collision.overlay.container.Body;
+import com.sad.function.global.GameInfo;
 import org.dyn4j.collision.Collisions;
 import org.dyn4j.dynamics.Capacity;
 import org.dyn4j.dynamics.contact.ContactConstraint;
@@ -36,4 +39,22 @@ final class Island {
     public void add(ContactConstraint contactConstraint) {
         this.contactConstraints.add(contactConstraint);
     }
+
+    public void add(Joint joint) { this.joints.add(joint); }
+
+    public void solve(ContactConstraintSolver solver, Vector2 gravity, float dt) {
+        int velocitySolverIterations = GameInfo.VELOCITY_CONSTRAINT_SOLVER_TERATIONS;
+        int positionSolverIterations = GameInfo.POSITION_CONSTRAINT_SOLVER_TERATIONS;
+
+        float sleepAngularVelocity = 0.2f;
+        float sleepLinearVelocitySquared = 0.25f;
+        float sleepTime = 1000;
+
+        int size = bodies.size();
+        int jSize = joints.size();
+
+        float invM, invI;
+    }
+
+    public class ContactConstraintSolver {}
 }
