@@ -21,6 +21,11 @@ import org.dyn4j.Epsilon;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Below has the logic for using restitution and friction.
+ * https://github.com/dyn4j/dyn4j/blob/master/src/main/java/org/dyn4j/dynamics/contact/ContactConstraint.java
+ */
+
 public class World {
     private static final float MAX_LINEAR_CORRECTION = 0.2f;
     private static final float MAX_LINEAR_TOLERANCE = 0.005f;

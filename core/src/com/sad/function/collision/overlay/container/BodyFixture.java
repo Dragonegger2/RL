@@ -53,6 +53,10 @@ public class BodyFixture extends Fixture implements UserData {
         this.restitution = restitution;
     }
 
+    public boolean isSensor() {return sensor; }
+
+    public void setSensor(boolean flag) { this.sensor = flag; }
+
     public Mass createMass() {
         return shape.createMass(density);
     }

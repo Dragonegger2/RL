@@ -14,6 +14,7 @@ import com.sad.function.collision.overlay.container.BodyFixture;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.Category;
 import com.sad.function.collision.overlay.filter.CategoryFilter;
+import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.collision.overlay.shape.Rectangle;
@@ -47,7 +48,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         BodyFixture playerFixture = player.addFixture(c);
         player.translate(-3, 3);
         player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (ConservativeAdvancement/CCD)
-
+        player.setMass(Mass.MassType.NORMAL);
         ground = new Body();
         Convex gs = new Rectangle(15f, .5f);
 
@@ -61,6 +62,9 @@ public class ShapeTest5 extends ApplicationAdapter {
 
         wall.setActive(false);
         ground.setActive(false);
+
+        wall.setMass(Mass.MassType.INFINITE);
+        ground.setMass(Mass.MassType.INFINITE);
 
         wall.setTag("WALL");
         ground.setTag("GROUND");

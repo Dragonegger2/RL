@@ -185,7 +185,7 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
         return this.setMass(Mass.MassType.NORMAL);
     }
 
-    private Body setMass(Mass.MassType type) {
+    public Body setMass(Mass.MassType type) {
         if (type == null) {
             type = mass.getType();
         }
