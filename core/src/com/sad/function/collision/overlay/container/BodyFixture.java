@@ -2,6 +2,7 @@ package com.sad.function.collision.overlay.container;
 
 
 import com.sad.function.collision.overlay.data.UserData;
+import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.shape.Convex;
 
 public class BodyFixture extends Fixture implements UserData {
@@ -50,6 +51,10 @@ public class BodyFixture extends Fixture implements UserData {
         if (restitution < 0)
             throw new IllegalArgumentException("Illegal value for restitution.");
         this.restitution = restitution;
+    }
+
+    public Mass createMass() {
+        return shape.createMass(density);
     }
 
     @Override

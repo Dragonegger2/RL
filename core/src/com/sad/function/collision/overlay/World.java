@@ -12,9 +12,11 @@ import com.sad.function.collision.overlay.continuous.ConservativeAdvancement;
 import com.sad.function.collision.overlay.data.*;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
 import com.sad.function.collision.overlay.filter.Filter;
+import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
+import org.dyn4j.Epsilon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,10 @@ public class World {
     private static final float MAX_LINEAR_CORRECTION = 0.2f;
     private static final float MAX_LINEAR_TOLERANCE = 0.005f;
     private static final float DEFAULT_MAX_TRANSLATION = 2.0f;
-    private static final float DEFAUL_MAX_ROTATION = (float)(0.5f * Math.PI);
+    private static final float DEFAUL_MAX_ROTATION = (float) (0.5f * Math.PI);
+
+    public static boolean ContinuousCollisionDetection = true;
+    public static boolean BulletsOnly = true;
 
     private final List<Body> bodies;
     private final List<Joint> joints;
@@ -71,11 +76,10 @@ public class World {
     }
 
     private void detect() {
-        //DO TOI
-//        timeOfImpactSolver.solve()
-        for (int i = 0; i < bodies.size(); i++) {
-            //
+        if(ContinuousCollisionDetection) {
+            solveTOI();
         }
+
         for (int i = 0; i < bodies.size(); i++) {
             broadphase.update(bodies.get(i));
         }
@@ -147,12 +151,26 @@ public class World {
         }
     }
 
+    //Comes from the Island object in Dyn4j. That's how he chose to accumulate his forces.
     private void accumulateBodyVelocity(Body body, float delta) {
         if (!body.isDynamic()) return;
 
         body.accumulate(delta);
-        body.velocity.x += (body.force.x * body.mass + gravity.x * body.gravityScale) * delta;
-        body.velocity.y += (body.force.y * body.mass + gravity.y * body.gravityScale) * delta;
+
+        float invM = body.getMass().getInverseMass();
+//        float invI = body.getMass().getInverseInertia();
+
+        //If the inverse mass is not infinite or fixed.
+        if(invM > Epsilon.E) {
+            body.velocity.x += (body.force.x * invM + gravity.x * body.gravityScale) * delta;
+            body.velocity.y += (body.force.y * invM + gravity.y * body.gravityScale) * delta;
+
+        }
+
+        //TODO: Add torques if I want them.
+//        if(invI > Epsilon.E) {
+//            body.angularVelocity += delta * invI * body.torque;
+//        }
 
         float linear = 1.0f - delta * body.linearDamping;
         float angular = 1.0f - delta * body.angularDamping;
@@ -181,21 +199,30 @@ public class World {
         return bodies;
     }
 
+    /**
+     * Entry point for handling TOI's.
+     */
     private void solveTOI() {
         //Listeners
 
         int size = bodies.size();
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Body body = bodies.get(i);
 
-            if(!body.isBullet()) continue;//Skip if the body is a bullet.
+            if (BulletsOnly && !body.isBullet()) continue;//Skip if the body is a bullet.
 
-            if(body.mass == -1) continue;   //We're only handling non-static bodies.
-            
+            if (body.getMass().isInfinite()) continue;   //We're only handling non-static bodies.
+
+            if(body.isAsleep()) continue;
+
             solveTOI(body);
         }
     }
 
+    /**
+     * Second stage of solving a TOI.
+     * @param body1 a dynamic body that we are checking collisions with.
+     */
     private void solveTOI(Body body1) {
         int size = bodies.size();
 
@@ -208,15 +235,16 @@ public class World {
         TimeOfImpact minToi = null;
         Body minBody = null;
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Body body2 = bodies.get(i);
 
-            if(body1 == body2) continue; //Skip if they are the same body.
-            if(body2.isDynamic() && !bullet) continue; //skip other dynamic to dynamic collisions. We only do that in the event of "bullets"
+            if (body1 == body2) continue; //Skip if they are the same body.
+            if (body2.isDynamic() && !bullet)
+                continue; //skip other dynamic to dynamic collisions. We only do that in the event of "bullets"
 
             AABB aabb2 = body2.createSweptAABB();
 
-            if(!aabb1.overlaps(aabb2)) continue;//Don't test if they are overlapping.
+            if (!aabb1.overlaps(aabb2)) continue;//Don't test if they are overlapping.
 
             TimeOfImpact toi = new TimeOfImpact();
             int fc1 = body1.getFixtureCount();
@@ -232,35 +260,35 @@ public class World {
             Transform tx1 = body1.getInitialTransform();
             Transform tx2 = body2.getInitialTransform();
 
-            for(int j = 0; j < fc1; j++) {
+            for (int j = 0; j < fc1; j++) {
                 BodyFixture f1 = body2.getFixture(j);
 
-                if(f1.isSensor()) continue; //we skip sensors.
+                if (f1.isSensor()) continue; //we skip sensors.
 
-                for(int k = 0; k < fc2; k++) {
+                for (int k = 0; k < fc2; k++) {
                     BodyFixture f2 = body2.getFixture(k);
 
-                    if(f2.isSensor()) continue;
+                    if (f2.isSensor()) continue;
 
                     Filter filter1 = f1.getFilter();
                     Filter filter2 = f2.getFilter();
 
                     //Ensure the fixtures are actually allowed to collide.
-                    if(!filter1.isAllowed(filter2)) {
+                    if (!filter1.isAllowed(filter2)) {
                         continue;
                     }
 
                     Convex c1 = f1.getShape();
                     Convex c2 = f2.getShape();
 
-                    if(timeOfImpactSolver.solve(c1, tx1, v1, av1, c2, tx2, v2, av2, t1, t2, toi)) {
+                    if (timeOfImpactSolver.solve(c1, tx1, v1, av1, c2, tx2, v2, av2, t1, t2, toi)) {
                         float t = toi.getTime();
 
-                        if(t < t2) {
+                        if (t < t2) {
                             boolean allow = true;
                             //Alert all listeners if we want to.
 
-                            if(allow) {
+                            if (allow) {
                                 t2 = t;
                                 minToi = toi;
                                 minBody = body2;
@@ -275,30 +303,42 @@ public class World {
 
 
         }
-        if(minToi != null) {
+
+        if (minToi != null) {
             float t = minToi.getTime();
 
             body1.transform0.lerp(body1.getTransform(), t, body1.getTransform());
 
-            if(minBody.isDynamic()) {
+            if (minBody.isDynamic()) {
                 minBody.transform0.lerp(minBody.getTransform(), t, minBody.getTransform());
             }
 
-            solve(body1, minBody, minToi);
+            timeOfImpactSolver(body1, minBody, minToi);
         }
     }
 
-    private void solve(Body body1, Body body2, TimeOfImpact timeOfImpact) {
-        //Linear tolerance?
-        //max linear correction
-//        float linearTolerance = 1;//>
-
+    /**
+     * Solve TOI
+     *
+     * @param body1        in this impact
+     * @param body2        in this impact
+     * @param timeOfImpact collision information.
+     */
+    private void timeOfImpactSolver(Body body1, Body body2, TimeOfImpact timeOfImpact) {
         Vector2 c1 = body1.getWorldCenter();
         Vector2 c2 = body2.getWorldCenter();
 
         //Get Mass...
-        float mass1 = body1.mass;
-        float mass2 = body2.mass;
+        Mass m1 = body1.getMass();
+        Mass m2 = body2.getMass();
+
+        float mass1 = m1.getMass();
+        float mass2 = m2.getMass();
+
+        float invMass1 = mass1 * m1.getInverseMass();
+        float invI1 = mass1 * m1.getInverseInertia();
+        float invMass2 = mass2 * m2.getInverseMass();
+        float invI2 = mass2 * m2.getInverseInertia();
 
         Separation separation = timeOfImpact.getSeparation();
 
@@ -316,23 +356,24 @@ public class World {
         float rn1 = VUtils.cross(r1, n);
         float rn2 = VUtils.cross(r2, n);
 
-        float invMass1 = 0;
-        float invMass2 = 0;
-        float invI1 = 0;
-        float invI2 = 0;
-
         float K = invMass1 + invMass2 + invI1 * rn1 * rn1 + invI2 * rn2 * rn2;
 
         float impulse = 0.0f;
 
-        if(K > 0.0f) {
+        if (K > 0.0f) {
             impulse = -C / K;
         }
 
         Vector2 J = n.cpy().scl(impulse);
 
-        body1.translate(J);
-//        body1.rotate();
-        //TODO FIX THIS.
+        body1.translate(J.scl(invMass1));
+        body1.rotate(invI1 * r1.crs(J), c1.x, c1.y);
+
+        body2.translate(J.scl(-invMass2));
+        body2.rotate(-invI2 * r2.crs(J), c2.x, c2.y);
+    }
+
+    public AbstractBroadphaseDetector<Body, BodyFixture> getBroadphaseDetector() {
+        return broadphase;
     }
 }

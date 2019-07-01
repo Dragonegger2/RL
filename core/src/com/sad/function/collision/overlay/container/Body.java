@@ -1,10 +1,10 @@
 package com.sad.function.collision.overlay.container;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.Collidable;
+import com.sad.function.collision.overlay.World;
 import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.data.Force;
-import com.sad.function.collision.overlay.World;
-import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
@@ -26,7 +26,6 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     public World world;
     public Vector2 velocity;
     public float gravityScale;
-    public float mass = 1;
     public Transform transform0;
     public Vector2 force;
     public float linearDamping = 1;
@@ -37,7 +36,7 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     private boolean asleep;
     private boolean dynamic;
     private float sleepTime;
-    private Mass _mass;
+    private Mass mass;
 
 
     public Body() {
@@ -48,7 +47,7 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
         super(fixtureCount);
 
         this.radius = 0.0f;
-        this._mass = new Mass();
+        this.mass = new Mass();
         this.transform0 = new Transform();
         this.velocity = new Vector2();
         this.gravityScale = 1.0f;
@@ -71,11 +70,9 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
         fixture.setFriction(restitution);
 
         this.fixtures.add(fixture);
-        /*
         if(this.world != null) {
-            this.world.braodphaseDetector.add(this, fixture);
+            this.world.getBroadphaseDetector().add(this, fixture);
         }
-         */
 
         return fixture;
     }
@@ -83,36 +80,35 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     public Body addFixture(BodyFixture fixture) {
         if (fixture == null) throw new NullPointerException("BodyFixture can't be null!");
         this.fixtures.add(fixture);
-        /*
         if(this.world != null) {
-            this.world.braodphaseDetector.add(this, fixture);
+            this.world.getBroadphaseDetector().add(this, fixture);
         }
-         */
         return this;
     }
 
     @Override
     public boolean removeFixture(BodyFixture fixture) {
-        /*
         if(this.world != null) {
-            this.world.broadphaseDetector.remove(this, fixture);
+            this.world.getBroadphaseDetector().remove(this, fixture);
         }
-         */
         return super.removeFixture(fixture);
     }
 
     @Override
+    public boolean isAsleep() {
+        return (this.state & Body.ASLEEP) == Body.ASLEEP;
+    }
+
+    @Override
     public Vector2 getLocalCenter() {
-        return null;
+        return this.mass.getCenter();
     }
 
     public BodyFixture removeBodyFixture(int index) {
         BodyFixture fixture = super.removeFixture(index);
-        /*
         if(this.world != null) {
-            this.world.broadphaseDetector.remove(this,fixture);
+            this.world.getBroadphaseDetector().remove(this,fixture);
         }
-         */
         return fixture;
     }
 
@@ -164,13 +160,16 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
             }
         }
     }
+
     public boolean isStatic() {
-        return Math.abs(velocity.x) <= Epsilon.E &&
+        return mass.getType() == Mass.MassType.INFINITE &&
+                Math.abs(velocity.x) <= Epsilon.E &&
                 Math.abs(velocity.y) <= Epsilon.E &&
                 Math.abs(angularVelocity) <= Epsilon.E;
     }
+
     public boolean isActive() {
-        return true;
+        return (this.state & Body.ACTIVE) == Body.ACTIVE;
     }
 
     public void setActive(boolean flag) {
@@ -187,37 +186,55 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     }
 
     private Body setMass(Mass.MassType type) {
-        if(type == null) {
-            type = _mass.getType();
+        if (type == null) {
+            type = mass.getType();
         }
 
         int size = fixtures.size();
-        if(size == 0) {
-            _mass = new Mass();
-        } else if(size == 1) {
-            _mass = fixtures.get(0).createMass();
+        if (size == 0) {
+            mass = new Mass();
+        } else if (size == 1) {
+            mass = fixtures.get(0).createMass();
         } else {
             List<Mass> masses = new ArrayList<>(size);
-            for(int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) {
                 Mass mass = fixtures.get(i).createMass();
                 masses.add(mass);
             }
-            this._mass = Mass.create(masses);
+            this.mass = Mass.create(masses);
         }
 
-        _mass.setType(type);
+        mass.setType(type);
         setRotationDiscRadius();
 
         return this;
     }
 
-    public boolean isDynamic() {
-        return (this.state & Body.ACTIVE) == Body.ACTIVE;
+    public Mass getMass() { return this.mass; }
+
+    private void setRotationDiscRadius() {
+        float r = 0.0f;
+        int size = fixtures.size();
+
+        if (size == 0) {
+            radius = 0.0f;
+            return;
+        }
+
+        Vector2 c = mass.getCenter();
+        for (int i = 0; i < size; i++) {
+            BodyFixture fixture = fixtures.get(i);
+            Convex convex = fixture.getShape();
+
+            float cr = convex.getRadius(c);
+
+            r = Math.max(r, cr);
+        }
+
+        this.radius = r;
     }
 
-    public void setDynamic(boolean flag) {
-        this.dynamic = flag;
-    }
+    public boolean isDynamic() { return mass.getType() != Mass.MassType.INFINITE; }
 
     /**
      * Accumulate all of the forces currently being applied to the body and removes them if they've exceeded their life.
@@ -265,11 +282,19 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     }
 
     public Body applyImpulse(float x, float y) {
-        this.velocity.add(x * mass, y * mass );
+
+        float invM = mass.getInverseMass();
+
+        if(invM == 0) {
+            return this;
+        }
+
+        this.velocity.add(x * invM, y * invM);
         this.setAsleep(false);
 
         return this;
     }
+
     public Body applyImpulse(Vector2 impulse) {
         return applyImpulse(impulse.x, impulse.y);
 

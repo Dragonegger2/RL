@@ -59,8 +59,6 @@ public class ShapeTest5 extends ApplicationAdapter {
         wall.addFixture(w);
         wall.translate(-10, 0);
 
-        player.setDynamic(true);
-
         wall.setActive(false);
         ground.setActive(false);
 

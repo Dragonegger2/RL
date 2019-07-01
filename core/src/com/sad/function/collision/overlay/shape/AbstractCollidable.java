@@ -181,4 +181,10 @@ public abstract class AbstractCollidable<T extends Fixture> implements Collidabl
 
     @Override
     public Object getUserData() { return this.userData; }
+
+    public void rotate(float theta, float x, float y) {
+        this.transform.rotate(theta, x, y);
+    }
+
+    public abstract boolean isAsleep();
 }

@@ -1,7 +1,10 @@
 package com.sad.function.collision.overlay.geometry;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.data.VUtils;
 import org.dyn4j.Epsilon;
+
+import java.util.List;
 
 public class Mass {
     private final float inertia;
@@ -48,6 +51,59 @@ public class Mass {
         if (mass <= Epsilon.E && inertia <= Epsilon.E) {
             type = MassType.INFINITE;
         }
+    }
+
+    public Mass(Mass mass) {
+        if(mass == null) throw new NullPointerException("MASS CANNOT BE NULL IN COPY CONSTRUCTOR.");
+
+        this.type = mass.type;
+        this.center = mass.center.cpy();
+        this.mass = mass.mass;
+        this.inertia = mass.inertia;
+        this.invMass = mass.invMass;
+        this.invInertia = mass.invInertia;
+    }
+
+    public static Mass create(List<Mass> masses) {
+        //TODO HANDLE The 0 and null cases.
+
+        int size = masses.size();
+        if(size == 1) {
+            Mass m = masses.get(0);
+            if(m != null) {
+                return new Mass(masses.get(0));
+            } else {
+                throw new NullPointerException("INVALID MASS");
+            }
+        }
+
+        Vector2 c = new Vector2();
+        float m = 0.0f;
+        float I = 0.0f;
+
+        for(int i =0; i < size; i++) {
+            Mass mass = masses.get(i);
+            if(mass == null) throw new NullPointerException("INVALID MASS");
+            c.add(mass.center.cpy().scl(mass.mass));
+            m+= mass.mass;
+        }
+
+        if(m > 0.0f) {
+            c.scl(1.0f / m);
+        }
+
+        for(int i = 0; i < size; i++) {
+            Mass mass = masses.get(i);
+
+            //Calcualte distance from new center to current mass's center.
+            float d2 = VUtils.distanceSquared(mass.center, c);
+            float Idis = mass.inertia + mass.mass * d2;
+
+            I += Idis;
+
+        }
+
+        return new Mass(c, m, I);
     }
 
     public Vector2 getCenter() {

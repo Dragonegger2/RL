@@ -1,10 +1,12 @@
 package com.sad.function.collision.overlay.shape;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.data.VUtils;
 import com.sad.function.collision.overlay.geometry.Geometry;
 import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.geometry.Mass;
 
 /**
  * All axis are stored in local coordinates.
@@ -200,4 +202,61 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         // create the aabb
         return new AABB(minX, minY, maxX, maxY);
     }
+
+    @Override
+    public Mass createMass(float density) {
+        // can't use normal centroid calculation since it will be weighted towards sides
+        // that have larger distribution of points.
+
+        Vector2 center = new Vector2();
+        float area = 0.0f;
+        float I = 0.0f;
+        int n = this.vertices.length;
+        // get the average center
+        Vector2 ac = new Vector2();
+        for (int i = 0; i < n; i++) {
+            ac.add(this.vertices[i]);
+        }
+        ac.scl(1.0f / n);
+        // loop through the vertices
+        for (int i = 0; i < n; i++) {
+            // get two vertices
+            Vector2 p1 = this.vertices[i];
+            Vector2 p2 = i + 1 < n ? this.vertices[i + 1] : this.vertices[0];
+            // get the vector from the center to the point
+            p1 = p1.cpy().sub(ac);
+            p2 = p2.cpy().sub(ac);
+            // perform the cross product (yi * x(i+1) - y(i+1) * xi)
+            float D = VUtils.cross(p1, p2);
+            // multiply by half
+            float triangleArea = 0.5f * D;
+            // add it to the total area
+            area += triangleArea;
+
+            // area weighted centroid
+            // (p1 + p2) * (D / 6)
+            // = (x1 + x2) * (yi * x(i+1) - y(i+1) * xi) / 6
+            // we will divide by the total area later
+
+            center.x += (p1.x + p2.x) * (1.0f / 3.0f) * triangleArea;
+            center.y += (p1.y + p2.y) * (1.0f / 3.0f) * triangleArea;
+
+            // (yi * x(i+1) - y(i+1) * xi) * (p2^2 + p2 . p1 + p1^2)
+            I += triangleArea * (p2.dot(p2) + p2.dot(p1) + p1.dot(p1));
+            // we will do the m / 6A = (d / 6) when we have the area summed up
+        }
+        // compute the mass
+        float m = density * area;
+        // finish the centroid calculation by dividing by the total area
+        // and adding in the average center
+        center.scl(1.0f / area);
+        Vector2 c = center.add(ac);
+        // finish the inertia tensor by dividing by the total area and multiplying by d / 6
+        I *= (density / 6.0);
+        // shift the axis of rotation to the area weighted center
+        // (center is the vector from the average center to the area weighted center since
+        // the average center is used as the origin)
+        I -= m * center.len2();
+
+        return new Mass(c, m, I);    }
 }
