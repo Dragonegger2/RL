@@ -84,7 +84,7 @@ public class World {
     public boolean update(float elapsedTime, float stepElapsedTime, int maximumSteps) {
         if(elapsedTime < 0) elapsedTime = 0;
 
-        step = elapsedTime;
+        this.step = elapsedTime;
         this.time += elapsedTime;
 
         //Inverse Frequency settings. This is for fixed step updates. Can add a method later to do variable time steps.
@@ -106,11 +106,12 @@ public class World {
         List<StepListener> stepListeners = getListeners(StepListener.class);
 
         int sSize = stepListeners.size();
+
         for(int i = 0; i < sSize; i++) {
             stepListeners.get(i).begin(delta, this);
         }
 
-        updateBodies();
+        updateBodies(delta);
         detect(delta);
 
 //        solveTOI();
@@ -120,10 +121,6 @@ public class World {
     }
 
     private void detect(float delta) {
-        // if(ContinuousCollisionDetection) {
-        //     solveTOI();
-        // }
-
         for (int i = 0; i < bodies.size(); i++) {
             broadphase.update(bodies.get(i));
         }
@@ -176,18 +173,18 @@ public class World {
         }
     }
 
-    private void updateBodies() {
+    private void updateBodies(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             body.transform0.set(body.getTransform());
 
             if(body.isStatic()) continue;
 
-            accumulateBodyVelocity(body, step);
+            accumulateBodyVelocity(body, delta);
         }
 
         for (int i = 0; i < bodies.size(); i++) {
-            translateBodies(bodies.get(i));
+            translateBodies(bodies.get(i), delta);
         }
     }
 
@@ -223,13 +220,13 @@ public class World {
         body.angularVelocity *= angular;
     }
 
-    private void translateBodies(Body body) {
+    private void translateBodies(Body body, float delta) {
         if (body.isStatic()) return;
 
-        float translationX = body.velocity.x * step;
-        float translationY = body.velocity.y * step;
+        float translationX = body.velocity.x * delta;
+        float translationY = body.velocity.y * delta;
 
-        float rotation = body.angularVelocity * step;
+        float rotation = body.angularVelocity * delta;
 
         body.translate(translationX, translationY);
         body.rotateAboutCenter(rotation);
@@ -263,7 +260,7 @@ public class World {
      * Second stage of solving a TOI.
      * @param body1 a dynamic body that we are checking collisions with.
      */
-    private void solveTOI(Body body1) {
+    private void solveTOI(Body body1, float delta) {
         int size = bodies.size();
 
         AABB aabb1 = body1.createSweptAABB();
@@ -290,7 +287,7 @@ public class World {
             int fc1 = body1.getFixtureCount();
             int fc2 = body2.getFixtureCount();
 
-            float dt = step; //TODO Make sure that we actually set the delta.
+            float dt = delta; //TODO Make sure that we actually set the delta.
 
             Vector2 v1 = body1.getLinearVelocity().cpy().scl(dt);
             Vector2 v2 = body2.getLinearVelocity().cpy().scl(dt);
