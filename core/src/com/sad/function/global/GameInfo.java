@@ -29,4 +29,6 @@ public class GameInfo {
 
     public static final float DEFAULT_SLEEP_ANGULAR_VELOCITY = (float)Math.toRadians(2.0);
     public static final float DEFAULT_SLEEP_ANGULAR_VELOCITY_SQUARED = DEFAULT_SLEEP_ANGULAR_VELOCITY * DEFAULT_SLEEP_ANGULAR_VELOCITY;
+
+    public static final float DEFAULT_STEP_FREQUENCY = 1.0f / 60.0f;
 }

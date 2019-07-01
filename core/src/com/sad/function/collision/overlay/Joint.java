@@ -24,6 +24,7 @@ public abstract class Joint extends Constraint implements UserData {
 
     public abstract void initializeConstraints();//TODO does it need step?
     public abstract boolean solvePositionConstraints();
+    public abstract void solveVelocityConstraints();
     public abstract Vector2 getAnchor1();
     public abstract Vector2 getAnchor2();
     public abstract Vector2 getReactionForce(float invdt);

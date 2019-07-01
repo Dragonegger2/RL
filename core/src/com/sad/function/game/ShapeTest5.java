@@ -111,6 +111,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         }
         //endregion
 
+
         world.update(delta);
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s P:{%s, %s}", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity(),player.getWorldCenter().x, player.getWorldCenter().y));

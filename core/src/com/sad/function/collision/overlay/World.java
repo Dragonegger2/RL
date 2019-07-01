@@ -8,6 +8,7 @@ import com.sad.function.collision.overlay.broadphase.Sap;
 import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
+import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.continuous.ConservativeAdvancement;
 import com.sad.function.collision.overlay.data.*;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
@@ -16,6 +17,7 @@ import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
+import com.sad.function.global.GameInfo;
 import org.dyn4j.Epsilon;
 
 import java.util.ArrayList;
@@ -43,11 +45,16 @@ public class World {
     private ConservativeAdvancement timeOfImpactSolver = new ConservativeAdvancement();
     private Vector2 gravity = new Vector2(0, -9.8f);
     private NarrowPhaseDetector narrowphase = new GJK();
+    private float time;
+    private final List<Listener> listeners;
 
+    private boolean updateRequired = true;
 
     public World() {
         bodies = new ArrayList<>(65);
         joints = new ArrayList<>();
+
+        listeners = new ArrayList<>();
     }
 
     /**
@@ -70,24 +77,57 @@ public class World {
         return bodies.remove(body);
     }
 
-    public void update(float delta) {
-        this.step = delta;
-        step();
-        detect();
+    public void update(float elapsedTime) {
+        this.update(elapsedTime, -1.0f, 1);
     }
 
-    private void step() {
-        updateBodies();
-    }
+    public boolean update(float elapsedTime, float stepElapsedTime, int maximumSteps) {
+        if(elapsedTime < 0) elapsedTime = 0;
 
-    private void detect() {
-        if(ContinuousCollisionDetection) {
-            solveTOI();
+        step = elapsedTime;
+        this.time += elapsedTime;
+
+        //Inverse Frequency settings. This is for fixed step updates. Can add a method later to do variable time steps.
+        float invHz = GameInfo.DEFAULT_STEP_FREQUENCY;
+        int steps = 0;
+        while(this.time >= invHz && steps < maximumSteps) {
+            this.time = this.time - invHz;
+
+            step(elapsedTime);//TODO Not sure this time makes sense. Hurk.
+            steps++;
         }
+
+        return steps > 0;
+    }
+
+
+
+    private void step(float delta) {
+        List<StepListener> stepListeners = getListeners(StepListener.class);
+
+        int sSize = stepListeners.size();
+        for(int i = 0; i < sSize; i++) {
+            stepListeners.get(i).begin(delta, this);
+        }
+
+        updateBodies();
+        detect(delta);
+
+//        solveTOI();
+//        detect(delta);
+
+        //Update the bodies by their new positions.
+    }
+
+    private void detect(float delta) {
+        // if(ContinuousCollisionDetection) {
+        //     solveTOI();
+        // }
 
         for (int i = 0; i < bodies.size(); i++) {
             broadphase.update(bodies.get(i));
         }
+
         List<BroadphasePair<Body, BodyFixture>> pairs = broadphase.detect(detectBroadphaseFilter);
         int pSize = pairs.size();
 
@@ -117,21 +157,13 @@ public class World {
                 manifolds.add(new CollisionManifold(penetration.normal.cpy(), penetration.distance, body1, fixture1, body2, fixture2));
             }
 
-            /**
-             * Handle all of my collisions.
-             */
+            //Handle all of my collisions.
             for (CollisionManifold manifold : manifolds) {
                 Body b = manifold.body1.isStatic() ? body2 : body1;
 
                 b.translate(manifold.normal.scl(manifold.distance));
 
-                //Cast a ray in the direction of the penetration (can be infinite I guess).
                 //Wait, I've already got the collision information...
-
-                //Create a method for ray detector.
-                //Ray r = new Ray(b.getWorldCenter(), manifold.normal);
-                //narrowphase.raycast(r, b.getRotationDiscRadius() + manifold.distance, )
-
 
                 //I think this will kill my velocity if my collision happens. This will be useful.
                 //Something seems to be causing a "slipping" to occur.
@@ -381,4 +413,35 @@ public class World {
     public AbstractBroadphaseDetector<Body, BodyFixture> getBroadphaseDetector() {
         return broadphase;
     }
+
+    /**
+     * Fetch all registered listeners to this world object that match the class type.
+     * @param clazz listener type to fetch.
+     * @param <T> Type parameter
+     * @return list of listeners OR null if clazz is null.
+     */
+    public <T extends Listener> List<T> getListeners(Class<T> clazz) {
+        if(clazz == null) return null;
+        List<T> listeners = new ArrayList<T>();
+        
+        int lSize = this.listeners.size();
+        for(int i = 0; i < lSize; i++) {
+            Listener listener = this.listeners.get(i);
+            if(clazz.isInstance(listener)) {
+                listeners.add(clazz.cast(listener));
+            }
+        }
+
+        return listeners;
+    }
+
+
+    public interface Listener {}
+    public interface StepListener extends Listener {
+        void begin(float delta, World world);
+        void updatePerformed(float delta, World world);
+        void postSolve(float delta, World world);
+        void end(float delta, World world);
+    }
+    public interface ContactListener extends Listener {}
 }
