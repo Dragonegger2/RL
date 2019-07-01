@@ -3,10 +3,13 @@ package com.sad.function.collision.overlay.narrowphase;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.NarrowPhaseDetector;
 import com.sad.function.collision.overlay.collision.DistanceDetector;
-import com.sad.function.collision.overlay.data.VUtils;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Separation;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.data.VUtils;
+import com.sad.function.collision.overlay.geometry.Ray;
+import com.sad.function.collision.overlay.geometry.Raycast;
+import com.sad.function.collision.overlay.geometry.Raycaster;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Convex;
 import org.dyn4j.Epsilon;
@@ -14,7 +17,7 @@ import org.dyn4j.Epsilon;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GJK implements NarrowPhaseDetector, DistanceDetector {
+public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
     public static final int DEFAULT_MAX_ITERATIONS = 30;
     public static final float DEFAULT_DETECT_EPSILON = 0.0f;
     public static final float DEFAULT_DISTANCE_EPSILON = (float) Math.sqrt(Epsilon.E);
@@ -26,6 +29,7 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
     protected float distanceEpsilon = GJK.DEFAULT_DISTANCE_EPSILON;
 
     protected EPA epa = new EPA();
+    private float raycastEpsilon = GJK.DEFAULT_DISTANCE_EPSILON;
 
     public static Vector2 getInitialDirection(Convex c1, Transform t1, Convex c2, Transform t2) {
         Vector2 tC1O = t1.getTransformed(c1.getCenter());
@@ -59,8 +63,11 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
 
         List<Vector2> simplex = new ArrayList<>(3);
 
+        MinkowskiSum ms = new MinkowskiSum(c1, t1, c2, t2);
+
         //Find the initial search direction and populate the simplex with it; prevents the 0th case of the GJK alg.
         Vector2 d = getInitialDirection(c1, t1, c2, t2);
+
         if (d.isZero()) d.set(1, 0);
 
         if (detect(c1, t1, c2, t2, simplex, d)) {
@@ -82,6 +89,32 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
         Vector2 d = getInitialDirection(c1, t1, c2, t2);
 
         return detect(c1, t1, c2, t2, simplex, d);
+    }
+
+    protected boolean detect(MinkowskiSum ms, List<Vector2> simplex, Vector2 d) {
+        if (d.isZero()) d.set(1f, 0);
+        simplex.add(ms.getSupportPoint(d));
+
+        if (simplex.get(0).dot(d) <= 0) {
+            return false;
+        }
+
+        d.scl(-1);  //Flip the direction.
+
+        int maxDetectIterations = 30;
+        for (int i = 0; i < maxDetectIterations; i++) {
+            Vector2 supportPoint = ms.getSupportPoint(d);
+            simplex.add(supportPoint);
+
+            if (supportPoint.dot(d) <= detectEpsilon) {
+                return false;
+            } else {
+                if (checkSimplex(simplex, d)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected boolean detect(Convex c1, Transform t1, Convex c2, Transform t2, List<Vector2> simplex, Vector2 d) {
@@ -151,7 +184,7 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
             Vector2 b = simplex.get(0);
             Vector2 ab = b.cpy().sub(a);
 
-            //TODO Triple product.
+            d.set(VUtils.tripleProduct(ab, ao, ab));
 
             if (d.len2() <= Epsilon.E) {
                 d.set(VUtils.left(ab));
@@ -208,14 +241,14 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
             float p1Magnitude = p1.len2();
             float p2Magnitude = p2.len2();
 
-            if(p1Magnitude <= Epsilon.E) {
+            if (p1Magnitude <= Epsilon.E) {
                 d.nor();
                 separation.setDistance(p1.len());
                 p1.nor();
                 separation.setNormal(d);
                 this.findClosestPoints(a, c, separation);
                 return true;
-            } else if( p2Magnitude <= Epsilon.E) {
+            } else if (p2Magnitude <= Epsilon.E) {
                 d.nor();
                 separation.setDistance(p2.len());
                 p2.nor();
@@ -224,7 +257,7 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
                 return true;
             }
 
-            if(p1Magnitude < p2Magnitude) {
+            if (p1Magnitude < p2Magnitude) {
                 b = c;
                 d = p1;
             } else {
@@ -286,5 +319,107 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector {
         // set the new points in the separation object
         separation.setPoint1(p1);
         separation.setPoint2(p2);
+    }
+
+    @Override
+    public boolean raycast(Ray ray, float maxLength, Convex convex, Transform transform, Raycast raycast) {
+        //TODO Circles
+        //TODO SEGMENTS
+
+        float lambda = 0;
+
+        boolean lengthCheck = maxLength > 0;
+
+        Vector2 a = null;
+        Vector2 b = null;
+
+        Vector2 start = ray.getStart();
+
+        Vector2 x = start;
+
+        Vector2 r = ray.getDirectionVector();
+        Vector2 n = new Vector2();
+
+        //is the starting point already contained within the convex shape.
+        if (convex.contains(start, transform)) {
+            return false;
+        }
+
+        Vector2 c = transform.getTransformed(convex.getCenter());
+        Vector2 d = x.cpy().sub(c); //c.to(x);
+
+        float distanceSquared = Float.MAX_VALUE;
+        int iterations = 0;
+
+        while (distanceSquared > raycastEpsilon) {
+            Vector2 p = convex.getFarthestPoint(d, transform);
+
+            Vector2 w = x.cpy().sub(p);
+
+            float dDotW = d.dot(w);
+
+            if (dDotW > 0) {
+                float dDotR = d.dot(r);
+
+                if (dDotR >= 0) {
+                    return false;
+                } else {
+                    lambda = lambda - dDotW / dDotR;
+
+                    if (lengthCheck && lambda > maxLength) {
+                        return false;
+                    }
+
+                    //x = r.product(lambda).add(start);
+                    x = r.cpy().scl(lambda).add(start);
+                    n.set(d);
+                }
+            }
+
+            if (a != null) {
+                if (b != null) {
+                    Vector2 p1 = Segment.getPointOnSegmentClosestToPoint(x, a, p);
+                    Vector2 p2 = Segment.getPointOnSegmentClosestToPoint(x, p, b);
+
+                    //Distance squared from points.
+                    if (VUtils.distanceSquared(p1, x) < VUtils.distanceSquared(p2, x)) {
+                        b.set(p);
+                        distanceSquared = VUtils.distanceSquared(p1, x);
+                    } else {
+                        a.set(p);
+                        distanceSquared = VUtils.distanceSquared(p2, x);
+                    }
+
+                    Vector2 ab = b.cpy().sub(a);
+                    Vector2 ax = x.cpy().sub(a);
+
+                    d = VUtils.tripleProduct(ab, ax, ab);
+                } else {
+                    b = p;
+
+                    Vector2 ab = b.cpy().sub(a);
+                    Vector2 ax = x.cpy().sub(a);
+
+                    d = VUtils.tripleProduct(ab, ax, ab);
+                }
+            } else {
+                a = p;
+                d.scl(-1);
+            }
+
+            //We were unable to find a colliding body fixture in the allotted number of iterations.
+            if (iterations == maxDistanceIterations) {
+                return false;
+            }
+
+            iterations++;
+        }
+
+        raycast.setPoint(x);
+        raycast.setNormal(n);
+        raycast.getNormal().nor(); //Set the normal, and then make sure it is normalized.
+        raycast.setDistance(lambda);
+
+        return true;
     }
 }

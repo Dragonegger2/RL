@@ -3,6 +3,7 @@ package com.sad.function.collision.overlay;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.broadphase.AbstractBroadphaseDetector;
+import com.sad.function.collision.overlay.broadphase.BroadphaseDetector;
 import com.sad.function.collision.overlay.broadphase.BroadphasePair;
 import com.sad.function.collision.overlay.broadphase.Sap;
 import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
@@ -12,7 +13,6 @@ import com.sad.function.collision.overlay.continuous.CA;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
-import com.sad.function.collision.overlay.geometry.Ray;
 import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
@@ -20,23 +20,19 @@ import com.sad.function.collision.overlay.shape.Convex;
 import java.util.ArrayList;
 import java.util.List;
 
-public class World {
-    private CA timeOfImpactSolver = new CA();
+public class World2 {
     private Vector2 gravity = new Vector2(0, -9.8f);
     public float step = 0;
 
     private final List<Body> bodies;
-    private final List<Joint> joints;
 
-    private NarrowPhaseDetector narrowphase = new GJK();
-    private final AbstractBroadphaseDetector<Body, BodyFixture> broadphase = new Sap<>();
-
+    private NarrowPhaseDetector narrowphase = new GJK();//SAT();
+    private BroadphaseDetector<Body, BodyFixture> broadphase = new Sap<>();
 
 
     protected BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
-    public World() {
+    public World2() {
         bodies = new ArrayList<>(65);
-        joints = new ArrayList<>();
     }
 
     /**
@@ -46,8 +42,6 @@ public class World {
      */
     public void addBody(Body body) {
         bodies.add(body);
-        body.world = this;
-        broadphase.add(body);
     }
 
     /**
@@ -55,7 +49,6 @@ public class World {
      * @return if the bodies were removed.
      */
     public boolean removeBody(Body body) {
-        broadphase.remove(body);
         return bodies.remove(body);
     }
 
@@ -106,18 +99,9 @@ public class World {
                 Body b = manifold.body1.isStatic() ? body2 : body1;
 
                 b.translate(manifold.normal.scl(manifold.distance));
-
-                //Cast a ray in the direction of the penetration (can be infinite I guess).
-                //Wait, I've already got the collision information...
-
-
-
-                Ray r = new Ray(b.getWorldCenter(), manifold.normal);
-                narrowphase.raycast(r, b.getRotationDiscRadius() + manifold.distance, )
             }
         }
     }
-
 
     private void updateBodies() {
         for (int i = 0; i < bodies.size(); i++) {

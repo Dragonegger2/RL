@@ -11,7 +11,7 @@ import java.util.List;
 
 public class NarrowPhase {
     //TODO: Maybe a listener system to the parent system for this.
-    private NarrowPhaseDetector narrowPhase = new SAT();
+    private NarrowPhaseDetector narrowPhase = new GJK();
 
     public List<CollisionManifold> solve(List<BroadphasePair<Body, BodyFixture>> potentialPairs) {
         List<CollisionManifold> manifolds = new ArrayList<>(potentialPairs.size());//Presize to all of the potentialpairs.

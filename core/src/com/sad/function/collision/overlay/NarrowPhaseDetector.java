@@ -1,11 +1,13 @@
 package com.sad.function.collision.overlay;
 
 import com.sad.function.collision.overlay.data.Penetration;
+import com.sad.function.collision.overlay.geometry.Raycast;
+import com.sad.function.collision.overlay.geometry.Raycaster;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.collision.overlay.shape.Shape;
 import com.sad.function.collision.overlay.data.Transform;
 
-public interface NarrowPhaseDetector {
+public interface NarrowPhaseDetector extends Raycaster {
     /**
      * Returns true if the two provided convex shapes overlap. Fills penetration {@link Penetration} with data.
      * @param convex1       shape that is the basis of comparison.

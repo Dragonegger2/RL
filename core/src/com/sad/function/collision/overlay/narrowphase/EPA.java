@@ -76,6 +76,7 @@ public class EPA {
 
             this.queue.add(e1);
             this.queue.add(e2);
+
         }
 
         private int getWinding(List<Vector2> simplex) {
@@ -98,7 +99,7 @@ public class EPA {
     /**
      * Represents a single edge of the Simplex around the origin.
      */
-    private class ExpandingSimplexEdge {
+    private class ExpandingSimplexEdge implements Comparable<ExpandingSimplexEdge>{
         final Vector2 point1;
         final Vector2 point2;
         final Vector2 normal;
@@ -121,8 +122,12 @@ public class EPA {
             this.point2 = point2;
         }
 
+        @Override
         public int compareTo(ExpandingSimplexEdge o) {
-            return Float.compare(this.distance, o.distance);
+            if(distance < o.distance) return -1;
+            if(distance > o.distance) return 1;
+
+            return 0;
         }
     }
 }
