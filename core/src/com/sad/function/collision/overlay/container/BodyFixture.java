@@ -21,6 +21,7 @@ public class BodyFixture extends Fixture implements UserData {
         this.density = BodyFixture.default_density;
         this.friction = BodyFixture.default_friction;
         this.restitution = BodyFixture.default_restitution;
+
     }
 
     public float getDensity() {
@@ -52,10 +53,6 @@ public class BodyFixture extends Fixture implements UserData {
             throw new IllegalArgumentException("Illegal value for restitution.");
         this.restitution = restitution;
     }
-
-    public boolean isSensor() {return sensor; }
-
-    public void setSensor(boolean flag) { this.sensor = flag; }
 
     public Mass createMass() {
         return shape.createMass(density);

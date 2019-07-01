@@ -180,6 +180,9 @@ public class World {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             body.transform0.set(body.getTransform());
+
+            if(body.isStatic()) continue;
+
             accumulateBodyVelocity(body, step);
         }
 

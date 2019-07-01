@@ -3,6 +3,7 @@ package com.sad.function.collision.overlay.shape;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.geometry.Geometry;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.geometry.Mass;
 
 public class Rectangle extends Polygon {
     private final float width;
@@ -109,5 +110,16 @@ public class Rectangle extends Polygon {
         }
         // return null if they do not intersect
         return false;
+    }
+
+    @Override
+    public Mass createMass(float density) {
+        float h = this.height;
+        float w = this.width;
+
+        float mass = density * h * w;
+
+        float inertia = mass * (h * h + w * w) / 12.0f;
+        return new Mass(this.center, mass, inertia);
     }
 }

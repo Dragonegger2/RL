@@ -33,8 +33,6 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     public float angularVelocity = 0;
     private int state;
     private List<Force> forces;
-    private boolean asleep;
-    private boolean dynamic;
     private float sleepTime;
     private Mass mass;
 
