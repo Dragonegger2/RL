@@ -13,7 +13,7 @@ import org.dyn4j.Epsilon;
  *
  * See: https://github.com/dyn4j/dyn4j/blob/master/src/main/java/org/dyn4j/collision/continuous/ConservativeAdvancement.java
  */
-public class CA {
+public class ConservativeAdvancement {
     public static final float DEFAULT_DISTANCE_EPSILON = (float)Math.cbrt(Epsilon.E);
 
     public static final int DEFAULT_MAX_ITERATIONS = 30;

@@ -46,7 +46,7 @@ public class ShapeTest5 extends ApplicationAdapter {
         Convex c = new Rectangle(1, 1);
         BodyFixture playerFixture = player.addFixture(c);
         player.translate(-3, 3);
-        player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (CA/CCD)
+        player.setBullet(true); //Set the body to need continuous advancement/continuous collision detection (ConservativeAdvancement/CCD)
 
         ground = new Body();
         Convex gs = new Rectangle(15f, .5f);

@@ -6,6 +6,7 @@ import com.sad.function.collision.overlay.data.Force;
 import com.sad.function.collision.overlay.World;
 import com.sad.function.collision.overlay.Collidable;
 import com.sad.function.collision.overlay.data.Transform;
+import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.shape.AbstractCollidable;
 import com.sad.function.collision.overlay.shape.Convex;
 import org.dyn4j.Epsilon;
@@ -36,6 +37,8 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     private boolean asleep;
     private boolean dynamic;
     private float sleepTime;
+    private Mass _mass;
+
 
     public Body() {
         this(1);
@@ -45,7 +48,7 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
         super(fixtureCount);
 
         this.radius = 0.0f;
-        //mass
+        this._mass = new Mass();
         this.transform0 = new Transform();
         this.velocity = new Vector2();
         this.gravityScale = 1.0f;
@@ -177,6 +180,35 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
             this.state &= ~Body.ACTIVE;
         }
 
+    }
+
+    public Body setMass() {
+        return this.setMass(Mass.MassType.NORMAL);
+    }
+
+    private Body setMass(Mass.MassType type) {
+        if(type == null) {
+            type = _mass.getType();
+        }
+
+        int size = fixtures.size();
+        if(size == 0) {
+            _mass = new Mass();
+        } else if(size == 1) {
+            _mass = fixtures.get(0).createMass();
+        } else {
+            List<Mass> masses = new ArrayList<>(size);
+            for(int i = 0; i < size; i++) {
+                Mass mass = fixtures.get(i).createMass();
+                masses.add(mass);
+            }
+            this._mass = Mass.create(masses);
+        }
+
+        _mass.setType(type);
+        setRotationDiscRadius();
+
+        return this;
     }
 
     public boolean isDynamic() {
