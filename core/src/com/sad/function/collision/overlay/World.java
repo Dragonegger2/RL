@@ -239,7 +239,7 @@ public class World {
     /**
      * Entry point for handling TOI's.
      */
-    private void solveTOI() {
+    private void solveTOI(float delta) {
         //Listeners
 
         int size = bodies.size();
@@ -252,7 +252,7 @@ public class World {
 
             if(body.isAsleep()) continue;
 
-            solveTOI(body);
+            solveTOI(body, delta);
         }
     }
 
@@ -423,7 +423,7 @@ public class World {
     public <T extends Listener> List<T> getListeners(Class<T> clazz) {
         if(clazz == null) return null;
         List<T> listeners = new ArrayList<T>();
-        
+
         int lSize = this.listeners.size();
         for(int i = 0; i < lSize; i++) {
             Listener listener = this.listeners.get(i);

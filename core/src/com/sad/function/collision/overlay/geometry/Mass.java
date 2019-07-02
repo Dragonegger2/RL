@@ -7,12 +7,12 @@ import org.dyn4j.Epsilon;
 import java.util.List;
 
 public class Mass {
+    private MassType type;
     private final float inertia;
     private final float invMass;      //1 / mass;
     private final float mass;
     private final float invInertia;
     private final Vector2 center;
-    private MassType type;
 
     public Mass() {
         type = MassType.INFINITE;
@@ -54,7 +54,7 @@ public class Mass {
     }
 
     public Mass(Mass mass) {
-        if(mass == null) throw new NullPointerException("MASS CANNOT BE NULL IN COPY CONSTRUCTOR.");
+        if (mass == null) throw new NullPointerException("MASS CANNOT BE NULL IN COPY CONSTRUCTOR.");
 
         this.type = mass.type;
         this.center = mass.center.cpy();
@@ -68,9 +68,9 @@ public class Mass {
         //TODO HANDLE The 0 and null cases.
 
         int size = masses.size();
-        if(size == 1) {
+        if (size == 1) {
             Mass m = masses.get(0);
-            if(m != null) {
+            if (m != null) {
                 return new Mass(masses.get(0));
             } else {
                 throw new NullPointerException("INVALID MASS");
@@ -81,18 +81,18 @@ public class Mass {
         float m = 0.0f;
         float I = 0.0f;
 
-        for(int i =0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Mass mass = masses.get(i);
-            if(mass == null) throw new NullPointerException("INVALID MASS");
+            if (mass == null) throw new NullPointerException("INVALID MASS");
             c.add(mass.center.cpy().scl(mass.mass));
-            m+= mass.mass;
+            m += mass.mass;
         }
 
-        if(m > 0.0f) {
+        if (m > 0.0f) {
             c.scl(1.0f / m);
         }
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Mass mass = masses.get(i);
 
             //Calcualte distance from new center to current mass's center.

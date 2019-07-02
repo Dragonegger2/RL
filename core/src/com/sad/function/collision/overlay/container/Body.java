@@ -28,8 +28,8 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     public float gravityScale;
     public Transform transform0;
     public Vector2 force;
-    public float linearDamping = 1;
-    public float angularDamping = 1;
+    public float linearDamping = 0.0f;
+    public float angularDamping = 0.01f;
     public float angularVelocity = 0;
     private int state;
     private List<Force> forces;
