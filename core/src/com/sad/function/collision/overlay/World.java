@@ -8,7 +8,6 @@ import com.sad.function.collision.overlay.broadphase.Sap;
 import com.sad.function.collision.overlay.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.overlay.container.Body;
 import com.sad.function.collision.overlay.container.BodyFixture;
-import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.overlay.continuous.ConservativeAdvancement;
 import com.sad.function.collision.overlay.data.*;
 import com.sad.function.collision.overlay.filter.DetectBroadphaseFilter;
@@ -38,21 +37,16 @@ public class World {
     public static boolean BulletsOnly = true;
 
     private final List<Body> bodies;
-    private final List<Joint> joints;
     private final AbstractBroadphaseDetector<Body, BodyFixture> broadphase = new Sap<>();
-    public float step = 0;
-    protected BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
+    private BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
     private ConservativeAdvancement timeOfImpactSolver = new ConservativeAdvancement();
     private Vector2 gravity = new Vector2(0, -9.8f);
     private NarrowPhaseDetector narrowphase = new GJK();
     private float time;
     private final List<Listener> listeners;
 
-    private boolean updateRequired = true;
-
     public World() {
         bodies = new ArrayList<>(65);
-        joints = new ArrayList<>();
 
         listeners = new ArrayList<>();
     }
@@ -84,7 +78,6 @@ public class World {
     public boolean update(float elapsedTime, float stepElapsedTime, int maximumSteps) {
         if(elapsedTime < 0) elapsedTime = 0;
 
-        this.step = elapsedTime;
         this.time += elapsedTime;
 
         //Inverse Frequency settings. This is for fixed step updates. Can add a method later to do variable time steps.
@@ -111,11 +104,10 @@ public class World {
             stepListeners.get(i).begin(delta, this);
         }
 
+        accumulateBodies(delta);
+        solveTOI(delta);
         updateBodies(delta);
         detect(delta);
-
-//        solveTOI();
-//        detect(delta);
 
         //Update the bodies by their new positions.
     }
@@ -172,8 +164,7 @@ public class World {
             }
         }
     }
-
-    private void updateBodies(float delta) {
+    private void accumulateBodies(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             body.transform0.set(body.getTransform());
@@ -182,7 +173,9 @@ public class World {
 
             accumulateBodyVelocity(body, delta);
         }
+    }
 
+    private void updateBodies(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             translateBodies(bodies.get(i), delta);
         }
@@ -201,7 +194,6 @@ public class World {
         if(invM > Epsilon.E) {
             body.velocity.x += (body.force.x * invM + gravity.x * body.gravityScale) * delta;
             body.velocity.y += (body.force.y * invM + gravity.y * body.gravityScale) * delta;
-
         }
 
         //TODO: Add torques if I want them.

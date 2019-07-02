@@ -104,7 +104,7 @@ final class Island {
         }
 
         float maxTranslation = 10000f; //TODO Find a realistic value for this.
-        float maxRotation;
+        float maxRotation = 0;
         float maxTranslationSqrd = maxTranslation * maxTranslation;
 
         for(int i = 0; i < size; i++) {
@@ -117,9 +117,33 @@ final class Island {
             float translationMagnitudeSquared = translationX * translationX + translationY * translationY;
 
             if(translationMagnitudeSquared > maxTranslationSqrd) {
+                float translationMagnitude = (float)Math.sqrt(translationMagnitudeSquared);
+                float ratio = maxTranslation / translationMagnitude;
+                
+                body.velocity.scl(ratio);
+                
+                translationX *= ratio;
+                translationY *= ratio;
+            }
+            
+            float rotation = body.angularVelocity * dt;
+            
+            if(rotation > maxRotation) {
+                float ratio = maxRotation / Math.abs(rotation);
 
+                body.angularVelocity *= ratio;
+                rotation *= ratio;
             }
 
+            body.translate(translationX, translationY);
+            body.rotateAboutCenter(rotation);
+
+        }
+
+        //solve position constraints.
+        boolean positionConstraintsSolved = false;
+        for(int i = 0; i < positionSolverIterations; i++) {
+//            boolean contactsSolved = solver.solvePositionConstraints(contactConstraints);
         }
 
     }

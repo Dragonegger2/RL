@@ -167,7 +167,8 @@ public class Body extends AbstractCollidable<BodyFixture> implements Collidable<
     }
 
     public boolean isActive() {
-        return (this.state & Body.ACTIVE) == Body.ACTIVE;
+//        return (this.state & Body.ACTIVE) == Body.ACTIVE;
+        return true;
     }
 
     public void setActive(boolean flag) {
