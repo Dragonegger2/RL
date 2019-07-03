@@ -104,8 +104,8 @@ public class ShapeTest5 extends ApplicationAdapter {
                 player.setLinearVelocity(0, player.getLinearVelocity().y);
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.applyImpulse(new Vector2(0, 3));
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.applyImpulse(new Vector2(0, 12));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             player.applyImpulse(new Vector2(0, -speed));

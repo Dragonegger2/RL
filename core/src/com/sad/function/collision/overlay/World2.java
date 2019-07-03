@@ -27,7 +27,7 @@ import java.util.List;
  * https://github.com/dyn4j/dyn4j/blob/master/src/main/java/org/dyn4j/dynamics/contact/ContactConstraint.java
  */
 
-public class World {
+public class World2 extends World {
     private static final float MAX_LINEAR_CORRECTION = 0.2f;
     private static final float MAX_LINEAR_TOLERANCE = 0.005f;
     private static final float DEFAULT_MAX_TRANSLATION = 2.0f;
@@ -45,30 +45,10 @@ public class World {
     private float time;
     private final List<Listener> listeners;
 
-    public World() {
+    public World2() {
         bodies = new ArrayList<>(65);
 
         listeners = new ArrayList<>();
-    }
-
-    /**
-     * Registers a body to be managed by the world.
-     *
-     * @param body to register.
-     */
-    public void addBody(Body body) {
-        bodies.add(body);
-        body.world = this;
-        broadphase.add(body);
-    }
-
-    /**
-     * @param body {@link Body}
-     * @return if the bodies were removed.
-     */
-    public boolean removeBody(Body body) {
-        broadphase.remove(body);
-        return bodies.remove(body);
     }
 
     public void update(float elapsedTime) {
@@ -104,15 +84,15 @@ public class World {
             stepListeners.get(i).begin(delta, this);
         }
 
-//        solveTOI(delta);
         accumulateBodies(delta);
+        solveTOI(delta);
         updateBodies(delta);
-        handleCollisions(delta);
+        detect(delta);
 
         //Update the bodies by their new positions.
     }
 
-    private void handleCollisions(float delta) {
+    private void detect(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             broadphase.update(bodies.get(i));
         }
@@ -401,39 +381,4 @@ public class World {
         body2.translate(J.scl(-invMass2));
         body2.rotate(-invI2 * r2.crs(J), c2.x, c2.y);
     }
-
-    public AbstractBroadphaseDetector<Body, BodyFixture> getBroadphaseDetector() {
-        return broadphase;
-    }
-
-    /**
-     * Fetch all registered listeners to this world object that match the class type.
-     * @param clazz listener type to fetch.
-     * @param <T> Type parameter
-     * @return list of listeners OR null if clazz is null.
-     */
-    public <T extends Listener> List<T> getListeners(Class<T> clazz) {
-        if(clazz == null) return null;
-        List<T> listeners = new ArrayList<T>();
-
-        int lSize = this.listeners.size();
-        for(int i = 0; i < lSize; i++) {
-            Listener listener = this.listeners.get(i);
-            if(clazz.isInstance(listener)) {
-                listeners.add(clazz.cast(listener));
-            }
-        }
-
-        return listeners;
-    }
-
-
-    public interface Listener {}
-    public interface StepListener extends Listener {
-        void begin(float delta, World world);
-        void updatePerformed(float delta, World world);
-        void postSolve(float delta, World world);
-        void end(float delta, World world);
-    }
-    public interface ContactListener extends Listener {}
 }
