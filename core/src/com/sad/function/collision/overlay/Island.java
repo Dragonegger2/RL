@@ -107,6 +107,7 @@ final class Island {
         float maxRotation = 0;
         float maxTranslationSqrd = maxTranslation * maxTranslation;
 
+        //integrate the positions.
         for(int i = 0; i < size; i++) {
             Body body = bodies.get(i);
 
@@ -137,7 +138,6 @@ final class Island {
 
             body.translate(translationX, translationY);
             body.rotateAboutCenter(rotation);
-
         }
 
         //solve position constraints.

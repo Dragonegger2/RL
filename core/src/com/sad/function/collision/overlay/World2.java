@@ -73,8 +73,6 @@ public class World2 extends World {
         return steps > 0;
     }
 
-
-
     private void step(float delta) {
         List<StepListener> stepListeners = getListeners(StepListener.class);
 
@@ -303,14 +301,9 @@ public class World2 extends World {
                                 minBody = body2;
                             }
                         }
-
-
                     }
-
                 }
             }
-
-
         }
 
         if (minToi != null) {

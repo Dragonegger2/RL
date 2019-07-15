@@ -17,7 +17,6 @@ import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.global.GameInfo;
-import org.dyn4j.Epsilon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +29,7 @@ import java.util.List;
 public class World {
     private static final float MAX_LINEAR_CORRECTION = 0.2f;
     private static final float MAX_LINEAR_TOLERANCE = 0.005f;
-    private static final float DEFAULT_MAX_TRANSLATION = 2.0f;
-    private static final float DEFAUL_MAX_ROTATION = (float) (0.5f * Math.PI);
 
-    public static boolean ContinuousCollisionDetection = true;
     public static boolean BulletsOnly = true;
 
     private final List<Body> bodies;
@@ -93,8 +89,6 @@ public class World {
         return steps > 0;
     }
 
-
-
     private void step(float delta) {
         List<StepListener> stepListeners = getListeners(StepListener.class);
 
@@ -104,14 +98,19 @@ public class World {
             stepListeners.get(i).begin(delta, this);
         }
 
-//        solveTOI(delta);
         accumulateBodies(delta);
         updateBodies(delta);
-        handleCollisions(delta);
+        solveTOI(delta);
+//        handleCollisions(delta);
 
         //Update the bodies by their new positions.
     }
 
+    /*
+     *  update contacts
+     *
+     *
+     */
     private void handleCollisions(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             broadphase.update(bodies.get(i));
@@ -181,37 +180,25 @@ public class World {
         }
     }
 
-    //Comes from the Island object in Dyn4j. That's how he chose to accumulate his forces.
+    /**
+     * Collect all impulses currently added to the body and store them in the object's force.
+     * @param body
+     * @param delta
+     */
     private void accumulateBodyVelocity(Body body, float delta) {
         if (!body.isDynamic()) return;
 
         body.accumulate(delta);
 
-        float invM = body.getMass().getInverseMass();
-//        float invI = body.getMass().getInverseInertia();
-
-        //If the inverse mass is not infinite or fixed.
-        if(invM > Epsilon.E) {
-            body.velocity.x += (body.force.x * invM + gravity.x * body.gravityScale) * delta;
-            body.velocity.y += (body.force.y * invM + gravity.y * body.gravityScale) * delta;
-        }
-
-        //TODO: Add torques if I want them.
-//        if(invI > Epsilon.E) {
-//            body.angularVelocity += delta * invI * body.torque;
-//        }
-
-        float linear = 1.0f - delta * body.linearDamping;
-        float angular = 1.0f - delta * body.angularDamping;
-
-        linear = MathUtils.clamp(linear, 0.0f, 1.0f);
-        angular = MathUtils.clamp(angular, 0.0f, 1.0f);
-
-        body.velocity.x *= linear;
-        body.velocity.y *= linear;
-        body.angularVelocity *= angular;
+        body.velocity.x += (body.force.x + gravity.x * body.gravityScale) * delta;
+        body.velocity.y += (body.force.y + gravity.y * body.gravityScale) * delta;
     }
 
+    /**
+     * Move the bodies.
+     * @param body body to move.
+     * @param delta
+     */
     private void translateBodies(Body body, float delta) {
         if (body.isStatic()) return;
 
@@ -290,7 +277,7 @@ public class World {
             Transform tx2 = body2.getInitialTransform();
 
             for (int j = 0; j < fc1; j++) {
-                BodyFixture f1 = body2.getFixture(j);
+                BodyFixture f1 = body1.getFixture(j);
 
                 if (f1.isSensor()) continue; //we skip sensors.
 
@@ -426,7 +413,6 @@ public class World {
 
         return listeners;
     }
-
 
     public interface Listener {}
     public interface StepListener extends Listener {
