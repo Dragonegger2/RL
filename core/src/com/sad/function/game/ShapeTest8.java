@@ -15,12 +15,14 @@ import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.Category;
 import com.sad.function.collision.overlay.filter.CategoryFilter;
 import com.sad.function.collision.overlay.geometry.Mass;
+import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.collision.overlay.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
@@ -37,6 +39,10 @@ public class ShapeTest8 extends ApplicationAdapter {
 
 
     World world = new World();
+
+    GJK gjk = new GJK();
+
+    List<Body> gameBodies = new ArrayList<>(3);
 
     @Override
     public void create() {
@@ -75,8 +81,12 @@ public class ShapeTest8 extends ApplicationAdapter {
         world.addBody(ground);
         world.addBody(player);
 
-        CategoryFilter player = new CategoryFilter(Category.PLAYER, Category.ALL);
+        CategoryFilter playerFilter = new CategoryFilter(Category.PLAYER, Category.ALL);
         CategoryFilter solid = new CategoryFilter(Category.ALL, Category.ALL);
+
+        gameBodies.add(player);
+        gameBodies.add(wall);
+        gameBodies.add(ground);
     }
 
     @Override
@@ -113,7 +123,7 @@ public class ShapeTest8 extends ApplicationAdapter {
         //endregion
 
 
-        world.update(delta);
+
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s P:{%s, %s}", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity(),player.getWorldCenter().x, player.getWorldCenter().y));
     }

@@ -13,20 +13,19 @@ import org.apache.logging.log4j.Logger;
 import org.dyn4j.dynamics.*;
 import org.dyn4j.dynamics.contact.ContactAdapter;
 import org.dyn4j.dynamics.contact.ContactPoint;
-import org.dyn4j.dynamics.contact.PersistedContactPoint;
-import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Transform;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
-public class ShapeTest6 extends ApplicationAdapter {
-    private static final Logger logger = LogManager.getLogger(ShapeTest6.class);
+public class Dyn4jTest extends ApplicationAdapter {
+    private static final Logger logger = LogManager.getLogger(Dyn4jTest.class);
 
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
@@ -41,6 +40,7 @@ public class ShapeTest6 extends ApplicationAdapter {
     private static final Object FOOT = new Object();
 
     private final AtomicBoolean isOnGround = new AtomicBoolean(false);
+    private UUID footId;
 
     @Override
     public void create() {
@@ -56,12 +56,11 @@ public class ShapeTest6 extends ApplicationAdapter {
         player.translate(0, 3);
         player.translate(0,0);
         player.setUserData(PLAYER);
-        BodyFixture foot = new BodyFixture(new Rectangle(playerWidth/2, playerHeight/2));
+
+        BodyFixture foot = player.addFixture(new Rectangle(playerWidth/2, playerHeight/2));
         foot.setSensor(true);
         foot.getShape().getCenter().set(0, -0.5);
         foot.setUserData(FOOT);
-        player.addFixture(foot);
-
         ground = new Body();
         ground.addFixture(new Rectangle(100, 1));
         ground.setMass(MassType.INFINITE);
@@ -78,10 +77,6 @@ public class ShapeTest6 extends ApplicationAdapter {
         world.setGravity(new org.dyn4j.geometry.Vector2(0, -9.8));
 
         world.addListener(new ContactAdapter() {
-            @Override
-            public void sensed(ContactPoint point) {
-                logger.info("SENSED");
-            }
             //In this case I need to be checking to see if the fixtures actually have data.
             @Override
             public boolean begin(ContactPoint point) {

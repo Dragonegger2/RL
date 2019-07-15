@@ -15,7 +15,6 @@ import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.filter.Category;
 import com.sad.function.collision.overlay.filter.CategoryFilter;
 import com.sad.function.collision.overlay.geometry.Mass;
-import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Circle;
 import com.sad.function.collision.overlay.shape.Convex;
 import com.sad.function.collision.overlay.shape.Rectangle;
@@ -28,19 +27,17 @@ import java.util.List;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
-public class ShapeTest7 extends ApplicationAdapter {
-    private static final Logger logger = LogManager.getLogger(ShapeTest7.class);
+public class MyWorldTest extends ApplicationAdapter {
+    private static final Logger logger = LogManager.getLogger(MyWorldTest.class);
 
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
 
     private Body player;
     private Body ground;
-
+    private Body wall;
 
     World world = new World();
-
-    GJK gjk = new GJK();
 
     List<Body> bodies = new ArrayList<>(3);
 
@@ -63,7 +60,7 @@ public class ShapeTest7 extends ApplicationAdapter {
         ground.translate(-10, 0);
 
         Convex w = new Rectangle(1, 10);
-        Body wall = new Body(1);
+        wall = new Body(1);
         wall.addFixture(w);
         wall.translate(-10, 0);
 
@@ -124,16 +121,8 @@ public class ShapeTest7 extends ApplicationAdapter {
         }
         //endregion
 
-        int size = bodies.size();
-        for(int i = 0; i < size; i++) {
-            for(int k = 1; k < size; k++) {
-                Body bodyA = bodies.get(i);
-                Body bodyB = bodies.get(k);
-            }
-        }
 
-
-//        world.update(delta);
+        world.update(delta);
 
         Gdx.graphics.setTitle(String.format("FPS: %s V: %s P:{%s, %s}", Gdx.graphics.getFramesPerSecond(), player.getLinearVelocity(),player.getWorldCenter().x, player.getWorldCenter().y));
     }

@@ -16,6 +16,7 @@ import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
+import com.sad.function.collision.overlay.shape.Rectangle;
 import com.sad.function.global.GameInfo;
 
 import java.util.ArrayList;
@@ -100,8 +101,8 @@ public class World {
 
         accumulateBodies(delta);
         updateBodies(delta);
-        solveTOI(delta);
-//        handleCollisions(delta);
+//        solveTOI(delta);
+        handleCollisions(delta);
 
         //Update the bodies by their new positions.
     }
@@ -163,6 +164,7 @@ public class World {
             }
         }
     }
+
     private void accumulateBodies(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
@@ -316,7 +318,6 @@ public class World {
 
                 }
             }
-
 
         }
 

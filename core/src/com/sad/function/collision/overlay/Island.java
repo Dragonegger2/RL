@@ -91,7 +91,7 @@ final class Island {
         solver.initialize(contactConstraints);
 
         //initialize joint constraints
-
+        //TODO
         //solve velocity constraints
         for(int i = 0; i < velocitySolverIterations; i++) {
             for(int j = 0; j < jSize; j++) {
@@ -143,7 +143,7 @@ final class Island {
         //solve position constraints.
         boolean positionConstraintsSolved = false;
         for(int i = 0; i < positionSolverIterations; i++) {
-//            boolean contactsSolved = solver.solvePositionConstraints(contactConstraints);
+            boolean contactsSolved = solver.solvePositionConstraints(contactConstraints);
         }
 
     }
@@ -155,6 +155,10 @@ final class Island {
 
         public void solveVelocityConstraints(List<ContactConstraint> contactConstraints) {
 
+        }
+
+        public boolean solvePositionConstraints(List<ContactConstraint> contactConstraints) {
+            return true;
         }
     }
 }
