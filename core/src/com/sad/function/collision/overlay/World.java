@@ -16,7 +16,6 @@ import com.sad.function.collision.overlay.geometry.Mass;
 import com.sad.function.collision.overlay.narrowphase.CollisionManifold;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
-import com.sad.function.collision.overlay.shape.Rectangle;
 import com.sad.function.global.GameInfo;
 
 import java.util.ArrayList;
@@ -36,10 +35,14 @@ public class World {
     private final List<Body> bodies;
     private final AbstractBroadphaseDetector<Body, BodyFixture> broadphase = new Sap<>();
     private BroadphaseFilter<Body, BodyFixture> detectBroadphaseFilter = new DetectBroadphaseFilter();
-    private ConservativeAdvancement timeOfImpactSolver = new ConservativeAdvancement();
-    private Vector2 gravity = new Vector2(0, -9.8f);
+
     private NarrowPhaseDetector narrowphase = new GJK();
+
+    private ConservativeAdvancement timeOfImpactSolver = new ConservativeAdvancement();
+
+    private Vector2 gravity = new Vector2(0, -9.8f);
     private float time;
+
     private final List<Listener> listeners;
 
     public World() {
@@ -99,9 +102,9 @@ public class World {
             stepListeners.get(i).begin(delta, this);
         }
 
-        accumulateBodies(delta);
+        accumulateVelocity(delta);
+        setInitialTransform();
         updateBodies(delta);
-//        solveTOI(delta);
         handleCollisions(delta);
 
         //Update the bodies by their new positions.
@@ -165,10 +168,9 @@ public class World {
         }
     }
 
-    private void accumulateBodies(float delta) {
+    private void accumulateVelocity(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
-            body.transform0.set(body.getTransform());
 
             if(body.isStatic()) continue;
 
@@ -176,9 +178,25 @@ public class World {
         }
     }
 
+    private void setInitialTransform() {
+        for(int i = 0; i < bodies.size(); i++) {
+            Body body = bodies.get(i);
+            body.transform0.set(body.getTransform());
+        }
+    }
     private void updateBodies(float delta) {
         for (int i = 0; i < bodies.size(); i++) {
-            translateBodies(bodies.get(i), delta);
+            Body body = bodies.get(i);
+
+            if (body.isStatic()) continue;
+
+            float translationX = body.velocity.x * delta;
+            float translationY = body.velocity.y * delta;
+
+            float rotation = body.angularVelocity * delta;
+
+            body.translate(translationX, translationY);
+            body.rotateAboutCenter(rotation);
         }
     }
 
@@ -194,23 +212,6 @@ public class World {
 
         body.velocity.x += (body.force.x + gravity.x * body.gravityScale) * delta;
         body.velocity.y += (body.force.y + gravity.y * body.gravityScale) * delta;
-    }
-
-    /**
-     * Move the bodies.
-     * @param body body to move.
-     * @param delta
-     */
-    private void translateBodies(Body body, float delta) {
-        if (body.isStatic()) return;
-
-        float translationX = body.velocity.x * delta;
-        float translationY = body.velocity.y * delta;
-
-        float rotation = body.angularVelocity * delta;
-
-        body.translate(translationX, translationY);
-        body.rotateAboutCenter(rotation);
     }
 
     public List<Body> getBodies() {
@@ -268,7 +269,7 @@ public class World {
             int fc1 = body1.getFixtureCount();
             int fc2 = body2.getFixtureCount();
 
-            float dt = delta; //TODO Make sure that we actually set the delta.
+            float dt = delta;
 
             Vector2 v1 = body1.getLinearVelocity().cpy().scl(dt);
             Vector2 v2 = body2.getLinearVelocity().cpy().scl(dt);
