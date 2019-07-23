@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.World;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.narrowphase.GJK;
@@ -24,7 +23,8 @@ import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 @SuppressWarnings("ALL")
 public class Basic extends ApplicationAdapter {
     private static final Logger logger = LogManager.getLogger(Basic.class);
-    Body player, wall, ground;
+    private Body player;
+
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private GJK gjk;
@@ -35,6 +35,26 @@ public class Basic extends ApplicationAdapter {
     private List<Body> bodies = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
 
+    private int footCount = 0;
+
+    private Object FOOT_SENSOR = new Object();
+    private Object PLAYER = new Object();
+    private Object SOLID = new Object();
+
+    public Basic() {
+        player = new Body();
+
+        player.translate(2, 2);
+        player.isStatic = false;
+        player.color = Color.BLUE;
+        player.tag = "PLAYER";
+        player.setUserData(PLAYER);
+        player.addFixture(new Rectangle(1,1));
+        Fixture footSensor = player.addFixture(new Rectangle(1, 0.5f), "TEST");
+        footSensor.setSensor(true);
+        footSensor.getShape().getCenter().set(0, 0.5f); //Offset the fixture.
+        footSensor.setUserData("TEST");
+    }
 
     @Override
     public void create() {
@@ -44,26 +64,19 @@ public class Basic extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
 
-        player = new Body();
-        player.translate(2, 2);
-        player.isStatic = false;
-        player.color = Color.BLUE;
-        player.tag = "PLAYER";
-        player.addFixture(new Rectangle(1,1));
-        Fixture footSensor = player.addFixture(new Rectangle(1, 0.5f));
-        footSensor.setSensor(true);
-        footSensor.getShape().getCenter().set(0, -0.5f); //Offset the fixture.
 
-        ground = new Body();
+        Body ground = new Body();
         ground.isStatic = true;
         ground.color = Color.GREEN;
         ground.tag = "GROUND";
         ground.addFixture(new Rectangle(10, 1));
+        ground.setUserData(SOLID);
 
-        wall = new Body();
+        Body wall = new Body();
         wall.isStatic = true;
         wall.tag = "WALL";
         wall.addFixture(new Rectangle(1, 10));
+        wall.setUserData(SOLID);
 
         Gdx.graphics.setTitle("BASIC EXAMPLE");
 
@@ -80,11 +93,17 @@ public class Basic extends ApplicationAdapter {
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT: {}", contact.getId());
+                if(contact.getFixture1().getUserData().equals("TEST") || contact.getFixture2().getUserData().equals("TEST")) {
+                    footCount += 1;
+                }
             }
 
             @Override
             public void end(Contact contact) {
                 logger.info("CONTACT ENDED: {}", contact.getId());
+                if(contact.getFixture1().getUserData().equals(FOOT_SENSOR) || contact.getFixture2().getUserData().equals(FOOT_SENSOR)) {
+                    footCount -= 1;
+                }
             }
         });
     }
@@ -114,7 +133,7 @@ public class Basic extends ApplicationAdapter {
                     Rectangle r = (Rectangle)f.getShape();
 
                     Vector2 position = body.getTransform().getTransformed(shapeCenter);
-
+                    //TODO Fix the transform, it's currently wrong.
                     shapeRenderer.setColor(body.color);
                     shapeRenderer.rect(position.x - r.getWidth()/2, position.y - r.getHeight()/2, r.getWidth(), r.getHeight());
                 } else {
@@ -207,9 +226,9 @@ public class Basic extends ApplicationAdapter {
 
                     Penetration penetration = new Penetration();
                     if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
-                        if(penetration.distance == 0) {
-                            logger.info("Touching.");
-                            continue;
+
+                        if(fixture1.isSensor() || fixture2.isSensor()) {
+                            logger.info("SENSOR!");
                         }
 
                         Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
@@ -222,9 +241,6 @@ public class Basic extends ApplicationAdapter {
                         if(penetration.normal.y != 0) {
                             body1.velocity.y = 0;
                         }
-
-                        //Add the contact to the body. What really needs to happen is that I have something that will add, and remove these contacts, otherwise I'll just keep accumulating.
-//                        body1.addContact(new Contact(body1, fixture1, body2, fixture2, penetration.clone()));
 
                         contactManager.addContact(new Contact(body1, fixture1, body2, fixture2));
                     }
@@ -249,14 +265,15 @@ public class Basic extends ApplicationAdapter {
      */
     private class Body {
         private final UUID id;
-        public Color color;
+        Color color;
         private Transform transform;
         private Transform transform0;
         private Vector2 velocity;
         private boolean isStatic = false;
         private String tag;
         private List<Fixture> fixtures;
-        private List<Contact> contacts;
+
+        private Object userData;
 
         public Body() {
             transform = new Transform();
@@ -265,7 +282,6 @@ public class Basic extends ApplicationAdapter {
             tag = "UNSET";
 
             fixtures = new ArrayList<>(1);
-            contacts = new ArrayList<>(5);
             id = UUID.randomUUID();
         }
 
@@ -310,16 +326,20 @@ public class Basic extends ApplicationAdapter {
         }
 
         //region fixture handling.
+
         public List<Fixture> getFixtures() {
             return fixtures;
         }
-
         public int getFixtureCount() {
             return fixtures.size();
         }
 
         public Fixture addFixture(Convex convex) {
-            Fixture fixture = new Fixture(convex);
+            return addFixture(convex, "DEFAULT_TAG");
+        }
+
+        public Fixture addFixture(Convex convex, String fixtureTag) {
+            Fixture fixture = new Fixture(convex, fixtureTag);
             fixtures.add(fixture);
             return fixture;
         }
@@ -331,20 +351,26 @@ public class Basic extends ApplicationAdapter {
         public Fixture removeFixture(int index) {
             return fixtures.remove(index);
         }
+
         //endregion
 
-        public void addContact(Contact contact) {
-            contacts.add(contact);
+        /**
+         * Generated object for contacts. Used to maintain relationships between touching objects.
+         */
+        public void setUserData(Object userData) {
+            this.userData = userData;
         }
-        
+
+        public Object getUserData() {
+            return userData;
+        }
+
         @Override
         public int hashCode() { return 17 * id.hashCode(); }
     }
 
-    /**
-     * Generated object for contacts. Used to maintain relationships between touching objects.
-     */
     private class Contact {
+
         private final UUID id;
         private final Body body1, body2;
         private final Fixture fixture1, fixture2;
@@ -386,15 +412,18 @@ public class Basic extends ApplicationAdapter {
         private final Convex shape;
         private boolean sensor;
         private Object userData;
-        private Transform transform;
+        final String tag;
 
         public Fixture(Convex shape) {
+            this(shape, "DEFAULT_TAG");
+        }
+
+        public Fixture(Convex shape, String tag) {
             this.shape = shape;
             this.id = UUID.randomUUID();
             this.sensor = false;
 
-            transform = new Transform();
-            //TODO: Maybe add filtering. Would be useful, especially when I do broadphase detection.
+            this.tag = tag;
         }
 
         public Convex getShape() {
@@ -410,7 +439,7 @@ public class Basic extends ApplicationAdapter {
         }
 
         public void setSensor(boolean flag) {
-            this.sensor = true;
+            this.sensor = flag;
         }
 
         public Object getUserData() {

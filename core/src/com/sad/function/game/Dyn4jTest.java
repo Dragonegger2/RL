@@ -58,7 +58,7 @@ public class Dyn4jTest extends ApplicationAdapter {
         player.setUserData(PLAYER);
 
         BodyFixture foot = player.addFixture(new Rectangle(playerWidth/2, playerHeight/2));
-        foot.setSensor(true);
+        foot.setSensor(false);
         foot.getShape().getCenter().set(0, -0.5);
         foot.setUserData(FOOT);
         ground = new Body();
