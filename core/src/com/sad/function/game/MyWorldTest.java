@@ -59,7 +59,7 @@ public class MyWorldTest extends ApplicationAdapter {
         BodyFixture groundFixture = ground.addFixture(gs);
         ground.translate(-10, 0);
 
-        Convex w = new Rectangle(1, 10);
+        Convex w = new Rectangle(2, 10);
         wall = new Body(1);
         wall.addFixture(w);
         wall.translate(-10, 0);
@@ -113,14 +113,14 @@ public class MyWorldTest extends ApplicationAdapter {
                 player.setLinearVelocity(0, player.getLinearVelocity().y);
             }
         }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             player.applyImpulse(new Vector2(0, 12));
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.applyImpulse(new Vector2(0, -speed));
-        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+//            player.applyImpulse(new Vector2(0, -speed));
+//        }
         //endregion
-
 
         world.update(delta);
 

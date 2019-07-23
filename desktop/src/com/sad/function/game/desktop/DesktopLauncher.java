@@ -15,6 +15,7 @@ public class DesktopLauncher {
 //		new LwjglApplication(new ApocalypticGame(), config);
 //		new LwjglApplication(new ShapeTest5(), config);
 //		new LwjglApplication(new Dyn4jTest(), config);
-		new LwjglApplication(new MyWorldTest(), config);
+//		new LwjglApplication(new MyWorldTest(), config);
+		new LwjglApplication(new Basic(), config);
 	}
 }
