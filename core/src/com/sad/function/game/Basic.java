@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.overlay.data.Penetration;
-import com.sad.function.collision.overlay.data.Separation;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Rectangle;
@@ -42,7 +41,7 @@ public class Basic extends ApplicationAdapter {
 
         player = new Body();
         player.shape = new Rectangle(1, 1);
-        player.translate(0, 0);
+        player.translate(0, 2);
         player.isStatic = false;
         player.color = Color.BLUE;
         player.tag = "PLAYER";
@@ -67,7 +66,26 @@ public class Basic extends ApplicationAdapter {
 
     @Override
     public void render() {
+        camera.position.x = player.getX();
+        camera.position.y = player.getY();
+
+        camera.update();
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < bodies.size(); i++) {
+            Body body = bodies.get(i);
+            shapeRenderer.setColor(body.color);
+            shapeRenderer.rect(body.getX(), body.getY(), body.getShape().getWidth(), body.getShape().getHeight());
+        }
+        shapeRenderer.end();
+
         float delta = 1f / 60f;   //TODO fix my timestep.
+
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
@@ -94,6 +112,9 @@ public class Basic extends ApplicationAdapter {
             body.translate(body.getVelocity());
         }
 
+        //Narrow phase. TODO: Add broadphase (like SAP).
+        //TODO: Can step & check for collisions in microsteps. IE 1/10 of current step to prevent tunneling.
+
         //Check for collisions.
         for (int i = 0; i < size; i++) {
             Body body1 = bodies.get(i);
@@ -104,14 +125,31 @@ public class Basic extends ApplicationAdapter {
 
                 if (body1 == body2) continue; //Check for identical bodies.
 
+                //TODO: Handle dynamic-dynamicc collisions.
                 if (!body1.isStatic() && !body2.isStatic()) {
                     logger.info("BOTH ARE DYNAMIC.");
                 }
 
+                //Calculate the penetration of the two shapes.
                 Penetration penetration = new Penetration();
                 if (gjk.detect(body1.getShape(), body1.getTransform(), body2.getShape(), body2.getTransform(), penetration)) {
                     logger.info("COLLISION OCCURRED!");
 
+                    if(penetration.distance == 0) continue;//Break out
+                    //NOTE: body1 is always dynamic, apply the translation only to the body.
+                    //Separate the body.
+                    body1.translate(penetration.normal.cpy().scl(penetration.distance));
+
+                    //If the penetration happened in the x-direction, clear the x-velocity.
+                    if(penetration.normal.x != 0) {
+                        //Collided on the side.
+                        body1.velocity.x = 0;
+                    }
+
+                    //if the penetration happened in the y-direction, clear the y-velocity.
+                    if(penetration.normal.y != 0) {
+                        body1.velocity.y = 0;
+                    }
                 }
 
             }
@@ -121,7 +159,7 @@ public class Basic extends ApplicationAdapter {
             OOOH this is why he generates a contact list first, and then updates it again afterwards.
 
             He does it early to skip any bodies that they are in contact with.
-
+            A contact would be what? A body that has a distance of 0 between itself and any other shapes?
             Aggregates forces.
 
             Applies the forces.
@@ -130,43 +168,21 @@ public class Basic extends ApplicationAdapter {
 
             All the while he's notifying listeners.
 
-            This way he can notify based on beginning, ending, and persisting events for contacts.
-
-
-
+            This way he can notify based on beginning, ending, and persisting events for contacts. Makes it easier to manage them.
          */
 
-        r();
+
     }
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
 
+        //Try and set camera to point to the player. May cause jumping.
         if (player != null) {
             camera.position.x = (float) player.getX();
             camera.position.y = (float) player.getY();
         }
-    }
-
-    public void r() {
-        camera.position.x = player.getX();
-        camera.position.y = player.getY();
-
-        camera.update();
-
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        for (int i = 0; i < bodies.size(); i++) {
-            Body body = bodies.get(i);
-            shapeRenderer.setColor(body.color);
-            shapeRenderer.rect(body.getX(), body.getY(), body.getShape().getWidth(), body.getShape().getHeight());
-        }
-        shapeRenderer.end();
     }
 
     private class Body {
@@ -178,6 +194,7 @@ public class Basic extends ApplicationAdapter {
         private Vector2 velocity;
         private boolean isStatic = false;
         private String tag;
+
         public Body() {
             transform = new Transform();
             shape = new Rectangle(0, 0);
