@@ -8,18 +8,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.overlay.World;
 import com.sad.function.collision.overlay.data.Penetration;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.narrowphase.GJK;
 import com.sad.function.collision.overlay.shape.Convex;
-import com.sad.function.collision.overlay.shape.Polygon;
 import com.sad.function.collision.overlay.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
@@ -30,15 +28,19 @@ public class Basic extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private GJK gjk;
+    private ContactManager contactManager;
 
     private Vector2 gravity = new Vector2(0, -9.8f);
 
     private List<Body> bodies = new ArrayList<>();
+    private List<Listener> listeners = new ArrayList<>();
+
 
     @Override
     public void create() {
         gjk = new GJK();
 
+        contactManager = new ContactManager();
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
 
@@ -68,6 +70,23 @@ public class Basic extends ApplicationAdapter {
         bodies.add(ground);
         bodies.add(wall);
         bodies.add(player);
+
+        listeners.add(new ContactListener() {
+            @Override
+            public void persist(Contact contact) {
+                logger.info("PERSISTED CONTACT {}", contact.getId() );
+            }
+
+            @Override
+            public void begin(Contact contact) {
+                logger.info("NEW CONTACT: {}", contact.getId());
+            }
+
+            @Override
+            public void end(Contact contact) {
+                logger.info("CONTACT ENDED: {}", contact.getId());
+            }
+        });
     }
 
     @Override
@@ -128,7 +147,6 @@ public class Basic extends ApplicationAdapter {
             player.getVelocity().y = 10f;
         }
 
-
         //add gravity.
         int size = bodies.size();
         for (int i = 0; i < size; i++) {
@@ -138,10 +156,8 @@ public class Basic extends ApplicationAdapter {
             body.getVelocity().add(gravity.cpy().scl(delta));
         }
 
-
         //Narrow phase. TODO: Add broadphase (like SAP).
         //TODO: Can step & check for collisions in microsteps. IE 1/10 of current step to prevent tunneling.
-
 
         int NUMBER_OF_STEPS = 10;
         float timestep = delta / NUMBER_OF_STEPS;
@@ -156,9 +172,12 @@ public class Basic extends ApplicationAdapter {
 
             handleBodies();
         }
+
+        //Notify all listeners.
+        contactManager.updateAndNotify(getListeners(ContactListener.class));
     }
 
-    public void handleBodies() {
+    private void handleBodies() {
         int size = bodies.size();
         for(int i = 0; i < bodies.size(); i++) {
             //skip non-dynamic bodies
@@ -170,7 +189,7 @@ public class Basic extends ApplicationAdapter {
         }
     }
 
-    public void checkFixtureCollisions(Body body1) {
+    private void checkFixtureCollisions(Body body1) {
         int size = bodies.size();
 
         for(int i = 0; i < size; i++) {
@@ -203,55 +222,16 @@ public class Basic extends ApplicationAdapter {
                         if(penetration.normal.y != 0) {
                             body1.velocity.y = 0;
                         }
+
+                        //Add the contact to the body. What really needs to happen is that I have something that will add, and remove these contacts, otherwise I'll just keep accumulating.
+//                        body1.addContact(new Contact(body1, fixture1, body2, fixture2, penetration.clone()));
+
+                        contactManager.addContact(new Contact(body1, fixture1, body2, fixture2));
                     }
                 }
             }
         }
     }
-
-//    public void handleCollisions() {
-//        int size = bodies.size();
-//
-//        //Check for collisions.
-//        for (int i = 0; i < size; i++) {
-//            Body body1 = bodies.get(i);
-//            if (body1.isStatic) continue; //Only want dynamic bodies in body1.
-//
-//            for (int j = 0; j < size; j++) {
-//                Body body2 = bodies.get(j);
-//
-//                if (body1 == body2) continue; //Check for identical bodies.
-//
-//                //TODO: Handle dynamic-dynamicc collisions.
-//                if (!body1.isStatic() && !body2.isStatic()) {
-//                    logger.info("BOTH ARE DYNAMIC.");
-//                }
-//
-//                //Calculate the penetration of the two shapes.
-//                Penetration penetration = new Penetration();
-//                if (gjk.detect(body1.getShape(), body1.getTransform(), body2.getShape(), body2.getTransform(), penetration)) {
-//
-//                    if (penetration.distance == 0) continue;//Break out
-//                    //NOTE: body1 is always dynamic, apply the translation only to the body.
-//                    //Separate the body.
-//                    Vector2 translation = penetration.normal.cpy();
-//                    translation.scl(-1).scl(penetration.distance); //Had to flip the vector.
-//                    body1.translate(translation);
-//
-//                    //If the penetration happened in the x-direction, clear the x-velocity.
-//                    if (penetration.normal.x != 0) {
-//                        //Collided on the side.
-//                        body1.velocity.x = 0;
-//                    }
-//
-//                    //if the penetration happened in the y-direction, clear the y-velocity.
-//                    if (penetration.normal.y != 0) {
-//                        body1.velocity.y = 0;
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     @Override
     public void resize(int width, int height) {
@@ -268,24 +248,25 @@ public class Basic extends ApplicationAdapter {
      * Represented by a group
      */
     private class Body {
-
+        private final UUID id;
         public Color color;
         private Transform transform;
         private Transform transform0;
-//        private Rectangle shape;
         private Vector2 velocity;
         private boolean isStatic = false;
         private String tag;
         private List<Fixture> fixtures;
+        private List<Contact> contacts;
 
         public Body() {
             transform = new Transform();
-//            shape = new Rectangle(0, 0);
             velocity = new Vector2();
             color = Color.RED;
             tag = "UNSET";
 
             fixtures = new ArrayList<>(1);
+            contacts = new ArrayList<>(5);
+            id = UUID.randomUUID();
         }
 
         public Transform getInitialTransform() {
@@ -295,10 +276,6 @@ public class Basic extends ApplicationAdapter {
         public Transform getTransform() {
             return transform;
         }
-
-//        public Rectangle getShape() {
-//            return shape;
-//        }
 
         public void translate(Vector2 t) {
             translate(t.x, t.y);
@@ -355,6 +332,49 @@ public class Basic extends ApplicationAdapter {
             return fixtures.remove(index);
         }
         //endregion
+
+        public void addContact(Contact contact) {
+            contacts.add(contact);
+        }
+        
+        @Override
+        public int hashCode() { return 17 * id.hashCode(); }
+    }
+
+    /**
+     * Generated object for contacts. Used to maintain relationships between touching objects.
+     */
+    private class Contact {
+        private final UUID id;
+        private final Body body1, body2;
+        private final Fixture fixture1, fixture2;
+        private final boolean isSensor;
+
+        private Contact(Body body1, Fixture fixture1, Body body2, Fixture fixture2) {
+            this.id = UUID.randomUUID();
+            this.body1 = body1;
+            this.body2 = body2;
+            this.fixture1 = fixture1;
+            this.fixture2 = fixture2;
+
+            isSensor = fixture1.isSensor() || fixture2.isSensor();
+        }
+
+        public Body getBody1() { return body1; }
+        public Body getBody2() { return body2; }
+
+        public Fixture getFixture1() { return fixture1; }
+        public Fixture getFixture2() { return fixture2; }
+
+        public UUID getId() { return id; }
+
+        public boolean isSensor() { return isSensor; }
+
+        @Override
+        public int hashCode() {
+            int result = 17 + body1.hashCode() + fixture1.hashCode() + body2.hashCode() + fixture2.hashCode();
+            return result;
+        }
     }
 
     /**
@@ -401,7 +421,85 @@ public class Basic extends ApplicationAdapter {
             this.userData = userData;
         }
 
-        //public void translateInLocalSpace()
+        @Override
+        public int hashCode() {
+            return 17 + id.hashCode();
+        }
+    }
+
+    private class ContactManager {
+        private final List<Contact> contactQueue;
+        
+        private Map<Integer, Contact> contacts;
+        private Map<Integer, Contact> contacts1;
+
+        public ContactManager() {
+            contacts = new HashMap<>();
+            contacts1 = new HashMap<>();
+
+            contactQueue = new ArrayList<>(5);
+        }
+
+        public void addContact(Contact contact) {
+            contactQueue.add(contact);
+        }
+
+        public void updateAndNotify(List<ContactListener> listeners) {
+            int size = contactQueue.size();
+            int listenerSize = listeners != null ? listeners.size() : 0;
+
+            Map<Integer, Contact> newMap = this.contacts1;
+
+            for(int i = 0; i < size; i++) {
+                Contact newContact =  contactQueue.get(i);
+                Contact oldContact = null;
+
+
+                oldContact = contacts.remove(newContact.hashCode()); //keep removing them from contacts ensures that by the end of this we've only got those that are needed for removal at the end.
+
+                //It's already an existing contact if it's not null.
+                if(oldContact != null) {
+                    for(int l = 0; l < listenerSize; l++) {
+                        ContactListener listener = listeners.get(l);
+                        //Oh, so it uses contact points to prevent false positives on contact. Two objects can have a persisted
+                        //contact but their points AKA "Contacts" can be different. I don't have that.
+                        listener.persist(oldContact);
+                    }
+                } else {
+                    for(int l = 0; l < listenerSize; l++) {
+                        ContactListener listener = listeners.get(l);
+                        listener.begin(newContact);
+                    }
+                }
+
+                newMap.put(newContact.hashCode(), newContact);
+            }
+
+            if(!contacts.isEmpty()) {
+                for(int i = 0; i < contacts.size(); i++) {
+                    Iterator<Contact> ic = contacts.values().iterator();
+                    while(ic.hasNext()) {
+                        Contact contact = ic.next();
+
+                        for(int l = 0; l < listenerSize; l++) {
+                            ContactListener listener = listeners.get(l);
+                            listener.end(contact);
+                        }
+
+                    }
+                }
+            }
+
+            if(size > 0) {
+                contacts.clear();
+                contacts1 = this.contacts;
+                this.contacts = newMap;
+            } else {
+                contacts.clear();
+            }
+
+            contactQueue.clear();
+        }
     }
 
     public class AABBCD {
@@ -418,19 +516,31 @@ public class Basic extends ApplicationAdapter {
         }
     }
 
-    /*
-            OOOH this is why he generates a contact list first, and then updates it again afterwards.
+    /**
+     * Fetch all registered listeners to this world object that match the class type.
+     * @param clazz listener type to fetch.
+     * @param <T> Type parameter
+     * @return list of listeners OR null if clazz is null.
+     */
+    public <T extends Listener> List<T> getListeners(Class<T> clazz) {
+        if(clazz == null) return null;
+        List<T> listeners = new ArrayList<T>();
 
-            He does it early to skip any bodies that they are in contact with.
-            A contact would be what? A body that has a distance of 0 between itself and any other shapes?
-            Aggregates forces.
+        int lSize = this.listeners.size();
+        for(int i = 0; i < lSize; i++) {
+            Listener listener = this.listeners.get(i);
+            if(clazz.isInstance(listener)) {
+                listeners.add(clazz.cast(listener));
+            }
+        }
 
-            Applies the forces.
-
-            Recreates contact list.
-
-            All the while he's notifying listeners.
-
-            This way he can notify based on beginning, ending, and persisting events for contacts. Makes it easier to manage them.
-         */
+        return listeners;
+    }
+    public interface Listener {}
+    public interface StepListener extends Listener {}
+    public interface ContactListener extends Listener {
+        void persist(Contact contact);
+        void begin(Contact contact);
+        void end(Contact contact);
+    }
 }
