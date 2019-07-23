@@ -48,6 +48,9 @@ public class Basic extends ApplicationAdapter {
         player.color = Color.BLUE;
         player.tag = "PLAYER";
         player.addFixture(new Rectangle(1,1));
+        Fixture footSensor = player.addFixture(new Rectangle(1, 0.5f));
+        footSensor.setSensor(true);
+        footSensor.getShape().getCenter().set(0, -0.5f); //Offset the fixture.
 
         ground = new Body();
         ground.isStatic = true;
