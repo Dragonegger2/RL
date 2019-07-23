@@ -49,11 +49,13 @@ public class Basic extends ApplicationAdapter {
         player.color = Color.BLUE;
         player.tag = "PLAYER";
         player.setUserData(PLAYER);
-        player.addFixture(new Rectangle(1,1));
-        Fixture footSensor = player.addFixture(new Rectangle(1, 0.5f), "TEST");
+        Fixture footSensor = new Fixture(new Rectangle(1, 1f), "TEST");
         footSensor.setSensor(true);
-        footSensor.getShape().getCenter().set(0, 0.5f); //Offset the fixture.
-        footSensor.setUserData("TEST");
+        footSensor.getShape().getCenter().set(0, -.5f); //Offset the fixture.
+        footSensor.setUserData(FOOT_SENSOR);
+
+        player.addFixture(footSensor);
+        player.addFixture(new Rectangle(1,1));
     }
 
     @Override
@@ -87,22 +89,25 @@ public class Basic extends ApplicationAdapter {
         listeners.add(new ContactListener() {
             @Override
             public void persist(Contact contact) {
-                logger.info("PERSISTED CONTACT {}", contact.getId() );
             }
 
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT: {}", contact.getId());
-                if(contact.getFixture1().getUserData().equals("TEST") || contact.getFixture2().getUserData().equals("TEST")) {
-                    footCount += 1;
+                if(contact.getFixture1().isSensor() || contact.getFixture2().isSensor()) {
+                    logger.info("SENSOR!");
+                }
+                if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
+                    footCount++;
                 }
             }
 
             @Override
             public void end(Contact contact) {
                 logger.info("CONTACT ENDED: {}", contact.getId());
-                if(contact.getFixture1().getUserData().equals(FOOT_SENSOR) || contact.getFixture2().getUserData().equals(FOOT_SENSOR)) {
-                    footCount -= 1;
+
+                if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
+                    footCount--;
                 }
             }
         });
@@ -128,17 +133,23 @@ public class Basic extends ApplicationAdapter {
                 Fixture f = body.getFixtures().get(j);
 
                 Vector2 shapeCenter = f.getShape().getCenter();
+                Vector2 position = body.getTransform().getTransformed(shapeCenter);
 
                 if(f.getShape() instanceof Rectangle) {
+
                     Rectangle r = (Rectangle)f.getShape();
 
-                    Vector2 position = body.getTransform().getTransformed(shapeCenter);
-                    //TODO Fix the transform, it's currently wrong.
+
                     shapeRenderer.setColor(body.color);
+                    if(f.isSensor()) shapeRenderer.setColor(Color.LIME);
                     shapeRenderer.rect(position.x - r.getWidth()/2, position.y - r.getHeight()/2, r.getWidth(), r.getHeight());
                 } else {
                     logger.warn("No matching renderer for {}", f.getShape().getClass());
                 }
+
+                shapeRenderer.setColor(Color.FIREBRICK);
+                shapeRenderer.circle(position.x, position.y, 0.125f, 15);
+
             }
         }
         shapeRenderer.end();
@@ -162,7 +173,7 @@ public class Basic extends ApplicationAdapter {
             player.getVelocity().x = 0;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && footCount > 0) {
             player.getVelocity().y = 10f;
         }
 
@@ -226,10 +237,6 @@ public class Basic extends ApplicationAdapter {
 
                     Penetration penetration = new Penetration();
                     if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
-
-                        if(fixture1.isSensor() || fixture2.isSensor()) {
-                            logger.info("SENSOR!");
-                        }
 
                         Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
                         body1.translate(translation);
@@ -332,6 +339,10 @@ public class Basic extends ApplicationAdapter {
         }
         public int getFixtureCount() {
             return fixtures.size();
+        }
+
+        public void addFixture(Fixture fixture) {
+            fixtures.add(fixture);
         }
 
         public Fixture addFixture(Convex convex) {
