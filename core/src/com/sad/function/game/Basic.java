@@ -104,7 +104,9 @@ public class Basic extends ApplicationAdapter {
             player.getVelocity().x = 0;
         }
 
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+            player.getVelocity().y = 10f;
+        }
 
 
         //add gravity.
