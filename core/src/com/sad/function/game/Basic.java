@@ -89,18 +89,19 @@ public class Basic extends ApplicationAdapter {
             for(int j = 0; j < body.getFixtureCount(); j++) {
                 Fixture f = body.getFixtures().get(j);
 
+                Vector2 shapeCenter = f.getShape().getCenter();
+
                 if(f.getShape() instanceof Rectangle) {
                     Rectangle r = (Rectangle)f.getShape();
 
-                    Vector2 position = body.getPosition().cpy();
-                    position.add(f.transform.x, f.transform.y);
+                    Vector2 position = body.getTransform().getTransformed(shapeCenter);
 
                     shapeRenderer.setColor(body.color);
                     shapeRenderer.rect(position.x - r.getWidth()/2, position.y - r.getHeight()/2, r.getWidth(), r.getHeight());
+                } else {
+                    logger.warn("No matching renderer for {}", f.getShape().getClass());
                 }
             }
-            shapeRenderer.setColor(body.color);
-            shapeRenderer.rect(body.getX() - body.getShape().getWidth() / 2, body.getY() - body.getShape().getHeight() / 2, body.getShape().getWidth(), body.getShape().getHeight());
         }
         shapeRenderer.end();
 
@@ -181,14 +182,11 @@ public class Basic extends ApplicationAdapter {
             int fc2 = body2.getFixtureCount();
 
             for(int j = 0; j < fc1; j++) {
+                Fixture fixture1 = body1.getFixtures().get(j);
                 for(int k = 0; k < fc2; k++) {
-
-                    Fixture fixture1 = body1.getFixtures().get(j);
                     Fixture fixture2 = body2.getFixtures().get(k);
 
-
                     Penetration penetration = new Penetration();
-
                     if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
                         if(penetration.distance == 0) {
                             logger.info("Touching.");
@@ -274,7 +272,7 @@ public class Basic extends ApplicationAdapter {
         public Color color;
         private Transform transform;
         private Transform transform0;
-        private Rectangle shape;
+//        private Rectangle shape;
         private Vector2 velocity;
         private boolean isStatic = false;
         private String tag;
@@ -282,7 +280,7 @@ public class Basic extends ApplicationAdapter {
 
         public Body() {
             transform = new Transform();
-            shape = new Rectangle(0, 0);
+//            shape = new Rectangle(0, 0);
             velocity = new Vector2();
             color = Color.RED;
             tag = "UNSET";
@@ -298,9 +296,9 @@ public class Basic extends ApplicationAdapter {
             return transform;
         }
 
-        public Rectangle getShape() {
-            return shape;
-        }
+//        public Rectangle getShape() {
+//            return shape;
+//        }
 
         public void translate(Vector2 t) {
             translate(t.x, t.y);
