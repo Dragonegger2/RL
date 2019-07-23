@@ -77,6 +77,7 @@ public class Basic extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             shapeRenderer.setColor(body.color);
@@ -97,7 +98,8 @@ public class Basic extends ApplicationAdapter {
             player.translate(1f, 0);
         }
 
-        //apply gravity.
+
+        //add gravity.
         int size = bodies.size();
         for (int i = 0; i < size; i++) {
             Body body = bodies.get(i);
@@ -106,14 +108,43 @@ public class Basic extends ApplicationAdapter {
             body.getVelocity().add(gravity.cpy().scl(delta));
         }
 
-        //Move the bodies by their velocity.
-        for(int i = 0; i < size; i++) {
-            Body body = bodies.get(i);
-            body.translate(body.getVelocity());
-        }
 
         //Narrow phase. TODO: Add broadphase (like SAP).
         //TODO: Can step & check for collisions in microsteps. IE 1/10 of current step to prevent tunneling.
+
+
+
+        int NUMBER_OF_STEPS = 10;
+        float timestep = delta / NUMBER_OF_STEPS;
+        for(int i = 0; i < NUMBER_OF_STEPS; i++) {
+            //Move the bodies by their velocity.
+            for(int j = 0; j < size; j++) {
+                Body body = bodies.get(j);
+                body.translate(body.getVelocity().cpy().scl(timestep));
+            }
+
+            handleCollisions();
+        }
+
+        /*
+            OOOH this is why he generates a contact list first, and then updates it again afterwards.
+
+            He does it early to skip any bodies that they are in contact with.
+            A contact would be what? A body that has a distance of 0 between itself and any other shapes?
+            Aggregates forces.
+
+            Applies the forces.
+
+            Recreates contact list.
+
+            All the while he's notifying listeners.
+
+            This way he can notify based on beginning, ending, and persisting events for contacts. Makes it easier to manage them.
+         */
+    }
+
+    public void handleCollisions() {
+        int size = bodies.size();
 
         //Check for collisions.
         for (int i = 0; i < size; i++) {
@@ -151,29 +182,9 @@ public class Basic extends ApplicationAdapter {
                         body1.velocity.y = 0;
                     }
                 }
-
             }
         }
-
-        /*
-            OOOH this is why he generates a contact list first, and then updates it again afterwards.
-
-            He does it early to skip any bodies that they are in contact with.
-            A contact would be what? A body that has a distance of 0 between itself and any other shapes?
-            Aggregates forces.
-
-            Applies the forces.
-
-            Recreates contact list.
-
-            All the while he's notifying listeners.
-
-            This way he can notify based on beginning, ending, and persisting events for contacts. Makes it easier to manage them.
-         */
-
-
     }
-
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
