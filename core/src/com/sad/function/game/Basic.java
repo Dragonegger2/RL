@@ -41,13 +41,13 @@ public class Basic extends ApplicationAdapter {
 
         player = new Body();
         player.shape = new Rectangle(1, 1);
-        player.translate(0, 2);
+        player.translate(2, 2);
         player.isStatic = false;
         player.color = Color.BLUE;
         player.tag = "PLAYER";
 
         ground = new Body();
-        ground.shape = new Rectangle(10, 0.5f);
+        ground.shape = new Rectangle(10, 1f);
         ground.isStatic = true;
         ground.color = Color.GREEN;
         ground.tag = "GROUND";
@@ -81,7 +81,7 @@ public class Basic extends ApplicationAdapter {
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             shapeRenderer.setColor(body.color);
-            shapeRenderer.rect(body.getX(), body.getY(), body.getShape().getWidth(), body.getShape().getHeight());
+            shapeRenderer.rect(body.getX() - body.getShape().getWidth() / 2, body.getY() - body.getShape().getHeight() / 2, body.getShape().getWidth(), body.getShape().getHeight());
         }
         shapeRenderer.end();
 
@@ -91,12 +91,20 @@ public class Basic extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.translate(-1f, 0);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && player.getVelocity().x > -5f) {
+            player.getVelocity().x -= 1f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.translate(1f, 0);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.D) && player.getVelocity().x < 5f) {
+            player.getVelocity().x += 1f;
         }
+
+        if(!Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.getVelocity().x = 0;
+        }
+
+
 
 
         //add gravity.
@@ -120,6 +128,8 @@ public class Basic extends ApplicationAdapter {
             //Move the bodies by their velocity.
             for(int j = 0; j < size; j++) {
                 Body body = bodies.get(j);
+                if(body.isStatic()) continue;
+
                 body.translate(body.getVelocity().cpy().scl(timestep));
             }
 
@@ -164,12 +174,13 @@ public class Basic extends ApplicationAdapter {
                 //Calculate the penetration of the two shapes.
                 Penetration penetration = new Penetration();
                 if (gjk.detect(body1.getShape(), body1.getTransform(), body2.getShape(), body2.getTransform(), penetration)) {
-                    logger.info("COLLISION OCCURRED!");
 
                     if(penetration.distance == 0) continue;//Break out
                     //NOTE: body1 is always dynamic, apply the translation only to the body.
                     //Separate the body.
-                    body1.translate(penetration.normal.cpy().scl(penetration.distance));
+                    Vector2 translation = penetration.normal.cpy();
+                    translation.scl(-1).scl(penetration.distance); //Had to flip the vector.
+                    body1.translate(translation);
 
                     //If the penetration happened in the x-direction, clear the x-velocity.
                     if(penetration.normal.x != 0) {
