@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import org.dyn4j.Epsilon;
 
+@SuppressWarnings("ALL")
 public class Segment {
     public static Vector2 getPointOnSegmentClosestToPoint(Vector2 point, Vector2 linePoint1, Vector2 linePoint2) {
         Vector2 p1ToP = new Vector2(point.x - linePoint1.x, point.y - linePoint1.y);

@@ -127,32 +127,6 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
         return false;
     }
 
-//    protected boolean detect(MinkowskiSum ms, List<Vector2> simplex, Vector2 d) {
-//        if (d.isZero()) d.set(1f, 0);
-//        simplex.add(ms.getSupportPoint(d));
-//
-//        if (simplex.get(0).dot(d) <= 0) {
-//            return false;
-//        }
-//
-//        d.scl(-1);  //Flip the direction.
-//
-//        int maxDetectIterations = 30;
-//        for (int i = 0; i < maxDetectIterations; i++) {
-//            Vector2 supportPoint = ms.getSupportPoint(d);
-//            simplex.add(supportPoint);
-//
-//            if (supportPoint.dot(d) <= detectEpsilon) {
-//                return false;
-//            } else {
-//                if (checkSimplex(simplex, d)) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
     protected boolean detect(Convex c1, Transform t1, Convex c2, Transform t2, List<Vector2> simplex, Vector2 d) {
         if (d.isZero()) d.set(1, 0);
 
@@ -232,6 +206,7 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
     @Override
     public boolean distance(Convex convex1, Transform t1, Convex convex2, Transform t2, Separation separation) {
         //TODO Circle-to-Circle
+
         MinkowskiSum ms = new MinkowskiSum(convex1, t1, convex2, t2);
 
         MinkowskiSum.MinkowskiSumPoint a = null;
@@ -241,16 +216,18 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
         Vector2 c1 = t1.getTransformed(convex1.getCenter());
         Vector2 c2 = t2.getTransformed(convex2.getCenter());
 
-        Vector2 d = c2.cpy().sub(c1);
+        Vector2 d = c2.cpy().sub(c1);  //c1.to(c2)
 
         if (d.isZero()) return false;
 
         a = ms.getSupportPoints(d);
+
         d.scl(-1);
+
         b = ms.getSupportPoints(d);
 
         d = Segment.getPointOnSegmentClosestToPoint(ORIGIN, b.point, a.point);
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < DEFAULT_MAX_ITERATIONS; i++) {
             d.scl(-1);
             if (d.len2() <= Epsilon.E) {
                 return false;
