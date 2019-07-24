@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
     public static final int DEFAULT_MAX_ITERATIONS = 30;
-    public static final float DEFAULT_DETECT_EPSILON = 0.0f;
+    public static final float DEFAULT_DETECT_EPSILON = (float)Epsilon.E;
     public static final float DEFAULT_DISTANCE_EPSILON = (float) Math.sqrt(Epsilon.E);
 
     private static final Vector2 ORIGIN = new Vector2(0, 0);
@@ -68,10 +68,9 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
         //Find the initial search direction and populate the simplex with it; prevents the 0th case of the GJK alg.
         Vector2 d = getInitialDirection(c1, t1, c2, t2);
 
-        if (d.isZero()) d.set(1, 0);
+//        if (d.isZero()) d.set(1, 0);
 
-        if (detect(c1, t1, c2, t2, simplex, d)) {
-
+        if(detect(ms, simplex, d)) {
             epa.getPenetration(simplex, c1, t1, c2, t2, penetration);
             return true;
         }
@@ -92,30 +91,67 @@ public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
     }
 
     protected boolean detect(MinkowskiSum ms, List<Vector2> simplex, Vector2 d) {
+        // check for a zero direction vector
         if (d.isZero()) d.set(1f, 0);
+        // add the first point
         simplex.add(ms.getSupportPoint(d));
-
-        if (simplex.get(0).dot(d) <= 0) {
+        // is the support point past the origin along d?
+        if (simplex.get(0).dot(d) <= 0.0) {
             return false;
         }
-
-        d.scl(-1);  //Flip the direction.
-
-        int maxDetectIterations = 30;
-        for (int i = 0; i < maxDetectIterations; i++) {
+        // negate the search direction
+        d.scl(-1);
+        // start the loop
+        for (int i = 0; i < DEFAULT_MAX_ITERATIONS; i++) {
+            // always add another point to the simplex at the beginning of the loop
             Vector2 supportPoint = ms.getSupportPoint(d);
             simplex.add(supportPoint);
 
-            if (supportPoint.dot(d) <= detectEpsilon) {
+            // make sure that the last point we added was past the origin
+            if (supportPoint.dot(d) <= this.detectEpsilon) {
+                // a is not past the origin so therefore the shapes do not intersect
+                // here we treat the origin on the line as no intersection
+                // immediately return with null indicating no penetration
                 return false;
             } else {
-                if (checkSimplex(simplex, d)) {
+                // if it is past the origin, then test whether the simplex contains the origin
+                if (this.checkSimplex(simplex, d)) {
+                    // if the simplex contains the origin then we know that there is an intersection.
+                    // if we broke out of the loop then we know there was an intersection
                     return true;
                 }
+                // if the simplex does not contain the origin then we need to loop using the new
+                // search direction and simplex
             }
         }
         return false;
     }
+
+//    protected boolean detect(MinkowskiSum ms, List<Vector2> simplex, Vector2 d) {
+//        if (d.isZero()) d.set(1f, 0);
+//        simplex.add(ms.getSupportPoint(d));
+//
+//        if (simplex.get(0).dot(d) <= 0) {
+//            return false;
+//        }
+//
+//        d.scl(-1);  //Flip the direction.
+//
+//        int maxDetectIterations = 30;
+//        for (int i = 0; i < maxDetectIterations; i++) {
+//            Vector2 supportPoint = ms.getSupportPoint(d);
+//            simplex.add(supportPoint);
+//
+//            if (supportPoint.dot(d) <= detectEpsilon) {
+//                return false;
+//            } else {
+//                if (checkSimplex(simplex, d)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     protected boolean detect(Convex c1, Transform t1, Convex c2, Transform t2, List<Vector2> simplex, Vector2 d) {
         if (d.isZero()) d.set(1, 0);

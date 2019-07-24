@@ -44,18 +44,18 @@ public class Basic extends ApplicationAdapter {
     public Basic() {
         player = new Body();
 
-        player.translate(2, 2);
+        player.translate(2, 1.3112774f);
         player.isStatic = false;
         player.color = Color.BLUE;
         player.tag = "PLAYER";
         player.setUserData(PLAYER);
-        Fixture footSensor = new Fixture(new Rectangle(1, 1f), "TEST");
+        Fixture footSensor = new Fixture(new Rectangle(.5f, 1f), "TEST");
         footSensor.setSensor(true);
         footSensor.getShape().getCenter().set(0, -.5f); //Offset the fixture.
         footSensor.setUserData(FOOT_SENSOR);
 
         player.addFixture(footSensor);
-        player.addFixture(new Rectangle(1,1));
+        player.addFixture(new Rectangle(.5f,1));
     }
 
     @Override
@@ -91,9 +91,8 @@ public class Basic extends ApplicationAdapter {
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT: {}", contact.getId());
-                if(contact.getFixture1().isSensor() || contact.getFixture2().isSensor()) {
-                    logger.info("SENSOR!");
-                }
+//                if(contact.getFixture1().isSensor() || contact.getFixture2().isSensor()) {
+//                }
                 if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
                     footCount++;
                 }
@@ -109,42 +108,26 @@ public class Basic extends ApplicationAdapter {
             }
         });
 
-        //player-solid kill velocity.
-        listeners.add(new ContactAdapter() {
-
-            public void playerSolidContact(Contact contact) {
-                //If a player contacts a solid
-                if((contact.getBody1().getUserData() == PLAYER || contact.getBody1().getUserData() == PLAYER) && (contact.getBody1().getUserData() == SOLID || contact.getBody2().getUserData() == SOLID)) {
-
-                    //BODY1 is always the dynamic shape.
-                    //All of this logic could be moved to a handler.
-                    Vector2 translation = contact.getPenetration().normal.cpy().scl(-1).scl(contact.getPenetration().distance);
-                    contact.getBody1().translate(translation);
-
-                    if(contact.getPenetration().normal.x != 0) {
-                        contact.getBody1().velocity.x = 0;
-                    }
-
-                    if(contact.getPenetration().normal.y != 0) {
-                        contact.getBody1().velocity.y = 0;
-                    }
-                }
-            }
-
-            @Override
-            public void begin(Contact contact) {
-                playerSolidContact(contact);
-            }
-
-            @Override
-            public void persist(Contact contact) {
-                playerSolidContact(contact);
-            }
-        });
+//        //player-solid kill velocity.
+//        listeners.add(new ContactAdapter() {
+//
+//
+//
+//            @Override
+//            public void begin(Contact contact) {
+//                playerSolidContact(contact);
+//            }
+//
+//            @Override
+//            public void persist(Contact contact) {
+////                playerSolidContact(contact);
+//            }
+//        });
     }
 
     @Override
     public void render() {
+        //region Render Loop
         camera.position.x = player.getX();
         camera.position.y = player.getY();
 
@@ -185,8 +168,9 @@ public class Basic extends ApplicationAdapter {
         shapeRenderer.end();
 
         float delta = 1f / 60f;   //TODO fix my timestep.
+        //endregion
 
-
+        //region Input Handling
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
@@ -206,6 +190,7 @@ public class Basic extends ApplicationAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && footCount > 0) {
             player.getVelocity().y = 10f;
         }
+        //endregion
 
         //add gravity.
         int size = bodies.size();
@@ -216,13 +201,10 @@ public class Basic extends ApplicationAdapter {
             body.getVelocity().add(gravity.cpy().scl(delta));
         }
 
-        //Narrow phase. TODO: Add broadphase (like SAP).
-        //TODO: Can step & check for collisions in microsteps. IE 1/10 of current step to prevent tunneling.
-
-        int NUMBER_OF_STEPS = 10;
+        int NUMBER_OF_STEPS = 1;
         float timestep = delta / NUMBER_OF_STEPS;
         for (int i = 0; i < NUMBER_OF_STEPS; i++) {
-            //Move the bodies by their velocity.
+            //Move the bodies by their velocity/timestep
             for (int j = 0; j < size; j++) {
                 Body body = bodies.get(j);
                 if (body.isStatic()) continue;
@@ -272,7 +254,26 @@ public class Basic extends ApplicationAdapter {
                     Fixture fixture2 = body2.getFixtures().get(k);
 
                     Penetration penetration = new Penetration();
-                    if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
+                     if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
+
+                        if(!fixture1.isSensor() && !fixture2.isSensor()) { //Neither are sensors...
+                            //BODY1 is always the dynamic shape.
+                            //All of this logic could be moved to a handler.
+                            Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
+                            body1.translate(translation);
+
+                            if(penetration.normal.x != 0) {
+                                body1.velocity.x = 0;
+                            }
+
+                            if(penetration.normal.y != 0) {
+                                body1.velocity.y = 0;
+                            }
+                        } else {
+                            logger.info("SENSORS!");
+                        }
+
+                        //Still need to notify if they are Sensors.
                         contactManager.addContact(new Contact(body1, fixture1, body2, fixture2, penetration));
                     }
                 }
@@ -587,6 +588,7 @@ public class Basic extends ApplicationAdapter {
         }
     }
 
+    //region Listener Logic
     /**
      * Fetch all registered listeners to this world object that match the class type.
      * @param clazz listener type to fetch.
@@ -632,4 +634,6 @@ public class Basic extends ApplicationAdapter {
 
         }
     }
+
+    //endregion
 }

@@ -38,7 +38,7 @@ public class MinkowskiSum {
         direction.scl(-1);
         Vector2 point2 = c2.getFarthestPoint(direction, t2);
         direction.scl(-1);
-        return new Vector2(point2.x - point1.x, point2.y - point2.y);
+        return new Vector2(point1.x - point2.x, point1.y - point2.y);
     }
 
     public final MinkowskiSumPoint getSupportPoints(Vector2 d) {
