@@ -55,7 +55,7 @@ public class Basic extends ApplicationAdapter {
         footSensor.setUserData(FOOT_SENSOR);
 
         player.addFixture(footSensor);
-        player.addFixture(new Rectangle(.5f,1));
+        player.addFixture(new Rectangle(1f,1), "PLAYER_BODY");
     }
 
     @Override
@@ -71,13 +71,13 @@ public class Basic extends ApplicationAdapter {
         ground.isStatic = true;
         ground.color = Color.GREEN;
         ground.tag = "GROUND";
-        ground.addFixture(new Rectangle(10, 1));
+        ground.addFixture(new Rectangle(10, 1), "GROUND");
         ground.setUserData(SOLID);
 
         Body wall = new Body();
         wall.isStatic = true;
         wall.tag = "WALL";
-        wall.addFixture(new Rectangle(1, 10));
+        wall.addFixture(new Rectangle(1, 10), "WALL");
         wall.setUserData(SOLID);
 
         Gdx.graphics.setTitle("BASIC EXAMPLE");
@@ -88,11 +88,10 @@ public class Basic extends ApplicationAdapter {
 
         //foot contact counter.
         listeners.add(new ContactAdapter() {
+
             @Override
             public void begin(Contact contact) {
-                logger.info("NEW CONTACT: {}", contact.getId());
-//                if(contact.getFixture1().isSensor() || contact.getFixture2().isSensor()) {
-//                }
+                logger.info("NEW CONTACT {}:{} {} {}", contact.id, contact.hashCode(), contact.getFixture1().tag, contact.getFixture2().tag);
                 if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
                     footCount++;
                 }
@@ -100,29 +99,13 @@ public class Basic extends ApplicationAdapter {
 
             @Override
             public void end(Contact contact) {
-                logger.info("CONTACT ENDED: {}", contact.getId());
+                logger.info("CONTACT ENDED {}:{} {} {}", contact.id, contact.hashCode(), contact.getFixture1().tag, contact.getFixture2().tag);
 
                 if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
                     footCount--;
                 }
             }
         });
-
-//        //player-solid kill velocity.
-//        listeners.add(new ContactAdapter() {
-//
-//
-//
-//            @Override
-//            public void begin(Contact contact) {
-//                playerSolidContact(contact);
-//            }
-//
-//            @Override
-//            public void persist(Contact contact) {
-////                playerSolidContact(contact);
-//            }
-//        });
     }
 
     @Override
@@ -217,6 +200,9 @@ public class Basic extends ApplicationAdapter {
 
         //Notify all listeners.
         contactManager.updateAndNotify(getListeners(ContactListener.class));
+
+        Gdx.graphics.setTitle(String.format("FPS: %s  |  Velocity: %s  |  Position: %s  |  Foot Count: %s",
+                Gdx.graphics.getFramesPerSecond(), player.getVelocity(), player.getPosition(), footCount));
     }
 
     private void handleBodies() {
@@ -256,6 +242,7 @@ public class Basic extends ApplicationAdapter {
                     Penetration penetration = new Penetration();
                      if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
 
+                         //ToDO: Goign to need to modify this so that sensors on any body will work.
                         if(!fixture1.isSensor() && !fixture2.isSensor()) { //Neither are sensors...
                             //BODY1 is always the dynamic shape.
                             //All of this logic could be moved to a handler.
@@ -269,8 +256,6 @@ public class Basic extends ApplicationAdapter {
                             if(penetration.normal.y != 0) {
                                 body1.velocity.y = 0;
                             }
-                        } else {
-                            logger.info("SENSORS!");
                         }
 
                         //Still need to notify if they are Sensors.
@@ -516,6 +501,28 @@ public class Basic extends ApplicationAdapter {
             contactQueue.add(contact);
         }
 
+        public void updateAndNotify2(List<ContactListener> listeners) {
+            int size = contactQueue.size();
+            int listenerSize = listeners != null ? listeners.size() : 0;
+
+            Map<Integer, Contact> newMap = this.contacts;
+            for(int i = 0; i < size; i++) {
+                Contact newContact = contactQueue.get(i);
+
+                Contact oldContact = null;
+                oldContact = contacts.remove(newContact.hashCode());
+
+                //If the old contact existed.
+                if(oldContact != null) {
+
+                }
+            }
+
+            //empty the queue when we are done.
+            contactQueue.clear();
+        }
+
+
         public void updateAndNotify(List<ContactListener> listeners) {
             int size = contactQueue.size();
             int listenerSize = listeners != null ? listeners.size() : 0;
@@ -543,10 +550,11 @@ public class Basic extends ApplicationAdapter {
                         listener.begin(newContact);
                     }
                 }
-
+                //Either create the new contact, or put it back into the contact map.
                 newMap.put(newContact.hashCode(), newContact);
             }
 
+            //If we still have any contacts left in the map these are the contacts that need to be removed.
             if(!contacts.isEmpty()) {
                 for(int i = 0; i < contacts.size(); i++) {
                     Iterator<Contact> ic = contacts.values().iterator();
@@ -562,6 +570,7 @@ public class Basic extends ApplicationAdapter {
                 }
             }
 
+            //Clear the contacts and set them equal to the new map.
             if(size > 0) {
                 contacts.clear();
                 contacts1 = this.contacts;
