@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
+import static java.util.Objects.hash;
 
 @SuppressWarnings("ALL")
 public class Basic extends ApplicationAdapter {
@@ -422,8 +423,11 @@ public class Basic extends ApplicationAdapter {
 
         @Override
         public int hashCode() {
-            int result = 17 + body1.hashCode() + fixture1.hashCode() + body2.hashCode() + fixture2.hashCode();
-            return result;
+            return hash(17,
+                    body1.hashCode(),
+                    fixture1.hashCode(),
+                    body2.hashCode(),
+                    fixture2.hashCode());
         }
 
         public Penetration getPenetration() {
@@ -556,17 +560,15 @@ public class Basic extends ApplicationAdapter {
 
             //If we still have any contacts left in the map these are the contacts that need to be removed.
             if(!contacts.isEmpty()) {
-                for(int i = 0; i < contacts.size(); i++) {
-                    Iterator<Contact> ic = contacts.values().iterator();
-                    while(ic.hasNext()) {
-                        Contact contact = ic.next();
+                Iterator<Contact> ic = contacts.values().iterator();
+                while(ic.hasNext()) {
+                    Contact contact = ic.next();
 
-                        for(int l = 0; l < listenerSize; l++) {
-                            ContactListener listener = listeners.get(l);
-                            listener.end(contact);
-                        }
-
+                    for(int l = 0; l < listenerSize; l++) {
+                        ContactListener listener = listeners.get(l);
+                        listener.end(contact);
                     }
+
                 }
             }
 
