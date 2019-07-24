@@ -111,6 +111,38 @@ public class Basic extends ApplicationAdapter {
                 }
             }
         });
+
+        listeners.add(new ContactListener() {
+            @Override
+            public void persist(Contact contact) {
+
+            }
+
+            @Override
+            public void begin(Contact contact) {
+                //If a player contacts a solid
+                if((contact.getBody1().getUserData() == PLAYER || contact.getBody1().getUserData() == PLAYER) && (contact.getBody1().getUserData() == SOLID || contact.getBody2().getUserData() == SOLID)) {
+
+                    //BODY1 is always the dynamic shape.
+                    //All of this logic could be moved to a handler.
+                    Vector2 translation = contact.getPenetration().normal.cpy().scl(-1).scl(contact.getPenetration().distance);
+                    contact.getBody1().translate(translation);
+
+                    if(contact.getPenetration().normal.x != 0) {
+                        contact.getBody1().velocity.x = 0;
+                    }
+
+                    if(contact.getPenetration().normal.y != 0) {
+                        contact.getBody1().velocity.y = 0;
+                    }
+                }
+            }
+
+            @Override
+            public void end(Contact contact) {
+
+            }
+        });
     }
 
     @Override
@@ -219,6 +251,12 @@ public class Basic extends ApplicationAdapter {
         }
     }
 
+    /**
+     * Iterate through all fixtures contained within the param against all other bodies, pairwise. Would be simpler
+     * if I used a broadphase collision handler first.
+     *
+     * @param body1 to check.
+     */
     private void checkFixtureCollisions(Body body1) {
         int size = bodies.size();
 
@@ -237,19 +275,7 @@ public class Basic extends ApplicationAdapter {
 
                     Penetration penetration = new Penetration();
                     if(gjk.detect(fixture1.getShape(), body1.getTransform(), fixture2.getShape(), body2.getTransform(), penetration)) {
-
-                        Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
-                        body1.translate(translation);
-
-                        if(penetration.normal.x != 0) {
-                            body1.velocity.x = 0;
-                        }
-
-                        if(penetration.normal.y != 0) {
-                            body1.velocity.y = 0;
-                        }
-
-                        contactManager.addContact(new Contact(body1, fixture1, body2, fixture2));
+                        contactManager.addContact(new Contact(body1, fixture1, body2, fixture2, penetration));
                     }
                 }
             }
@@ -385,14 +411,17 @@ public class Basic extends ApplicationAdapter {
         private final UUID id;
         private final Body body1, body2;
         private final Fixture fixture1, fixture2;
+        private final Penetration penetration;
+
         private final boolean isSensor;
 
-        private Contact(Body body1, Fixture fixture1, Body body2, Fixture fixture2) {
+        private Contact(Body body1, Fixture fixture1, Body body2, Fixture fixture2, Penetration penetration) {
             this.id = UUID.randomUUID();
             this.body1 = body1;
             this.body2 = body2;
             this.fixture1 = fixture1;
             this.fixture2 = fixture2;
+            this.penetration = penetration;
 
             isSensor = fixture1.isSensor() || fixture2.isSensor();
         }
@@ -412,6 +441,10 @@ public class Basic extends ApplicationAdapter {
             int result = 17 + body1.hashCode() + fixture1.hashCode() + body2.hashCode() + fixture2.hashCode();
             return result;
         }
+
+        public Penetration getPenetration() {
+            return penetration;
+        }
     }
 
     /**
@@ -421,7 +454,7 @@ public class Basic extends ApplicationAdapter {
     private class Fixture {
         private final UUID id;
         private final Convex shape;
-        private boolean sensor;
+        private boolean sensor = false;
         private Object userData;
         final String tag;
 
