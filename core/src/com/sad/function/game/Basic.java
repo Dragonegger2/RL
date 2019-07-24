@@ -86,11 +86,8 @@ public class Basic extends ApplicationAdapter {
         bodies.add(wall);
         bodies.add(player);
 
-        listeners.add(new ContactListener() {
-            @Override
-            public void persist(Contact contact) {
-            }
-
+        //foot contact counter.
+        listeners.add(new ContactAdapter() {
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT: {}", contact.getId());
@@ -112,14 +109,10 @@ public class Basic extends ApplicationAdapter {
             }
         });
 
-        listeners.add(new ContactListener() {
-            @Override
-            public void persist(Contact contact) {
+        //player-solid kill velocity.
+        listeners.add(new ContactAdapter() {
 
-            }
-
-            @Override
-            public void begin(Contact contact) {
+            public void playerSolidContact(Contact contact) {
                 //If a player contacts a solid
                 if((contact.getBody1().getUserData() == PLAYER || contact.getBody1().getUserData() == PLAYER) && (contact.getBody1().getUserData() == SOLID || contact.getBody2().getUserData() == SOLID)) {
 
@@ -139,8 +132,13 @@ public class Basic extends ApplicationAdapter {
             }
 
             @Override
-            public void end(Contact contact) {
+            public void begin(Contact contact) {
+                playerSolidContact(contact);
+            }
 
+            @Override
+            public void persist(Contact contact) {
+                playerSolidContact(contact);
             }
         });
     }
@@ -615,5 +613,23 @@ public class Basic extends ApplicationAdapter {
         void persist(Contact contact);
         void begin(Contact contact);
         void end(Contact contact);
+    }
+
+    public class ContactAdapter implements ContactListener {
+
+        @Override
+        public void persist(Contact contact) {
+
+        }
+
+        @Override
+        public void begin(Contact contact) {
+
+        }
+
+        @Override
+        public void end(Contact contact) {
+
+        }
     }
 }
