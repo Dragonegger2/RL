@@ -21,8 +21,8 @@ import java.util.List;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
-public class Basic extends ApplicationAdapter {
-    private static final Logger logger = LogManager.getLogger(Basic.class);
+public class Tower extends ApplicationAdapter {
+    private static final Logger logger = LogManager.getLogger(Tower.class);
     private Body player;
 
     private ShapeRenderer shapeRenderer;

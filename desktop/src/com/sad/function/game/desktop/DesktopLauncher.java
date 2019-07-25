@@ -16,6 +16,6 @@ public class DesktopLauncher {
 //		new LwjglApplication(new ShapeTest5(), config);
 //		new LwjglApplication(new Dyn4jTest(), config);
 //		new LwjglApplication(new MyWorldTest(), config);
-		new LwjglApplication(new Basic(), config);
+		new LwjglApplication(new Tower(), config);
 	}
 }
