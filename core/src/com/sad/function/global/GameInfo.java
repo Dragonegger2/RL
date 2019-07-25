@@ -1,5 +1,7 @@
 package com.sad.function.global;
 
+import com.sad.function.input.InputEventPool;
+
 public class GameInfo {
     public static final boolean DEBUG = true;
 
@@ -16,6 +18,7 @@ public class GameInfo {
     public static final float XVelocity = 2f;
 
     public static int FOOT_CONTACTS = 0;
+    public static InputEventPool inputEventPool;
 
     public enum FIXTURE_TYPE {
         FOOT
