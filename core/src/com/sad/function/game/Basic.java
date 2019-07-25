@@ -44,10 +44,9 @@ public class Basic extends ApplicationAdapter {
     private Object SOLID = new Object();
     private Object BULLET = new Object();
 
-
-    public Basic() {
-
-    }
+    private int jump = Input.Keys.SPACE;
+    private int left = Input.Keys.LEFT;
+    private int right = Input.Keys.RIGHT;
 
     @Override
     public void create() {
@@ -120,6 +119,7 @@ public class Basic extends ApplicationAdapter {
             }
         });
 
+        //Handle contact with bullets.
         listeners.add(new ContactAdapter() {
             @Override
             public void begin(Contact contact) {
