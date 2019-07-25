@@ -10,14 +10,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
-import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.detection.narrowphase.GJK;
-import com.sad.function.collision.shape.Convex;
 import com.sad.function.collision.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
@@ -62,23 +61,23 @@ public class Basic extends ApplicationAdapter {
         player.setStatic(false);
         player.setColor(Color.BLUE);
         player.setUserData(PLAYER);
-        Fixture footSensor = new Fixture(new Rectangle(.5f, 1f), "TEST");
+        Fixture footSensor = new Fixture(new Rectangle(.5f, 1f));
         footSensor.setSensor(true);
         footSensor.getShape().getCenter().set(0, -.5f); //Offset the fixture.
         footSensor.setUserData(FOOT_SENSOR);
 
         player.addFixture(footSensor);
-        player.addFixture(new Rectangle(1f,1), "PLAYER_BODY");
+        player.addFixture(new Rectangle(1f,1));
 
         Body ground = new Body();
         ground.setStatic(true);
         ground.setColor(Color.GREEN);
-        ground.addFixture(new Rectangle(10, 1), "GROUND");
+        ground.addFixture(new Rectangle(10, 1));
         ground.setUserData(SOLID);
 
         Body wall = new Body();
         wall.setStatic(true);
-        wall.addFixture(new Rectangle(1, 10), "WALL");
+        wall.addFixture(new Rectangle(1, 10));
         wall.setUserData(SOLID);
 
         Gdx.graphics.setTitle("BASIC EXAMPLE");
@@ -86,8 +85,10 @@ public class Basic extends ApplicationAdapter {
         Body bulletExample = new Body();
         bulletExample.setStatic(false);
         bulletExample.addFixture(new Rectangle(0.5f, 0.5f));
-        bulletExample.translate(3,1);
+        bulletExample.translate(10,1);
         bulletExample.setUserData(BULLET);
+        bulletExample.getVelocity().set(-1f, 0);
+        bulletExample.setGravityScale(0);
 
         bodies.add(bulletExample);
         bodies.add(ground);
@@ -209,8 +210,9 @@ public class Basic extends ApplicationAdapter {
         for (int i = 0; i < size; i++) {
             Body body = bodies.get(i);
             if (body.isStatic()) continue;
+            float gravityScale = body.getGravityScale();
 
-            body.getVelocity().add(gravity.cpy().scl(delta));
+            body.getVelocity().add(gravity.cpy().scl(delta).scl(gravityScale));
         }
 
         //endregion

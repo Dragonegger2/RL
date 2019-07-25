@@ -22,6 +22,7 @@ public class Body {
     private boolean isStatic = false;
     private String tag;
     private List<Fixture> fixtures;
+    private float gravityScale = 1.0f;
 
     private Object userData;
 
@@ -88,22 +89,33 @@ public class Body {
     }
 
     public Fixture addFixture(Convex convex) {
-        return addFixture(convex, "DEFAULT_TAG");
-    }
-
-    public Fixture addFixture(Convex convex, String fixtureTag) {
-        Fixture fixture = new Fixture(convex, fixtureTag);
+        Fixture fixture = new Fixture(convex);
         fixtures.add(fixture);
         return fixture;
     }
 
+    /**
+     * Remove the provided {@link Fixture} from this body.
+     * @param fixture to remove.
+     * @return if successfully removed the fixture.
+     */
     public boolean removeFixture(Fixture fixture) {
         return fixtures.remove(fixture);
     }
 
+    /**
+     * Remove the {@link Fixture} at a given index.
+     * @param index to remove {@link Fixture} from
+     * @return the removed {@link Fixture}.
+     */
     public Fixture removeFixture(int index) {
         return fixtures.remove(index);
     }
+
+    /**
+     * Remove all associated fixtures.
+     */
+    public void removeFixtures() { fixtures.clear(); }
 
     //endregion
 
@@ -128,4 +140,12 @@ public class Body {
     public Color getColor() { return this.color; }
 
     public UUID getId() { return id; }
+
+    public float getGravityScale() {
+        return gravityScale;
+    }
+
+    public void setGravityScale(float gravityScale) {
+        this.gravityScale = gravityScale;
+    }
 }

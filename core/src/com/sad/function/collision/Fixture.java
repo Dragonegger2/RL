@@ -14,14 +14,11 @@ public class Fixture {
     private final Convex shape;
     private boolean sensor = false;
     private Object userData;
-    final String tag;
+    private String tag;
 
     protected Filter filter;
 
     public Fixture(Convex shape) {
-        this(shape, "DEFAULT_TAG");
-    }
-    public Fixture(Convex shape, String tag) {
         this.shape = shape;
         this.id = UUID.randomUUID();
         this.sensor = false;
