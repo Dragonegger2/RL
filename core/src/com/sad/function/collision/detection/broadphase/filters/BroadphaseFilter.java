@@ -1,11 +1,12 @@
 package com.sad.function.collision.detection.broadphase.filters;
 
 import com.badlogic.gdx.math.collision.Ray;
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.AABB;
-import com.sad.function.collision.overlay.container.Fixture;
 
-public interface BroadphaseFilter<E extends Collidable<T>, T extends Fixture> {
-    boolean isAllowed(E collidable1, T fixture1, E collidable2, T fixture2);
-    boolean isAllowed(AABB aabb, E collidable, T fixture);
-    boolean isAllowed(Ray ray, float length, E collidable, T fixture);
+public interface BroadphaseFilter {
+    boolean isAllowed(Body collidable1, Fixture fixture1, Body collidable2, Fixture fixture2);
+    boolean isAllowed(AABB aabb, Body collidable, Fixture fixture);
+    boolean isAllowed(Ray ray, float length, Body collidable, Fixture fixture);
 }

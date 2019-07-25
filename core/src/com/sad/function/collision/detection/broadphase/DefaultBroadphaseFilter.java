@@ -1,12 +1,14 @@
 package com.sad.function.collision.detection.broadphase;
 
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 import com.sad.function.collision.filter.Filter;
 import com.sad.function.collision.detection.broadphase.filters.BroadphaseFilter;
 import com.sad.function.collision.detection.broadphase.filters.BroadphaseFilterAdapter;
 
-public class DefaultBroadphaseFilter<E extends Collidable<T>, T extends Fixture> extends BroadphaseFilterAdapter<E, T> implements BroadphaseFilter<E, T> {
+public class DefaultBroadphaseFilter extends BroadphaseFilterAdapter implements BroadphaseFilter {
     @Override
-    public boolean isAllowed(E body1, T bodyFixture1, E body2, T bodyFixture2) {
+    public boolean isAllowed(Body body1, Fixture bodyFixture1, Body body2, Fixture bodyFixture2) {
         Filter filter1 = bodyFixture1.getFilter();
         Filter filter2 = bodyFixture2.getFilter();
 

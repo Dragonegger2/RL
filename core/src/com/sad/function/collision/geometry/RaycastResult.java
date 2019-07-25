@@ -1,14 +1,15 @@
 package com.sad.function.collision.geometry;
 
-import com.sad.function.collision.overlay.container.Body;
-import com.sad.function.collision.overlay.container.BodyFixture;
+
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 
 public class RaycastResult implements Comparable<RaycastResult> {
     private Body body;
-    private BodyFixture fixture;
+    private Fixture fixture;
     private Raycast raycast;
 
-    public RaycastResult(Body body, BodyFixture fixture, Raycast raycast) {
+    public RaycastResult(Body body, Fixture fixture, Raycast raycast) {
         this.body = body;
         this.fixture = fixture;
         this.raycast = raycast;
@@ -27,11 +28,11 @@ public class RaycastResult implements Comparable<RaycastResult> {
         this.body = body;
     }
 
-    public BodyFixture getFixture() {
+    public Fixture getFixture() {
         return fixture;
     }
 
-    public void setFixture(BodyFixture fixture) {
+    public void setFixture(Fixture fixture) {
         this.fixture = fixture;
     }
 
