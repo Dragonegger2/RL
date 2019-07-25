@@ -108,7 +108,9 @@ public class Basic extends ApplicationAdapter {
             public void end(Contact contact) {
                 logger.info("CONTACT ENDED {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
 
-                if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
+                boolean footSensor = contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR;
+
+                if(footSensor) {
                     footCount--;
                 }
             }
@@ -306,71 +308,6 @@ public class Basic extends ApplicationAdapter {
         }
     }
 
-    public class AABBCD {
-        public boolean collides(Rectangle rect1, Rectangle rect2) {
-            return (rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x &&
-                    rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y);
-        }
-
-        public class Rectangle {
-            public float x;
-            public float y;
-            public float width;
-            public float height;
-        }
-    }
-
-    public class ClippingManifoldSolver {
-        public boolean getManifold(Penetration penetration, Convex convex1, Transform transform1, Convex convex2, Transform transform2, Manifold manifold) {
-            manifold.clear();
-
-            Vector2 n = penetration.normal;
-
-//            convex1.getFarthestFeature(n, transform1);
-
-
-            return false;
-        }
-    }
-
-    public class Manifold {
-        protected List<ManifoldPoint> points;
-        protected Vector2 normal;   //Penetration normal.
-
-        public Manifold() {
-            points = new ArrayList<>(2);
-        }
-
-        public Manifold(List<ManifoldPoint> points, Vector2 normal) {
-            this.points = points;
-            this.normal = normal;
-        }
-
-        public void clear() {
-            points.clear();
-            normal = null;
-        }
-
-        public List<ManifoldPoint> getPoints() { return this.points; }
-        public Vector2 getNormal() { return normal; }
-
-        public void setPoints(List<ManifoldPoint> points) { this.points = points; }
-        public void setNormal(Vector2 normal) { this.normal = normal; }
-    }
-    public class ManifoldPoint {
-        protected final UUID id;
-        private Vector2 point;
-        private float depth;
-
-        public ManifoldPoint(UUID id) {this.id = id;}
-        public ManifoldPoint(UUID id, Vector2 point, float depth) {
-            this.id = id;
-            this.point = point;
-        }
-
-    }
-
-    //region Listener Logic
     /**
      * Fetch all registered listeners to this world object that match the class type.
      * @param clazz listener type to fetch.
@@ -391,6 +328,4 @@ public class Basic extends ApplicationAdapter {
 
         return listeners;
     }
-
-    //endregion
 }

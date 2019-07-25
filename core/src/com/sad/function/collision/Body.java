@@ -71,9 +71,7 @@ public class Body {
         return isStatic;
     }
 
-    public void setStatic(boolean flag) {
-        isStatic = false;
-    }
+    public void setStatic(boolean flag) { isStatic = flag; }
 
     //region fixture handling.
 
