@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.sad.function.collision.overlay.data.Penetration;
-import com.sad.function.collision.overlay.data.Transform;
-import com.sad.function.collision.overlay.narrowphase.GJK;
-import com.sad.function.collision.overlay.shape.Convex;
-import com.sad.function.collision.overlay.shape.Rectangle;
+import com.sad.function.collision.data.Penetration;
+import com.sad.function.collision.data.Transform;
+import com.sad.function.collision.detection.narrowphase.GJK;
+import com.sad.function.collision.shape.Convex;
+import com.sad.function.collision.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
