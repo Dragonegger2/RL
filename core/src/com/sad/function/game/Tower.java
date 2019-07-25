@@ -1,5 +1,8 @@
 package com.sad.function.game;
 
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -7,25 +10,27 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.detection.narrowphase.GJK;
 import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.manager.LevelManager;
+import com.sad.function.manager.ResourceManager;
+import com.sad.function.system.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sad.function.global.GameInfo.GRAVITY;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
-public class Basic extends ApplicationAdapter {
-    private static final Logger logger = LogManager.getLogger(Basic.class);
+public class Tower extends ApplicationAdapter {
+    private static final Logger logger = LogManager.getLogger(Tower.class);
+
+    //Physics and Input System should be communicating. IE Input System is manipulating data in the Physics System.
     private Body player;
 
     private ShapeRenderer shapeRenderer;
@@ -53,15 +58,34 @@ public class Basic extends ApplicationAdapter {
 
     LevelManager levelManager;
 
+    private World gameWorld;
+    private ResourceManager resourceManager;
     @Override
     public void create() {
         gjk = new GJK();
 
+        resourceManager = new ResourceManager();
+        camera = new OrthographicCamera();
+
         //TODO Rewrite the LevelManager so that it only accecpts an Artemis World object.
+        //Don't really need a Level Manager any more.
+
+        WorldConfiguration towerWorldConfig = new WorldConfigurationBuilder()
+                .with(
+//                        new RenderingSystem(resourceManager, )
+                        new PlayerInputSystem(),
+                        new PhysicsSystem(null),
+                        new CameraSystem(camera),
+                        new AnimationSystem()
+                )
+                .build();
+
+        gameWorld = new World(towerWorldConfig);
+
+
 //        levelManager = new LevelManager();
         contactManager = new ContactManager();
         shapeRenderer = new ShapeRenderer();
-        camera = new OrthographicCamera();
 
         player = new Body();
 
