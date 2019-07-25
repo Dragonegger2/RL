@@ -16,16 +16,6 @@ public class Circle extends AbstractShape implements Convex, Shape {
     }
 
     /**
-     * A circle has no normals.
-     *
-     * @return an empty set.
-     */
-//    @Override
-    public Vector2[] getAxes(Transform t) {
-        return new Vector2[]{};
-    }
-
-    /**
      * Returns the radius of this circle.
      * @return float radius.
      */
@@ -33,11 +23,6 @@ public class Circle extends AbstractShape implements Convex, Shape {
         return radius;
     }
 
-    /**
-     * Retur
-     * @param center
-     * @return
-     */
     @Override
     public float getRadius(Vector2 center) {
         return this.radius + VUtils.distance(center, this.center);

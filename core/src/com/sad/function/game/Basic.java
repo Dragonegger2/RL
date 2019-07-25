@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sad.function.global.GameInfo.GRAVITY;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
@@ -39,6 +41,7 @@ public class Basic extends ApplicationAdapter {
     private int playerHealth = 100;
 
     private Object FOOT_SENSOR = new Object();
+    private Object ARM_SENSOR = new Object();
     private Object PLAYER = new Object();
     private Object SOLID = new Object();
     private Object BULLET = new Object();
@@ -66,6 +69,11 @@ public class Basic extends ApplicationAdapter {
         footSensor.getShape().getCenter().set(0, -.5f); //Offset the fixture.
         footSensor.setUserData(FOOT_SENSOR);
 
+        Fixture armSensor = new Fixture(new Rectangle(2, .9f));
+        armSensor.setSensor(true);
+        armSensor.setUserData(ARM_SENSOR);
+
+        player.addFixture(armSensor);
         player.addFixture(footSensor);
         player.addFixture(new Rectangle(1f,1));
 
@@ -77,7 +85,7 @@ public class Basic extends ApplicationAdapter {
 
         Body wall = new Body();
         wall.setStatic(true);
-        wall.addFixture(new Rectangle(1, 10));
+        wall.addFixture(new Rectangle(1, 100));
         wall.setUserData(SOLID);
 
         Gdx.graphics.setTitle("BASIC EXAMPLE");
@@ -100,8 +108,21 @@ public class Basic extends ApplicationAdapter {
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
+
                 if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
                     footCount++;
+                }
+
+                if(contact.getFixture1().getUserData() == ARM_SENSOR || contact.getFixture2().getUserData() == ARM_SENSOR) {
+                    //TODO Add a check for a SOLID.
+                    //Figure out which one is the player.
+                    Body playerBody = contact.getFixture1().getUserData() == ARM_SENSOR ? contact.getBody1() : contact.getBody2();
+                    //Limit the verticle velocity.
+
+                    //Always negative.
+                    playerBody.setGravityScale(0.5f);
+                    //TODO: Set gravity scale back to normal.
+
                 }
             }
 
