@@ -13,6 +13,7 @@ import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.detection.narrowphase.GJK;
 import com.sad.function.collision.shape.Rectangle;
+import com.sad.function.manager.LevelManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,10 +51,14 @@ public class Basic extends ApplicationAdapter {
     private int left = Input.Keys.LEFT;
     private int right = Input.Keys.RIGHT;
 
+    LevelManager levelManager;
+
     @Override
     public void create() {
         gjk = new GJK();
 
+        //TODO Rewrite the LevelManager so that it only accecpts an Artemis World object.
+//        levelManager = new LevelManager();
         contactManager = new ContactManager();
         shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
