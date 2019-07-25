@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class Body {
     private final UUID id;
-    Color color;
+    private Color color;
     private Transform transform;
     private Transform transform0;
     private Vector2 velocity;
@@ -80,6 +80,7 @@ public class Body {
     public List<Fixture> getFixtures() {
         return fixtures;
     }
+    public Fixture getFixture(int index) { return fixtures.get(index); }
     public int getFixtureCount() {
         return fixtures.size();
     }
@@ -127,4 +128,6 @@ public class Body {
     }
 
     public Color getColor() { return this.color; }
+
+    public UUID getId() { return id; }
 }

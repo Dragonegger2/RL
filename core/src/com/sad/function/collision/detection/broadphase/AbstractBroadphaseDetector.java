@@ -1,24 +1,25 @@
 package com.sad.function.collision.detection.broadphase;
 
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.AABB;
 import com.sad.function.collision.detection.broadphase.filters.BroadphaseFilter;
-import com.sad.function.collision.overlay.container.Fixture;
 
 import java.util.List;
 
 
-public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T extends Fixture> implements BroadphaseDetector<E,T> {
-    protected final BroadphaseFilter<E, T> defaultFilter = new DefaultBroadphaseFilter<>();
+public abstract class AbstractBroadphaseDetector implements BroadphaseDetector {
+    protected final BroadphaseFilter defaultFilter = new DefaultBroadphaseFilter();
 
     /**
-     * Add the provided {@link Collidable} to this implementation of a broadphase detector.
-     * @param collidable{@link Collidable} to add to this object.
+     * Add the provided {@link Body} to this implementation of a broadphase detector.
+     * @param collidable {@link Body} to add to this object.
      */
     @Override
-    public void add(E collidable) {
+    public void add(Body collidable) {
         int size = collidable.getFixtureCount();
         for(int i = 0; i < size; i++) {
-            T f = collidable.getFixture(i);
+            Fixture f = collidable.getFixtures().get(i);
             this.add(collidable, f);
         }
     }
@@ -28,10 +29,10 @@ public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T exte
      * @param collidable to retrieve fixtures from.
      */
     @Override
-    public void remove(E collidable) {
+    public void remove(Body collidable) {
         int size = collidable.getFixtureCount();
         for(int i = 0; i < size; i++) {
-            T fixture = collidable.getFixture(i);
+            Fixture fixture = collidable.getFixture(i);
             remove(collidable, fixture);
         }
     }
@@ -41,16 +42,16 @@ public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T exte
      * @param collidable to update.
      */
     @Override
-    public void update(E collidable) {
+    public void update(Body collidable) {
         int size = collidable.getFixtureCount();
         for(int i = 0; i < size; i++) {
-            T f = collidable.getFixture(i);
+            Fixture f = collidable.getFixture(i);
             update(collidable, f);
         }
     }
 
     @Override
-    public AABB getAABB(E collidable) {
+    public AABB getAABB(Body collidable) {
         int size = collidable.getFixtureCount();
         if (size == 0) return new AABB(0, 0, 0, 0);
         AABB union = this.getAABB(collidable, collidable.getFixture(0));
@@ -62,10 +63,10 @@ public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T exte
     }
 
     @Override
-    public boolean contains(E collidable) {
+    public boolean contains(Body collidable) {
         int size = collidable.getFixtureCount();
         for(int i = 0; i < size; i++) {
-            T f = collidable.getFixture(i);
+            Fixture f = collidable.getFixture(i);
             if(!contains(collidable,f)) {
                 return false;
             }
@@ -74,20 +75,20 @@ public abstract class AbstractBroadphaseDetector<E extends Collidable<T>, T exte
     }
 
     @Override
-    public List<BroadphasePair<E, T>> detect() {
+    public List<BroadphasePair> detect() {
         return detect(this.defaultFilter);
     }
 
-    public abstract void add(E collidable, T fixture);
-    public abstract boolean remove(E collidable, T fixture);
-    public abstract void update(E collidable, T fixture);
-    public abstract AABB getAABB(E collidable, T fixture);
-    public abstract boolean contains(E collidable, T fixture);
+    public abstract void add(Body collidable, Fixture fixture);
+    public abstract boolean remove(Body collidable, Fixture fixture);
+    public abstract void update(Body collidable, Fixture fixture);
+    public abstract AABB getAABB(Body collidable, Fixture fixture);
+    public abstract boolean contains(Body collidable, Fixture fixture);
 
     public abstract int size();
     public abstract void clear();
 
-    static int createKey(Collidable c1, Fixture fixture) {
+    static int createKey(Body c1, Fixture fixture) {
         int hash = 17;
         hash *= 31 + c1.getId().hashCode();
         hash *= 41 + fixture.getId().hashCode();

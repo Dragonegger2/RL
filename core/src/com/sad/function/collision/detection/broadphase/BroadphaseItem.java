@@ -1,21 +1,22 @@
 package com.sad.function.collision.detection.broadphase;
 
-import com.sad.function.collision.overlay.container.Fixture;
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 
-public class BroadphaseItem<E extends Collidable<T>, T extends Fixture> {
-    private final E collidable;
-    private final T fixture;
+public class BroadphaseItem {
+    private final Body collidable;
+    private final Fixture fixture;
 
-    public BroadphaseItem(E collidable, T fixture) {
+    public BroadphaseItem(Body collidable, Fixture fixture) {
         this.collidable = collidable;
         this.fixture = fixture;
     }
 
-    public E getCollidable() {
+    public Body getCollidable() {
         return collidable;
     }
 
-    public T getFixture() {
+    public Fixture getFixture() {
         return fixture;
     }
 }

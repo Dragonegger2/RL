@@ -1,17 +1,18 @@
 package com.sad.function.collision.detection.broadphase;
 
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.AABB;
 import com.sad.function.collision.detection.broadphase.filters.BroadphaseFilter;
-import com.sad.function.collision.overlay.container.Fixture;
 import com.sad.function.collision.data.Transform;
 import org.dyn4j.BinarySearchTree;
 import org.dyn4j.collision.Collisions;
 
 import java.util.*;
 
-public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBroadphaseDetector<E, T> implements BroadphaseDetector<E, T> {
-    BinarySearchTree<SapProxy<E, T>> tree;
-    Map<Integer, SapProxy<E, T>> map;
+public class Sap extends AbstractBroadphaseDetector implements BroadphaseDetector {
+    BinarySearchTree<SapProxy> tree;
+    Map<Integer, SapProxy> map;
     float expansion = 0;
 
     public Sap() {
@@ -24,9 +25,9 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public void add(E collidable, T fixture) {
+    public void add(Body collidable, Fixture fixture) {
         int key = createKey(collidable, fixture);
-        SapProxy<E, T> proxy = this.map.get(key);
+        SapProxy proxy = this.map.get(key);
         if (proxy == null) {
             this.add(key, collidable, fixture);
         } else {
@@ -34,13 +35,13 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
         }
     }
 
-    private void add(int key, E collidable, T fixture) {
+    private void add(int key, Body collidable, Fixture fixture) {
         Transform tx = collidable.getTransform();
         AABB aabb = fixture.getShape().createAABB(tx);
         // expand the aabb
         aabb.expand(this.expansion);
         // create a new node for the collidable
-        SapProxy<E, T> proxy = new SapProxy<E, T>(collidable, fixture, aabb);
+        SapProxy proxy = new SapProxy(collidable, fixture, aabb);
         // add the proxy to the map
         this.map.put(key, proxy);
         // insert the node into the tree
@@ -48,9 +49,9 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public boolean remove(E collidable, T fixture) {
+    public boolean remove(Body collidable, Fixture fixture) {
         int key = createKey(collidable, fixture);
-        SapProxy<E, T> proxy = map.remove(key);
+        SapProxy proxy = map.remove(key);
         if (proxy != null) {
             tree.remove(proxy);
             return true;
@@ -60,9 +61,9 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public void update(E collidable, T fixture) {
+    public void update(Body collidable, Fixture fixture) {
         int key = createKey(collidable, fixture);
-        SapProxy<E, T> proxy = this.map.get(key);
+        SapProxy proxy = this.map.get(key);
         if (proxy != null) {
             this.update(key, proxy, collidable, fixture);
         } else {
@@ -70,7 +71,7 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
         }
     }
 
-    private void update(int key, SapProxy<E, T> proxy, E collidable, T fixture) {
+    private void update(int key, SapProxy proxy, Body collidable, Fixture fixture) {
         Transform tx = collidable.getTransform();
         // create the new aabb
         AABB aabb = fixture.getShape().createAABB(tx);
@@ -90,9 +91,9 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public AABB getAABB(E collidable, T fixture) {
+    public AABB getAABB(Body collidable, Fixture fixture) {
         int key = createKey(collidable, fixture);
-        SapProxy<E, T> proxy = map.get(key);
+        SapProxy proxy = map.get(key);
         if (proxy != null) {
             return proxy.aabb;
         }
@@ -100,7 +101,7 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public boolean contains(E collidable, T fixture) {
+    public boolean contains(Body collidable, Fixture fixture) {
         int key = createKey(collidable, fixture);
         return map.containsKey(key);
     }
@@ -117,7 +118,7 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public List<BroadphasePair<E, T>> detect(BroadphaseFilter<E, T> filter) {
+    public List<BroadphasePair> detect(BroadphaseFilter filter) {
         // get the number of proxies
         int size = this.tree.size();
 
@@ -128,24 +129,25 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
         }
 
         // the estimated size of the pair list
-        int eSize = Collisions.getEstimatedCollisionPairs(size);
-        List<BroadphasePair<E, T>> pairs = new ArrayList<>(eSize);
+
+        int eSize = Collisions.getEstimatedCollisionPairs(size); //TODO: Remove this dependency at some point.
+        List<BroadphasePair> pairs = new ArrayList<>(eSize);
 
         // clear the tested flags
-        Iterator<SapProxy<E, T>> itp = this.tree.iterator();
+        Iterator<SapProxy> itp = this.tree.iterator();
         while (itp.hasNext()) {
-            SapProxy<E, T> p = itp.next();
+            SapProxy p = itp.next();
             p.tested = false;
         }
 
         // find all the possible pairs O(n*log(n))
-        Iterator<SapProxy<E, T>> ito = this.tree.iterator();
+        Iterator<SapProxy> ito = this.tree.iterator();
         while (ito.hasNext()) {
             // get the current proxy
-            SapProxy<E, T> current = ito.next();
-            Iterator<SapProxy<E, T>> iti = this.tree.tailIterator(current);
+            SapProxy current = ito.next();
+            Iterator<SapProxy> iti = this.tree.tailIterator(current);
             while (iti.hasNext()) {
-                SapProxy<E, T> test = iti.next();
+                SapProxy test = iti.next();
                 // dont compare objects against themselves
                 if (test.collidable == current.collidable) continue;
                 // dont compare object that have already been compared
@@ -155,7 +157,7 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
                 if (current.aabb.getMaxX() >= test.aabb.getMinX()) {
                     if (current.aabb.overlaps(test.aabb)) {
                         if (filter.isAllowed(current.collidable, current.fixture, test.collidable, test.fixture)) {
-                            pairs.add(new BroadphasePair<>(
+                            pairs.add(new BroadphasePair(
                                     current.collidable,
                                     current.fixture,
                                     test.collidable,
@@ -174,7 +176,7 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
     }
 
     @Override
-    public List<BroadphaseItem<E, T>> detect(AABB aabb, BroadphaseFilter<E, T> filter) {
+    public List<BroadphaseItem> detect(AABB aabb, BroadphaseFilter filter) {
         // get the size of the proxy list
         int size = this.tree.size();
 
@@ -184,19 +186,19 @@ public class Sap<E extends Collidable<T>, T extends Fixture> extends AbstractBro
             return Collections.emptyList();
         }
 
-        List<BroadphaseItem<E, T>> list = new ArrayList<BroadphaseItem<E, T>>(Collisions.getEstimatedCollisionsPerObject());
+        List<BroadphaseItem> list = new ArrayList<BroadphaseItem>(Collisions.getEstimatedCollisionsPerObject());
 
         // we must check all aabbs starting at the root
         // from which point the first aabb to not intersect
         // flags us to stop O(n)
-        Iterator<SapProxy<E, T>> it = this.tree.inOrderIterator();
+        Iterator<SapProxy> it = this.tree.inOrderIterator();
         while (it.hasNext()) {
-            SapProxy<E, T> proxy = it.next();
+            SapProxy proxy = it.next();
             // check for overlap
             if (proxy.aabb.getMaxX() > aabb.getMinX()) {
                 if (proxy.aabb.overlaps(aabb)) {
                     if (filter.isAllowed(aabb, proxy.collidable, proxy.fixture)) {
-                        list.add(new BroadphaseItem<E, T>(
+                        list.add(new BroadphaseItem(
                                 proxy.collidable,
                                 proxy.fixture));
                     }
