@@ -28,10 +28,8 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         this.normals = Geometry.getCounterClockwiseEdgeNormals(vertices);
     }
 
-    @Override
     public Vector2[] getVertices() { return this.vertices; }
 
-    @Override
     public Vector2[] getNormals() {
         return this.normals;
     }

@@ -13,7 +13,7 @@ public abstract class AbstractShape implements Shape {
     protected Vector2 center;
     protected float radius;
 
-    protected AbstractShape(float radius) {
+    public AbstractShape(float radius) {
         this(new Vector2(), radius);
     }
 
@@ -63,9 +63,6 @@ public abstract class AbstractShape implements Shape {
     public Projection project(Vector2 n) {
         return this.project(n, Transform.IDENTITY);
     }
-
-    public abstract Vector2[] getVertices();
-    public abstract Vector2[] getNormals();
 
     @Override
     public AABB createAABB() {
