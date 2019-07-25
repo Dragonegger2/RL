@@ -37,12 +37,26 @@ public class Basic extends ApplicationAdapter {
     private List<Listener> listeners = new ArrayList<>();
 
     private int footCount = 0;
+    private int playerHealth = 100;
 
     private Object FOOT_SENSOR = new Object();
     private Object PLAYER = new Object();
     private Object SOLID = new Object();
+    private Object BULLET = new Object();
+
 
     public Basic() {
+
+    }
+
+    @Override
+    public void create() {
+        gjk = new GJK();
+
+        contactManager = new ContactManager();
+        shapeRenderer = new ShapeRenderer();
+        camera = new OrthographicCamera();
+
         player = new Body();
 
         player.translate(2, 1.3112774f);
@@ -57,16 +71,6 @@ public class Basic extends ApplicationAdapter {
 
         player.addFixture(footSensor);
         player.addFixture(new Rectangle(1f,1), "PLAYER_BODY");
-    }
-
-    @Override
-    public void create() {
-        gjk = new GJK();
-
-        contactManager = new ContactManager();
-        shapeRenderer = new ShapeRenderer();
-        camera = new OrthographicCamera();
-
 
         Body ground = new Body();
         ground.isStatic = true;
@@ -83,6 +87,14 @@ public class Basic extends ApplicationAdapter {
 
         Gdx.graphics.setTitle("BASIC EXAMPLE");
 
+        Body bulletExample = new Body();
+        bulletExample.isStatic = false;
+        bulletExample.tag = "BULLET";
+        bulletExample.addFixture(new Rectangle(0.5f, 0.5f));
+        bulletExample.translate(3,1);
+        bulletExample.setUserData(BULLET);
+
+        bodies.add(bulletExample);
         bodies.add(ground);
         bodies.add(wall);
         bodies.add(player);
@@ -104,6 +116,25 @@ public class Basic extends ApplicationAdapter {
 
                 if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
                     footCount--;
+                }
+            }
+        });
+
+        listeners.add(new ContactAdapter() {
+            @Override
+            public void begin(Contact contact) {
+                Object body1UserData = contact.getBody1().getUserData();
+                Object body2UserData = contact.getBody2().getUserData();
+
+                if((contact.getBody1().getUserData() == PLAYER || contact.getBody2().getUserData() == PLAYER) && (contact.getBody1().getUserData() == BULLET || contact.getBody2().getUserData() == BULLET)) {
+                    //Delete the bullet, and decrement player health.
+                    Body bullet = body1UserData == BULLET ? contact.getBody1() : contact.getBody2();
+
+                    if(bodies.remove(bullet)) {
+                        playerHealth -= 10;
+                    } else {
+                        logger.error("Unable to remove the bullet from the bodies list.");
+                    }
                 }
             }
         });
@@ -176,7 +207,7 @@ public class Basic extends ApplicationAdapter {
         }
         //endregion
 
-        //add gravity.
+        //region add gravity.
         int size = bodies.size();
         for (int i = 0; i < size; i++) {
             Body body = bodies.get(i);
@@ -184,6 +215,8 @@ public class Basic extends ApplicationAdapter {
 
             body.getVelocity().add(gravity.cpy().scl(delta));
         }
+
+        //endregion
 
         int NUMBER_OF_STEPS = 1;
         float timestep = delta / NUMBER_OF_STEPS;
@@ -202,8 +235,8 @@ public class Basic extends ApplicationAdapter {
         //Notify all listeners.
         contactManager.updateAndNotify(getListeners(ContactListener.class));
 
-        Gdx.graphics.setTitle(String.format("FPS: %s  |  Velocity: %s  |  Position: %s  |  Foot Count: %s",
-                Gdx.graphics.getFramesPerSecond(), player.getVelocity(), player.getPosition(), footCount));
+        Gdx.graphics.setTitle(String.format("FPS: %s  |  Velocity: %s  |  Position: %s  |  Foot Count: %s  |  Player Health: %s",
+                Gdx.graphics.getFramesPerSecond(), player.getVelocity(), player.getPosition(), footCount, playerHealth));
     }
 
     private void handleBodies() {
@@ -505,28 +538,6 @@ public class Basic extends ApplicationAdapter {
             contactQueue.add(contact);
         }
 
-        public void updateAndNotify2(List<ContactListener> listeners) {
-            int size = contactQueue.size();
-            int listenerSize = listeners != null ? listeners.size() : 0;
-
-            Map<Integer, Contact> newMap = this.contacts;
-            for(int i = 0; i < size; i++) {
-                Contact newContact = contactQueue.get(i);
-
-                Contact oldContact = null;
-                oldContact = contacts.remove(newContact.hashCode());
-
-                //If the old contact existed.
-                if(oldContact != null) {
-
-                }
-            }
-
-            //empty the queue when we are done.
-            contactQueue.clear();
-        }
-
-
         public void updateAndNotify(List<ContactListener> listeners) {
             int size = contactQueue.size();
             int listenerSize = listeners != null ? listeners.size() : 0;
@@ -597,6 +608,56 @@ public class Basic extends ApplicationAdapter {
             public float width;
             public float height;
         }
+    }
+
+    public class ClippingManifoldSolver {
+        public boolean getManifold(Penetration penetration, Convex convex1, Transform transform1, Convex convex2, Transform transform2, Manifold manifold) {
+            manifold.clear();
+
+            Vector2 n = penetration.normal;
+
+//            convex1.getFarthestFeature(n, transform1);
+
+
+            return false;
+        }
+    }
+
+    public class Manifold {
+        protected List<ManifoldPoint> points;
+        protected Vector2 normal;   //Penetration normal.
+
+        public Manifold() {
+            points = new ArrayList<>(2);
+        }
+
+        public Manifold(List<ManifoldPoint> points, Vector2 normal) {
+            this.points = points;
+            this.normal = normal;
+        }
+
+        public void clear() {
+            points.clear();
+            normal = null;
+        }
+
+        public List<ManifoldPoint> getPoints() { return this.points; }
+        public Vector2 getNormal() { return normal; }
+
+        public void setPoints(List<ManifoldPoint> points) { this.points = points; }
+        public void setNormal(Vector2 normal) { this.normal = normal; }
+    }
+    public class ManifoldPoint {
+        protected final UUID id;
+        private Vector2 point;
+        private float depth;
+
+        public ManifoldPoint(UUID id) {this.id = id;}
+        public ManifoldPoint(UUID id, Vector2 point, float depth) {
+            this.id = id;
+            this.point = point;
+        }
+
     }
 
     //region Listener Logic

@@ -7,6 +7,7 @@ import com.sad.function.collision.overlay.data.AABB;
 import com.sad.function.collision.overlay.data.Projection;
 import com.sad.function.collision.overlay.data.Transform;
 import com.sad.function.collision.overlay.geometry.Mass;
+import org.dyn4j.geometry.EdgeFeature;
 
 /**
  * All axis are stored in local coordinates.
@@ -168,6 +169,35 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         // transform the point into world space and return
         return transform.getTransformed(this.vertices[index]);
     }
+
+//    public EdgeFeature getFarthestFeature(Vector2 vector, Transform transform) {
+//        Vector2 localn = transform.getInverseTransformedR(vector);
+//        Vector2 maximum = new Vector2();
+//        float max = -Float.MAX_VALUE;
+//
+//        int index = 0;
+//        int count = vertices.length;
+//
+//        for(int i = 0; i < count; i++) {
+//            Vector2 v = vertices[i];
+//            float projection = localn.dot(v);
+//
+//            if(projection > max) {
+//                maximum.set(v);
+//                max = projection;
+//
+//                index = i;
+//            }
+//        }
+//
+//        //Find the most perpendicular edge.
+//        int l = index + 1 == count ? 0 : index + 1;
+//        int r = index - 1 < 0 ? count - 1 : index - 1;
+//        Vector2 leftN = normals[index == 0 ? count - 1 : index - 1];
+//        Vector2 rightN = normals[index];
+//
+//        transform.transform(maximum);
+//    }
 
     @Override
     public AABB createAABB(Transform transform) {

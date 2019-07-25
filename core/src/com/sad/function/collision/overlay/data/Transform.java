@@ -9,6 +9,11 @@ public class Transform {
     public float cost = 1.0f;
     public float sint = 0.0f;
 
+    private float m00 = 1.0f;
+    private float m01 = 0.0f;
+    private float m10 = 0.0f;
+    private float m11 = 1.0f;
+
     public Transform() {
     }
 
@@ -195,5 +200,13 @@ public class Transform {
         result.sint = (float)Math.sin(a);
         result.x   = x;
         result.y   = y;
+    }
+
+    public void transform(Vector2 vector) {
+        float x = vector.x;
+        float y = vector.y;
+
+        vector.x = m00 * x + this.m01 * y + this.x;
+        vector.y = m10 * x + this.m11 * y + this.y;
     }
 }
