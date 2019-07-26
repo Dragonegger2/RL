@@ -7,7 +7,7 @@ import java.util.UUID;
 
 /**
  * Represents a shape.
- * Has it's own UserData object, Transform (in local space), and most importantly a Convex shape.
+ * Has it's own UserData object, TransformComponent (in local space), and most importantly a Convex shape.
  */
 public class Fixture {
     private final UUID id;

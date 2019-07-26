@@ -1,5 +1,8 @@
 package com.sad.function.game;
 
+import com.artemis.Archetype;
+import com.artemis.ArchetypeBuilder;
+import com.artemis.World;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -10,8 +13,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
+import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.detection.narrowphase.GJK;
 import com.sad.function.collision.shape.Rectangle;
+import com.sad.function.components.PhysicsComponent;
+import com.sad.function.components.TransformComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,8 +54,16 @@ public class Tower extends ApplicationAdapter {
     private int left = Input.Keys.LEFT;
     private int right = Input.Keys.RIGHT;
 
+
+    Archetype playerArchetype;
+    World gameWorld;
+
     @Override
     public void create() {
+        playerArchetype = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsComponent.class)
+                .build(gameWorld);
         gjk = new GJK();
 
         contactManager = new ContactManager();

@@ -14,5 +14,5 @@ public interface Convex extends Shape {
 
     Vector2 getFarthestPoint(Vector2 vector, Transform transform);
 
-//    EdgeFeature getFarthestFeature(Vector2 vector, Transform transform);
+//    EdgeFeature getFarthestFeature(Vector2 vector, TransformComponent transform);
 }

@@ -167,7 +167,7 @@ public class Polygon extends AbstractShape implements Convex, Shape {
         return transform.getTransformed(this.vertices[index]);
     }
 
-//    public EdgeFeature getFarthestFeature(Vector2 vector, Transform transform) {
+//    public EdgeFeature getFarthestFeature(Vector2 vector, TransformComponent transform) {
 //        Vector2 localn = transform.getInverseTransformedR(vector);
 //        Vector2 maximum = new Vector2();
 //        float max = -Float.MAX_VALUE;
