@@ -7,6 +7,6 @@ import com.sad.function.collision.Body;
 /**
  * Component used in the {@link PhysicsSystem} to calculate collisions.
  */
-public class PhysicsComponent extends Component {
+public class PhysicsBody extends Component {
     public Body body;
 }

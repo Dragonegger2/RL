@@ -8,15 +8,12 @@ public class Transform {
     public float y = 0;
     public float cost = 1.0f;
     public float sint = 0.0f;
-
     private float m00 = 1.0f;
     private float m01 = 0.0f;
     private float m10 = 0.0f;
     private float m11 = 1.0f;
-
     public Transform() {
     }
-
     public Transform(float x, float y) {
         this.x = x;
         this.y = y;
@@ -25,6 +22,14 @@ public class Transform {
     public Transform(Vector2 xy) {
         this.x = xy.x;
         this.y = xy.y;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public Vector2 getTransformed(Vector2 v) {
@@ -96,7 +101,7 @@ public class Transform {
     }
 
     private float getRotation() {
-        return (float)Math.atan2(sint, cost);
+        return (float) Math.atan2(sint, cost);
     }
 
     public void lerp(Vector2 dp, float da, float alpha, Transform result) {
@@ -113,8 +118,8 @@ public class Transform {
     }
 
     private void rotateOnly(float theta) {
-        float cos = (float)Math.cos(theta);
-        float sin = (float)Math.sin(theta);
+        float cos = (float) Math.cos(theta);
+        float sin = (float) Math.sin(theta);
 
         float cost = cos * this.cost - sin * this.sint;
         float sint = sin * this.cost + cos * this.sint;
@@ -125,26 +130,26 @@ public class Transform {
     }
 
     public void rotate(float theta) {
-        float cos = (float)Math.cos(theta);
-        float sin = (float)Math.sin(theta);
+        float cos = (float) Math.cos(theta);
+        float sin = (float) Math.sin(theta);
 
         // perform an optimized version of matrix multiplication
         float cost = cos * this.cost - sin * this.sint;
         float sint = sin * this.cost + cos * this.sint;
-        float x   = cos * this.x - sin * this.y;
-        float y   = sin * this.x + cos * this.y;
+        float x = cos * this.x - sin * this.y;
+        float y = sin * this.x + cos * this.y;
 
         // set the new values
         this.cost = cost;
         this.sint = sint;
-        this.x   = x;
-        this.y   = y;
+        this.x = x;
+        this.y = y;
     }
 
     public void rotate(float theta, float x, float y) {
         // pre-compute cos/sin of the given angle
-        float cos = (float)Math.cos(theta);
-        float sin = (float)Math.sin(theta);
+        float cos = (float) Math.cos(theta);
+        float sin = (float) Math.sin(theta);
 
         // perform an optimized version of the matrix multiplication:
         // M(new) = inverse(T) * R * T * M(old)
@@ -181,8 +186,8 @@ public class Transform {
         // are two possible rotations depending on the
         // direction, we always choose the smaller
         float diff = re - rs;
-        if (diff < -Math.PI) diff += Math.PI*2;
-        if (diff > Math.PI) diff -= Math.PI*2;
+        if (diff < -Math.PI) diff += Math.PI * 2;
+        if (diff > Math.PI) diff -= Math.PI * 2;
         // interpolate
         // its ok if this method produces an angle
         // outside the range of -pi < theta < pi
@@ -196,10 +201,10 @@ public class Transform {
         // result.rotate(a);
         // result.translate(x, y);
 
-        result.cost = (float)Math.cos(a);
-        result.sint = (float)Math.sin(a);
-        result.x   = x;
-        result.y   = y;
+        result.cost = (float) Math.cos(a);
+        result.sint = (float) Math.sin(a);
+        result.x = x;
+        result.y = y;
     }
 
     public void transform(Vector2 vector) {

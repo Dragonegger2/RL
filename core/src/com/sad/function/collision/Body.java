@@ -16,8 +16,6 @@ import java.util.UUID;
 public class Body {
     private final UUID id;
     private Color color;
-    private Transform transform;
-    private Transform transform0;
     private Vector2 velocity;
     private boolean isStatic = false;
     private String tag;
@@ -27,41 +25,12 @@ public class Body {
     private Object userData;
 
     public Body() {
-        transform = new Transform();
         velocity = new Vector2();
         color = Color.RED;
         tag = "UNSET";
 
         fixtures = new ArrayList<>(1);
         id = UUID.randomUUID();
-    }
-
-    public Transform getInitialTransform() {
-        return transform0;
-    }
-
-    public Transform getTransform() {
-        return transform;
-    }
-
-    public void translate(Vector2 t) {
-        translate(t.x, t.y);
-    }
-
-    public void translate(float x, float y) {
-        transform.translate(x, y);
-    }
-
-    public Vector2 getPosition() {
-        return new Vector2(transform.x, transform.y);
-    }
-
-    public float getX() {
-        return transform.x;
-    }
-
-    public float getY() {
-        return transform.y;
     }
 
     public Vector2 getVelocity() {
@@ -147,5 +116,13 @@ public class Body {
 
     public void setGravityScale(float gravityScale) {
         this.gravityScale = gravityScale;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }
