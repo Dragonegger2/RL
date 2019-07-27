@@ -24,11 +24,10 @@ public class GameInfo {
     public static float GRAVITY = 9.8f;
     public static float MAX_FALL_SPEED = 15f;
 
-    public static final int VELOCITY_CONSTRAINT_SOLVER_TERATIONS = 6;
-    public static final int POSITION_CONSTRAINT_SOLVER_TERATIONS = 8;
-
     public static final float DEFAULT_SLEEP_ANGULAR_VELOCITY = (float)Math.toRadians(2.0);
     public static final float DEFAULT_SLEEP_ANGULAR_VELOCITY_SQUARED = DEFAULT_SLEEP_ANGULAR_VELOCITY * DEFAULT_SLEEP_ANGULAR_VELOCITY;
 
     public static final float DEFAULT_STEP_FREQUENCY = 1.0f / 60.0f;
+
+    public static final float MAX_HORIZONTAL_VELOCITY = 2f;
 }

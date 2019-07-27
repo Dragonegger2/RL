@@ -14,6 +14,7 @@ import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.components.GravityAffected;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
+import com.sad.function.global.GameInfo;
 import com.sad.function.systems.CollisionBodyRenderingSystem;
 import com.sad.function.systems.PhysicsSystem;
 import com.sad.function.systems.SpriteRenderingSystem;
@@ -29,9 +30,6 @@ public class Tower extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private ContactManager contactManager;
-
-    private Vector2 gravity = new Vector2(0, -9.8f);
-
 
     private int footCount = 0;
     private int playerHealth = 100;
@@ -271,11 +269,11 @@ public class Tower extends ApplicationAdapter {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.getVelocity().x > -5f) {
-            player.getVelocity().x -= 1f;
+            player.getVelocity().x -= GameInfo.MAX_HORIZONTAL_VELOCITY;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.getVelocity().x < 5f) {
-            player.getVelocity().x += 1f;
+            player.getVelocity().x += GameInfo.MAX_HORIZONTAL_VELOCITY;
         }
 
         if (!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
