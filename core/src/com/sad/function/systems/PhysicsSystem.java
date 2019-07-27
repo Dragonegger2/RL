@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.detection.narrowphase.GJK;
+import com.sad.function.components.GravityAffected;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 
@@ -18,42 +19,31 @@ import java.util.List;
 public class PhysicsSystem extends BaseEntitySystem {
     private static final int PHYSIC_SUB_STEPS = 10; //TODO Make configurable.
 
-    private final Vector2 gravity = new Vector2(0, -9.8f);
+    private final Vector2 gravity = new Vector2(0, -20.0f);
 
     private final ContactManager contactManager;
-
+    protected ComponentMapper<GravityAffected> mGravityAffected;
     private ComponentMapper<PhysicsBody> mPhysics;
     private ComponentMapper<TransformComponent> mTransform;
-
     private GJK gjk;
-    private IntBag registeredBodies;
     private List<Listener> listeners = new ArrayList<>();
 
     public PhysicsSystem() {
         gjk = new GJK();
         contactManager = new ContactManager();
-        registeredBodies = new IntBag();
-    }
-
-    @Override
-    public void inserted(int entity) {
-        registeredBodies.add(entity);
-    }
-
-    @Override
-    public void removed(int entity) {
-        registeredBodies.remove(entity);
     }
 
     @Override
     protected void processSystem() {
-        int[] ids = registeredBodies.getData();
+        applyGravity();
 
         //apply velocity.
+        IntBag actives = subscription.getEntities();
         float splitStep = world.delta / PHYSIC_SUB_STEPS;
         for (int i = 0; i < PHYSIC_SUB_STEPS; i++) {
             //Apply velocity.
-            for (int entity : ids) {
+            for (int j = 0; j < actives.size(); j++) {
+                int entity = actives.get(j);
                 Body body = mPhysics.create(entity).body;
 
                 if (body.isStatic()) continue;
@@ -68,9 +58,26 @@ public class PhysicsSystem extends BaseEntitySystem {
         contactManager.updateAndNotify(getListeners(ContactListener.class));
     }
 
+    private void applyGravity() {
+        IntBag actives = subscription.getEntities();
+        for (int i = 0; i < actives.size(); i++) {
+            int entity = actives.get(i);
+            //TODO For some reason the entity bag has dozens of 0's.
+            Body body = mPhysics.create(entity).body;
+
+            if (mGravityAffected.has(entity)) {
+                GravityAffected gravityAffected = mGravityAffected.create(entity);
+                body.getVelocity().add(gravity.cpy()
+                        .scl(gravityAffected.gravityScale)
+                         .scl(world.getDelta()));
+            }
+        }
+    }
+
     private void handleBodies() {
-        int[] ids = registeredBodies.getData();
-        for (int entity : ids) {
+        IntBag actives = subscription.getEntities();
+        for (int i = 0; i < actives.size(); i++) {
+            int entity = actives.get(i);
             Body body = mPhysics.create(entity).body;
 
             if (body.isStatic()) continue;
@@ -80,9 +87,10 @@ public class PhysicsSystem extends BaseEntitySystem {
     }
 
     private void checkFixtureCollisions(Body body1, int body1ID) {
-        int[] ids = registeredBodies.getData();
+        IntBag actives = subscription.getEntities();
 
-        for (int entity : ids) {
+        for (int i = 0; i < actives.size(); i++) {
+            int entity = actives.get(i);
             Body body2 = mPhysics.create(entity).body;
 
             if (body1 == body2) continue;
@@ -157,22 +165,28 @@ public class PhysicsSystem extends BaseEntitySystem {
 
     /**
      * Sets the current gravity of this {@link com.artemis.World}
-     *
+     * <p>
      * Default is (0, -9.8f).
      *
      * @param x value of gravity.
      * @param y value of gravity.
      */
-    public void setGravity(float x, float y) { gravity.set(x, y); }
+    public void setGravity(float x, float y) {
+        gravity.set(x, y);
+    }
+
+    public Vector2 getGravity() {
+        return gravity;
+    }
 
     /**
      * Sets the current gravity of this {@link com.artemis.World}
-     *
+     * <p>
      * Default is (0, -9.8f).
      *
      * @param gravity new value of gravity.
      */
-    public void setGravity(Vector2 gravity) { this.gravity.set(gravity); }
-
-    public Vector2 getGravity() { return gravity; }
+    public void setGravity(Vector2 gravity) {
+        this.gravity.set(gravity);
+    }
 }

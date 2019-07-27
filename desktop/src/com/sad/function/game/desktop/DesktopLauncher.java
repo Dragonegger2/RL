@@ -12,10 +12,6 @@ public class DesktopLauncher {
 		config.vSyncEnabled = false;
 //		config.foregroundFPS= 0;
 //		config.vSyncEnabled = false;
-//		new LwjglApplication(new ApocalypticGame(), config);
-//		new LwjglApplication(new ShapeTest5(), config);
-//		new LwjglApplication(new Dyn4jTest(), config);
-//		new LwjglApplication(new MyWorldTest(), config);
 		new LwjglApplication(new Tower(), config);
 	}
 }

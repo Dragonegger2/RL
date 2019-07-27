@@ -29,7 +29,6 @@ public class ContactManager {
             Contact newContact =  contactQueue.get(i);
             Contact oldContact = null;
 
-
             oldContact = contacts.remove(newContact.hashCode()); //keep removing them from contacts ensures that by the end of this we've only got those that are needed for removal at the end.
 
             //It's already an existing contact if it's not null.

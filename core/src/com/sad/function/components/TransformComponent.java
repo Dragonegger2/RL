@@ -10,4 +10,8 @@ import com.sad.function.collision.data.Transform;
  */
 public class TransformComponent extends Component {
     public Transform transform;
+
+    public TransformComponent() {
+        transform = new Transform();
+    }
 }

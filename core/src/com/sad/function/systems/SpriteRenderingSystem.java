@@ -24,7 +24,7 @@ public class SpriteRenderingSystem extends IteratingSystem {
 
         camera.update();
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(154, 206, 235, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if(GameInfo.RENDER_SPRITES) {

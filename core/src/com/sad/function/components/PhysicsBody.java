@@ -9,4 +9,8 @@ import com.sad.function.collision.Body;
  */
 public class PhysicsBody extends Component {
     public Body body;
+
+    public PhysicsBody() {
+        body = new Body();
+    }
 }

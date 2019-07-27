@@ -5,7 +5,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +15,6 @@ import com.sad.function.components.GravityAffected;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 import com.sad.function.systems.CollisionBodyRenderingSystem;
-import com.sad.function.systems.GravitySystem;
 import com.sad.function.systems.PhysicsSystem;
 import com.sad.function.systems.SpriteRenderingSystem;
 import org.apache.logging.log4j.LogManager;
@@ -62,45 +60,7 @@ public class Tower extends ApplicationAdapter {
     protected PhysicsSystem physicsSystem;
 
     private int playerID;
-
-    public Tower() {
-        physicsSystem = new PhysicsSystem();
-
-        towerGameWorldConfig = new WorldConfigurationBuilder()
-                .with(
-                        new SpriteRenderingSystem(camera),
-                        new CollisionBodyRenderingSystem(camera),
-                        new GravitySystem(),
-                        physicsSystem
-                )
-                .build();
-
-        gameWorld = new World(towerGameWorldConfig);
-
-        //region Archetypes Definitions.
-        aPlayer = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .add(GravityAffected.class)
-                .build(gameWorld);
-
-        aPlayer = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(gameWorld);
-
-
-        aSolid = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(gameWorld);
-        //endregion
-
-        //region Instantiate Component Mappers from Game World.
-        mTransformComponent = gameWorld.getMapper(TransformComponent.class);
-        mPhysicsComponent = gameWorld.getMapper(PhysicsBody.class);
-        //endregion
-    }
+    private float velocity = 10f;
 
     /**
      * Instantiate all components related to a player.
@@ -117,22 +77,22 @@ public class Tower extends ApplicationAdapter {
         body.setStatic(false);
         body.setColor(Color.BLUE);
         body.setUserData(PLAYER);
-
+        body.setUserData("PLAYER");
         Fixture footSensor = body.addFixture(new Rectangle(0.9f, 1f));
         footSensor.setSensor(true);
         footSensor.getShape().getCenter().set(0, -0.5f);
         footSensor.setUserData(FOOT_SENSOR);
 
-        Fixture armSensor = body.addFixture(new Rectangle(2, 0.9f));
-        armSensor.setSensor(true);
-        armSensor.setUserData(ARM_SENSOR);
-
+//
+//        Fixture armSensor = body.addFixture(new Rectangle(2, 0.9f));
+//        armSensor.setSensor(true);
+//        armSensor.setUserData(ARM_SENSOR);
         //Create the main collision body for the player
         body.addFixture(new Rectangle(1,1));
         //endregion
 
         TransformComponent cTransform = mTransformComponent.create(e);
-        cTransform = new TransformComponent();
+        cTransform.transform = new Transform();
 
         cTransform.transform.translate(2, 1.3112774f);
 
@@ -140,23 +100,30 @@ public class Tower extends ApplicationAdapter {
     }
 
     private int createSolidRectangle(float width, float height, float x, float y, Color color) {
-        int e = gameWorld.create(aSolid);
-        PhysicsBody cPhysics = mPhysicsComponent.create(e);
-
+        int solid = gameWorld.create(aSolid);
+        PhysicsBody cPhysics = mPhysicsComponent.create(solid);
+        cPhysics.body = new Body();
         Body body = cPhysics.body;
-        body = new Body();
 
         body.setStatic(true);
         body.addFixture(new Rectangle(width, height));
         body.setUserData(SOLID);
         body.setColor(color);
-        return e;
+        body.setTag("SOLID");
+
+        TransformComponent transformComponent = new TransformComponent();
+        transformComponent.transform = new Transform();
+        transformComponent.transform.translate(x, y);
+
+        return solid;
     }
 
     private int createBullet() {
         int e = gameWorld.create(aBullet);
 
-        Body b = mPhysicsComponent.create(e).body;
+        PhysicsBody cPhysics = mPhysicsComponent.create(e);
+        cPhysics.body = new Body();
+        Body b = cPhysics.body;
 
         b = new Body();
         b.setStatic(false);
@@ -164,6 +131,7 @@ public class Tower extends ApplicationAdapter {
         b.getVelocity().set(-1f, 0f);
         b.setUserData(BULLET);
         b.addFixture(new Rectangle(0.5f, 0.5f));
+        b.setTag("BULLET");
 
         Transform t = mTransformComponent.create(e).transform;
         t = new Transform();
@@ -175,23 +143,9 @@ public class Tower extends ApplicationAdapter {
 
     @Override
     public void create() {
-        contactManager = new ContactManager();
-        shapeRenderer = new ShapeRenderer();
         camera = new OrthographicCamera();
 
-        playerID = createPlayer();
-        logger.info("Created player: {}", playerID);
-
-        int ground = createSolidRectangle(10,1,0,0, Color.GREEN);
-        logger.info("Created a solid {}", ground);
-
-        int wall = createSolidRectangle(1, 100, 0,0, Color.GREEN);
-        logger.info("Created a solid {}", wall);
-
-        int bullet = createBullet();
-        logger.info("Created a bullet {}!", bullet);
-
-
+        physicsSystem = new PhysicsSystem();
         //foot contact counter.
         physicsSystem.addListener(new ContactAdapter() {
             @Override
@@ -202,17 +156,17 @@ public class Tower extends ApplicationAdapter {
                     footCount++;
                 }
 
-                if(contact.getFixture1().getUserData() == ARM_SENSOR || contact.getFixture2().getUserData() == ARM_SENSOR) {
-                    //TODO Add a check for a SOLID.
-                    //Figure out which one is the player.
-                    Body playerBody = contact.getFixture1().getUserData() == ARM_SENSOR ? contact.getBody1() : contact.getBody2();
-                    //Limit the verticle velocity.
-
-                    //Always negative.
-                    playerBody.setGravityScale(0.5f);
-                    //TODO: Set gravity scale back to normal.
-
-                }
+//                if(contact.getFixture1().getUserData() == ARM_SENSOR || contact.getFixture2().getUserData() == ARM_SENSOR) {
+////                    //TODO Add a check for a SOLID.
+////                    //Figure out which one is the player.
+////                    Body playerBody = contact.getFixture1().getUserData() == ARM_SENSOR ? contact.getBody1() : contact.getBody2();
+////                    //Limit the verticle velocity.
+////
+////                    //Always negative.
+////                    playerBody.setGravityScale(0.5f);
+////                    //TODO: Set gravity scale back to normal.
+////
+////                }
             }
 
             @Override
@@ -226,6 +180,55 @@ public class Tower extends ApplicationAdapter {
                 }
             }
         });
+
+        towerGameWorldConfig = new WorldConfigurationBuilder()
+                .with(
+                        new SpriteRenderingSystem(camera),
+                        new CollisionBodyRenderingSystem(camera),
+                        physicsSystem
+                )
+                .build();
+
+        gameWorld = new World(towerGameWorldConfig);
+
+        //region Archetypes Definitions.
+        aPlayer = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .add(GravityAffected.class)
+                .build(gameWorld);
+
+        aSolid = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(gameWorld);
+
+        aBullet = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(gameWorld);
+        //endregion
+
+        //region Instantiate Component Mappers from Game World.
+        mTransformComponent = gameWorld.getMapper(TransformComponent.class);
+        mPhysicsComponent = gameWorld.getMapper(PhysicsBody.class);
+        //endregion
+
+        contactManager = new ContactManager();
+
+        playerID = createPlayer();
+        logger.info("Created player: {}", playerID);
+
+        int ground = createSolidRectangle(10,1,0,0, Color.GREEN);
+         logger.info("Created a solid {}", ground);
+
+        int wall = createSolidRectangle(1, 100, 0,0, Color.GREEN);
+        logger.info("Created a solid {}", wall);
+
+        int bullet = createBullet();
+        logger.info("Created a bullet {}!", bullet);
+
+
 
         //Handle contact with bullets.
 //        physicsSystem.addListener(new ContactAdapter() {
@@ -260,6 +263,8 @@ public class Tower extends ApplicationAdapter {
 
         //endregion
 
+        float delta = Gdx.graphics.getDeltaTime();
+
         //region Input Handling
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
@@ -278,32 +283,32 @@ public class Tower extends ApplicationAdapter {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && footCount > 0) {
-            player.getVelocity().y = 10f;
+            player.getVelocity().y = velocity;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+            velocity += 5f;
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
+            velocity -= 5f;
         }
         //endregion
 
 
-        //TODO: Create a gravity system.
         //TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore,
         // it should continue passing along the component version.
         //TODO: Write a rendering system.
-        //TODO: Write a collision body rendering system for debugging the physics.
         //TODO: Handle player input via a system or something.
 
-        gameWorld.setDelta(1f/60f);
+        gameWorld.setDelta(delta);
         gameWorld.process();
 
-        Gdx.graphics.setTitle(String.format("FPS: %s", Gdx.graphics.getFramesPerSecond()));
+        Gdx.graphics.setTitle(String.format("|  FPS: %s |  Jump Speed: %s  |  Velocity: %s  |", Gdx.graphics.getFramesPerSecond(), velocity, gameWorld.getMapper(PhysicsBody.class).create(playerID).body.getVelocity()));
     }
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
-
-        //Try and set camera to point to the player. May cause jumping.
-//        if (player != null) {
-//            camera.position.x = (float) player.getX();
-//            camera.position.y = (float) player.getY();
-//        }
     }
 }
