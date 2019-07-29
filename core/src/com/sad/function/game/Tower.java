@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.ArchetypeDefinitions;
@@ -44,9 +46,7 @@ public class Tower extends ApplicationAdapter {
     private int left = Input.Keys.LEFT;
     private int right = Input.Keys.RIGHT;
 
-    private Archetype aPlayer;
-    private Archetype aSolid;
-    private Archetype aBullet;
+    public ArchetypeDefinitions archetypes;
 
     private World gameWorld;
 
@@ -60,13 +60,14 @@ public class Tower extends ApplicationAdapter {
     private int playerID;
     private float velocity = 28f;
 
+    //TODO: Create factory methods/system to create them.
     //region Entity Creation Methods
     /**
      * Instantiate all components related to a player.
      * @return the id for a new player.
      */
     private int createPlayer() {
-        int e = gameWorld.create(aPlayer);
+        int e = gameWorld.create(archetypes.aPlayer);
 
         //region Body Creation
         PhysicsBody cPhysics = mPhysicsComponent.create(e);
@@ -95,7 +96,7 @@ public class Tower extends ApplicationAdapter {
     }
 
     private int createSolidRectangle(float width, float height, float x, float y, Color color) {
-        int solid = gameWorld.create(aSolid);
+        int solid = gameWorld.create(archetypes.aSolid);
         PhysicsBody cPhysics = mPhysicsComponent.create(solid);
         cPhysics.body = new Body();
         Body body = cPhysics.body;
@@ -106,7 +107,7 @@ public class Tower extends ApplicationAdapter {
         body.setColor(color);
         body.setTag("SOLID");
 
-        TransformComponent transformComponent = new TransformComponent();
+        TransformComponent transformComponent = mTransformComponent.create(solid);
         transformComponent.transform = new Transform();
         transformComponent.transform.translate(x, y);
 
@@ -114,7 +115,7 @@ public class Tower extends ApplicationAdapter {
     }
 
     private int createBullet() {
-        int e = gameWorld.create(aBullet);
+        int e = gameWorld.create(archetypes.aBullet);
 
         PhysicsBody cPhysics = mPhysicsComponent.create(e);
         cPhysics.body = new Body();
@@ -147,7 +148,6 @@ public class Tower extends ApplicationAdapter {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         physicsSystem = new PhysicsSystem();
-
 
         //foot contact counter.
         physicsSystem.addListener(new ContactAdapter() {
@@ -188,15 +188,9 @@ public class Tower extends ApplicationAdapter {
                 )
                 .build();
 
+
         gameWorld = new World(towerGameWorldConfig);
-
-        //region Archetypes Definitions.
-        aPlayer = ArchetypeDefinitions.playerArchetype().build(gameWorld);
-
-        aSolid = ArchetypeDefinitions.solidArchetype().build(gameWorld);
-
-        aBullet = ArchetypeDefinitions.bulletARchetype().build(gameWorld);
-        //endregion
+        archetypes = new ArchetypeDefinitions(gameWorld);
 
         //region Instantiate Component Mappers from Game World to facilitate entity creation.
         mTransformComponent = gameWorld.getMapper(TransformComponent.class);
@@ -208,10 +202,13 @@ public class Tower extends ApplicationAdapter {
         logger.info("Created player: {}", playerID);
 
         int ground = createSolidRectangle(10,1,0,0, Color.GREEN);
+        mTransformComponent.create(ground).transform.translate(5f,0);
          logger.info("Created a solid {}", ground);
 
         int wall = createSolidRectangle(1, 100, 0,0, Color.GREEN);
         logger.info("Created a solid {}", wall);
+
+        int wall2 = createSolidRectangle(1 ,100, 10, 0, Color.GREEN);
 
         int bullet = createBullet();
         logger.info("Created a bullet {}!", bullet);
