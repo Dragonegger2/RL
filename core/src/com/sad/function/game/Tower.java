@@ -210,6 +210,11 @@ public class Tower extends ApplicationAdapter {
 
         int wall2 = createSolidRectangle(1 ,100, 10, 0, Color.GREEN);
 
+        //TODO: Remove velocity component from the {@link Body}
+        int s = createSolidRectangle(1, 0.5f, 3, 1f, Color.GREEN);
+        mPhysicsComponent.create(s).body.getVelocity().set(0, 0.25f);
+        mPhysicsComponent.create(s).body.setStatic(false);
+
         int bullet = createBullet();
         logger.info("Created a bullet {}!", bullet);
         //endregion

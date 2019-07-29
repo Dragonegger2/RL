@@ -40,7 +40,7 @@ public class CollisionBodyRenderingSystem extends IteratingSystem {
             Transform transform = mTransformComponent.create(entityId).transform;
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.setColor(Color.RED);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
 
             for (int j = 0; j < body.getFixtureCount(); j++) {
