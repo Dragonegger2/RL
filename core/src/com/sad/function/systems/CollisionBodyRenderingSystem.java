@@ -28,9 +28,9 @@ public class CollisionBodyRenderingSystem extends IteratingSystem {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
 
-    public CollisionBodyRenderingSystem(OrthographicCamera camera) {
+    public CollisionBodyRenderingSystem(OrthographicCamera camera, ShapeRenderer shapeRenderer) {
         this.camera = camera;
-        shapeRenderer = new ShapeRenderer();
+        this.shapeRenderer = shapeRenderer;
     }
 
     @Override

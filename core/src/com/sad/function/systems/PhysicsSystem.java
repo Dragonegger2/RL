@@ -19,7 +19,7 @@ import java.util.List;
 public class PhysicsSystem extends BaseEntitySystem {
     private static final int PHYSIC_SUB_STEPS = 10; //TODO Make configurable.
 
-    private final Vector2 gravity = new Vector2(0, -200.0f);
+    private final Vector2 gravity = new Vector2(0, -100.0f);
 
     private final ContactManager contactManager;
     protected ComponentMapper<GravityAffected> mGravityAffected;

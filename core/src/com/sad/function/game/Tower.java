@@ -6,8 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.ArchetypeDefinitions;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
@@ -28,6 +30,7 @@ public class Tower extends ApplicationAdapter {
     private static final Logger logger = LogManager.getLogger(Tower.class);
 
     private ShapeRenderer shapeRenderer;
+    private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
     private ContactManager contactManager;
 
@@ -58,8 +61,9 @@ public class Tower extends ApplicationAdapter {
     protected PhysicsSystem physicsSystem;
 
     private int playerID;
-    private float velocity = 10f;
+    private float velocity = 28f;
 
+    //region Entity Creation Methods
     /**
      * Instantiate all components related to a player.
      * @return the id for a new player.
@@ -139,11 +143,17 @@ public class Tower extends ApplicationAdapter {
         return e;
     }
 
+    //endregion
+
     @Override
     public void create() {
         camera = new OrthographicCamera();
-
+        contactManager = new ContactManager();
+        spriteBatch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
         physicsSystem = new PhysicsSystem();
+
+
         //foot contact counter.
         physicsSystem.addListener(new ContactAdapter() {
             @Override
@@ -181,8 +191,8 @@ public class Tower extends ApplicationAdapter {
 
         towerGameWorldConfig = new WorldConfigurationBuilder()
                 .with(
-                        new SpriteRenderingSystem(camera),
-                        new CollisionBodyRenderingSystem(camera),
+                        new SpriteRenderingSystem(camera, spriteBatch),
+                        new CollisionBodyRenderingSystem(camera, shapeRenderer),
                         physicsSystem
                 )
                 .build();
@@ -190,30 +200,19 @@ public class Tower extends ApplicationAdapter {
         gameWorld = new World(towerGameWorldConfig);
 
         //region Archetypes Definitions.
-        aPlayer = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .add(GravityAffected.class)
-                .build(gameWorld);
+        aPlayer = ArchetypeDefinitions.playerArchetype().build(gameWorld);
 
-        aSolid = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(gameWorld);
+        aSolid = ArchetypeDefinitions.solidArchetype().build(gameWorld);
 
-        aBullet = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(gameWorld);
+        aBullet = ArchetypeDefinitions.bulletARchetype().build(gameWorld);
         //endregion
 
-        //region Instantiate Component Mappers from Game World.
+        //region Instantiate Component Mappers from Game World to facilitate entity creation.
         mTransformComponent = gameWorld.getMapper(TransformComponent.class);
         mPhysicsComponent = gameWorld.getMapper(PhysicsBody.class);
         //endregion
 
-        contactManager = new ContactManager();
-
+        //region Create game objects.
         playerID = createPlayer();
         logger.info("Created player: {}", playerID);
 
@@ -225,8 +224,7 @@ public class Tower extends ApplicationAdapter {
 
         int bullet = createBullet();
         logger.info("Created a bullet {}!", bullet);
-
-
+        //endregion
 
         //Handle contact with bullets.
 //        physicsSystem.addListener(new ContactAdapter() {
@@ -308,5 +306,11 @@ public class Tower extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, VIRTUAL_HEIGHT * width / (float) height, VIRTUAL_HEIGHT);
+    }
+
+    @Override
+    public void dispose() {
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
     }
 }
