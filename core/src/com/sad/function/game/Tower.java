@@ -284,8 +284,7 @@ public class Tower extends ApplicationAdapter {
         //endregion
 
 
-        //TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore,
-        // it should continue passing along the component version.
+        //TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore, it should continue passing along the component version.
         //TODO: Write a rendering system.
         //TODO: Handle player input via a system or something.
 
