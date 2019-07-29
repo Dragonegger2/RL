@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.sad.function.ArchetypeDefinitions;
+import com.sad.function.EntityType;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
@@ -23,6 +25,7 @@ import com.sad.function.systems.SpriteRenderingSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static com.sad.function.EntityType.*;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
@@ -36,12 +39,6 @@ public class Tower extends ApplicationAdapter {
 
     private int footCount = 0;
     private int playerHealth = 100;
-
-    private Object FOOT_SENSOR = new Object();
-    private Object ARM_SENSOR = new Object();
-    private Object PLAYER = new Object();
-    private Object SOLID = new Object();
-    private Object BULLET = new Object();
 
     private int jump = Input.Keys.SPACE;
     private int left = Input.Keys.LEFT;
@@ -78,17 +75,13 @@ public class Tower extends ApplicationAdapter {
 
         body.setStatic(false);
         body.setColor(Color.BLUE);
-        body.setUserData(PLAYER);
+        body.setUserData(player);
         body.setUserData("PLAYER");
         Fixture footSensor = body.addFixture(new Rectangle(0.9f, 1f));
         footSensor.setSensor(true);
         footSensor.getShape().getCenter().set(0, -0.5f);
-        footSensor.setUserData(FOOT_SENSOR);
+        footSensor.setUserData(foot_sensor);
 
-//
-//        Fixture armSensor = body.addFixture(new Rectangle(2, 0.9f));
-//        armSensor.setSensor(true);
-//        armSensor.setUserData(ARM_SENSOR);
         //Create the main collision body for the player
         body.addFixture(new Rectangle(1,1));
         //endregion
@@ -109,7 +102,7 @@ public class Tower extends ApplicationAdapter {
 
         body.setStatic(true);
         body.addFixture(new Rectangle(width, height));
-        body.setUserData(SOLID);
+        body.setUserData(EntityType.solid);
         body.setColor(color);
         body.setTag("SOLID");
 
@@ -131,7 +124,7 @@ public class Tower extends ApplicationAdapter {
         b.setStatic(false);
         b.setGravityScale(0.0f);
         b.getVelocity().set(-1f, 0f);
-        b.setUserData(BULLET);
+        b.setUserData(bullet);
         b.addFixture(new Rectangle(0.5f, 0.5f));
         b.setTag("BULLET");
 
@@ -144,6 +137,8 @@ public class Tower extends ApplicationAdapter {
     }
 
     //endregion
+
+    private static final float TIME_STEP = 1f/60f;
 
     @Override
     public void create() {
@@ -160,30 +155,26 @@ public class Tower extends ApplicationAdapter {
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
 
-                if(contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR) {
+                Object fixture1UD = contact.getFixture1().getUserData();
+                Object fixture2UD = contact.getFixture2().getUserData();
+
+                if(fixture1UD == null && fixture2UD == null) return;
+
+                if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
                     footCount++;
                 }
-
-//                if(contact.getFixture1().getUserData() == ARM_SENSOR || contact.getFixture2().getUserData() == ARM_SENSOR) {
-////                    //TODO Add a check for a SOLID.
-////                    //Figure out which one is the player.
-////                    Body playerBody = contact.getFixture1().getUserData() == ARM_SENSOR ? contact.getBody1() : contact.getBody2();
-////                    //Limit the verticle velocity.
-////
-////                    //Always negative.
-////                    playerBody.setGravityScale(0.5f);
-////                    //TODO: Set gravity scale back to normal.
-////
-////                }
             }
 
             @Override
             public void end(Contact contact) {
                 logger.info("CONTACT ENDED {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
 
-                boolean footSensor = contact.getFixture1().getUserData() == FOOT_SENSOR || contact.getFixture2().getUserData() == FOOT_SENSOR;
+                Object fixture1UD = contact.getFixture1().getUserData();
+                Object fixture2UD = contact.getFixture2().getUserData();
 
-                if(footSensor) {
+                if(fixture1UD == null && fixture2UD == null) return;
+
+                if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
                     footCount--;
                 }
             }
@@ -250,16 +241,17 @@ public class Tower extends ApplicationAdapter {
 
     @Override
     public void render() {
+        //Calculate minimum timestep.
+        float delta = Math.min(Gdx.graphics.getDeltaTime(), TIME_STEP);
+
+        //region Render Loop
         Body player = mPhysicsComponent.create(playerID).body;
         Transform t = mTransformComponent.create(playerID).transform;
 
-        //region Render Loop
         camera.position.x = t.getX();
         camera.position.y = t.getY();
-
         //endregion
 
-        float delta = Gdx.graphics.getDeltaTime();
 
         //region Input Handling
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -297,10 +289,11 @@ public class Tower extends ApplicationAdapter {
         //TODO: Write a rendering system.
         //TODO: Handle player input via a system or something.
 
+
         gameWorld.setDelta(delta);
         gameWorld.process();
 
-        Gdx.graphics.setTitle(String.format("|  FPS: %s |  Jump Speed: %s  |  Velocity: %s  |", Gdx.graphics.getFramesPerSecond(), velocity, gameWorld.getMapper(PhysicsBody.class).create(playerID).body.getVelocity()));
+        Gdx.graphics.setTitle(String.format("|  FPS: %s |  Jump Speed: %s  |  Velocity: %s  |", Gdx.graphics.getFramesPerSecond(), velocity, mPhysicsComponent.create(playerID).body.getVelocity()));
     }
 
     @Override

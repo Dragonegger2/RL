@@ -36,8 +36,6 @@ public class CollisionBodyRenderingSystem extends IteratingSystem {
     @Override
     protected void process(int entityId) {
         if(GameInfo.RENDER_HITBOX_OUTLINES) {
-            //TODO Add an option to turn this off.
-
             Body body = mPhysicsBody.create(entityId).body;
             Transform transform = mTransformComponent.create(entityId).transform;
             shapeRenderer.setProjectionMatrix(camera.combined);
