@@ -97,7 +97,8 @@ public class PhysicsSystem extends BaseEntitySystem {
 
             int fc1 = body1.getFixtureCount();
             int fc2 = body2.getFixtureCount();
-
+            //I can try and use the Raycast method to pre-collect objects as a rough form of Broadphase?
+            //TODO Modifying this method is how I can prevent the object from stopping when it collides.
             for (int j = 0; j < fc1; j++) {
                 Fixture fixture1 = body1.getFixtures().get(j);
                 for (int k = 0; k < fc2; k++) {
@@ -107,21 +108,19 @@ public class PhysicsSystem extends BaseEntitySystem {
                     if (gjk.detect(fixture1.getShape(), mTransform.create(body1ID).transform,
                             fixture2.getShape(), mTransform.create(entity).transform, penetration)) {
 
-                        //TODO: Going to need to modify this so that sensors on any body will work.
-                        if (!fixture1.isSensor() && !fixture2.isSensor()) { //Neither are sensors...
-                            //BODY1 is always the dynamic shape.
-                            //All of this logic could be moved to a handler.
-                            Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
+                        //TODO: Going to need to modify this so that sensors on any body will work. It randomly stutters.
+                        //BODY1 is always the dynamic shape.
+                        //All of this logic could be moved to a handler.
+                        Vector2 translation = penetration.normal.cpy().scl(-1).scl(penetration.distance);
 
-                            mTransform.create(body1ID).transform.translate(translation);
+                        mTransform.create(body1ID).transform.translate(translation);
 
-                            if (penetration.normal.x != 0) {
-                                body1.getVelocity().x = 0;
-                            }
+                        if (penetration.normal.x != 0) {
+                            body1.getVelocity().x = 0;
+                        }
 
-                            if (penetration.normal.y != 0) {
-                                body1.getVelocity().y = 0;
-                            }
+                        if (penetration.normal.y != 0) {
+                            body1.getVelocity().y = 0;
                         }
 
                         //Still need to notify if they are Sensors.
@@ -163,18 +162,6 @@ public class PhysicsSystem extends BaseEntitySystem {
         return listeners;
     }
 
-    /**
-     * Sets the current gravity of this {@link com.artemis.World}
-     * <p>
-     * Default is (0, -9.8f).
-     *
-     * @param x value of gravity.
-     * @param y value of gravity.
-     */
-    public void setGravity(float x, float y) {
-        gravity.set(x, y);
-    }
-
     public Vector2 getGravity() {
         return gravity;
     }
@@ -188,5 +175,17 @@ public class PhysicsSystem extends BaseEntitySystem {
      */
     public void setGravity(Vector2 gravity) {
         this.gravity.set(gravity);
+    }
+
+    /**
+     * Sets the current gravity of this {@link com.artemis.World}
+     * <p>
+     * Default is (0, -9.8f).
+     *
+     * @param x value of gravity.
+     * @param y value of gravity.
+     */
+    public void setGravity(float x, float y) {
+        gravity.set(x, y);
     }
 }
