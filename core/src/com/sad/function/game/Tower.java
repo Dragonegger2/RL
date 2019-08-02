@@ -55,42 +55,6 @@ public class Tower extends ApplicationAdapter {
     private int playerID;
     private float velocity = 28f;
 
-    //TODO: Create factory methods/system to create them.
-    //region Entity Creation Methods
-    /**
-     * Instantiate all components related to a player.
-     * @return the id for a new player.
-     */
-    private int createPlayer() {
-        int e = gameWorld.create(ArchetypeDefinitions.aPlayer.build(gameWorld));
-
-        //region Body Creation
-        PhysicsBody cPhysics = mPhysicsComponent.create(e);
-
-        cPhysics.body = new Body();
-        Body body = cPhysics.body;
-
-        body.setStatic(false);
-        body.setColor(Color.BLUE);
-        body.setUserData(player);
-        body.setUserData("PLAYER");
-        Fixture footSensor = body.addFixture(new Rectangle(0.9f, 1f));
-        footSensor.setSensor(true);
-        footSensor.getShape().getCenter().set(0, -0.5f);
-        footSensor.setUserData(foot_sensor);
-
-        //Create the main collision body for the player
-        body.addFixture(new Rectangle(1,1));
-        //endregion
-
-        TransformComponent cTransform = mTransformComponent.create(e);
-        cTransform.transform = new Transform();
-
-        cTransform.transform.translate(2, 1.3112774f);
-
-        return e;
-    }
-
     //endregion
 
     @Override
@@ -162,7 +126,7 @@ public class Tower extends ApplicationAdapter {
         //endregion
 
         //region Create game objects.
-        playerID = createPlayer();
+        playerID = spawner.player(2, 1.3112774f);
         logger.info("Created player: {}", playerID);
 
 
@@ -198,12 +162,8 @@ public class Tower extends ApplicationAdapter {
         //Calculate minimum timestep.
         float delta = Math.min(Gdx.graphics.getDeltaTime(), GameInfo.DEFAULT_STEP_FREQUENCY);
 
-        //region Render Loop
-        Body player = mPhysicsComponent.create(playerID).body;
-        //endregion
-
-
         //region Input Handling
+        Body player = mPhysicsComponent.create(playerID).body;
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }

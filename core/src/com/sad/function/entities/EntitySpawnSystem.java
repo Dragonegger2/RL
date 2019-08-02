@@ -2,7 +2,9 @@ package com.sad.function.entities;
 
 import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.Color;
 import com.sad.function.collision.Body;
+import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.components.PhysicsBody;
@@ -10,7 +12,7 @@ import com.sad.function.components.TransformComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static com.sad.function.entities.EntityType.bullet;
+import static com.sad.function.entities.EntityType.*;
 
 public class EntitySpawnSystem extends BaseSystem {
     private static final Logger logger = LogManager.getLogger(EntitySpawnSystem.class);
@@ -61,5 +63,38 @@ public class EntitySpawnSystem extends BaseSystem {
 
         logger.info("Created platform with world id {} and a unique body id of {}", solid, body.getId());
         return solid;
+    }
+
+    /**
+     * Instantiate all components related to a player.
+     * @return the id for a new player.
+     */
+    public int player(float x, float y) {
+        int e = world.create(ArchetypeDefinitions.aPlayer.build(world));
+
+        //region Body Creation
+        PhysicsBody cPhysics = mPhysicsBody.create(e);
+
+        cPhysics.body = new Body();
+        Body body = cPhysics.body;
+
+        body.setStatic(false);
+        body.setColor(Color.BLUE);
+        body.setUserData(player);
+        body.setUserData("PLAYER");
+        Fixture footSensor = body.addFixture(new Rectangle(0.9f, 1f));
+        footSensor.setSensor(true);
+        footSensor.getShape().getCenter().set(0, -0.5f);
+        footSensor.setUserData(foot_sensor);
+
+        //Create the main collision body for the player
+        body.addFixture(new Rectangle(1,1));
+        //endregion
+
+        TransformComponent cTransform = mTransformComponent.create(e);
+        cTransform.transform = new Transform();
+        cTransform.transform.translate(x, y);
+
+        return e;
     }
 }
