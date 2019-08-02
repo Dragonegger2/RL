@@ -90,8 +90,8 @@ public class PhysicsSystem extends BaseEntitySystem {
         IntBag actives = subscription.getEntities();
 
         for (int i = 0; i < actives.size(); i++) {
-            int entity = actives.get(i);
-            Body body2 = mPhysics.create(entity).body;
+            int body2ID = actives.get(i);
+            Body body2 = mPhysics.create(body2ID).body;
 
             if (body1 == body2) continue;
 
@@ -106,7 +106,7 @@ public class PhysicsSystem extends BaseEntitySystem {
 
                     Penetration penetration = new Penetration();
                     if (gjk.detect(fixture1.getShape(), mTransform.create(body1ID).transform,
-                            fixture2.getShape(), mTransform.create(entity).transform, penetration)) {
+                            fixture2.getShape(), mTransform.create(body2ID).transform, penetration)) {
 
                         //TODO: Going to need to modify this so that sensors on any body will work. It randomly stutters.
                         //BODY1 is always the dynamic shape.
@@ -124,7 +124,7 @@ public class PhysicsSystem extends BaseEntitySystem {
                         }
 
                         //Still need to notify if they are Sensors.
-                        contactManager.addContact(new Contact(body1, fixture1, body2, fixture2, penetration));
+                        contactManager.addContact(new Contact(body1, fixture1, body2, fixture2, penetration, body1ID, body2ID));
                     }
                 }
             }

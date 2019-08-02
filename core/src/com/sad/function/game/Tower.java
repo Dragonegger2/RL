@@ -4,16 +4,11 @@ import com.artemis.*;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.sad.function.entities.ArchetypeDefinitions;
-import com.sad.function.entities.EntitySpawnSystem;
-import com.sad.function.entities.EntityType;
+import com.sad.function.systems.EntitySpawnSystem;
 import com.sad.function.collision.*;
-import com.sad.function.collision.data.Transform;
-import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 import com.sad.function.global.GameInfo;
@@ -25,6 +20,13 @@ import org.apache.logging.log4j.Logger;
 
 import static com.sad.function.entities.EntityType.*;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
+
+//TODO: Add a PERSIST case to my ContactAdapter.
+//TODO: Figure out a way to do one-way platforms.
+//TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore, it should continue passing along the component version.
+//TODO: Write a rendering system.
+//TODO: Handle player input via a system or something.
+
 
 @SuppressWarnings("ALL")
 public class Tower extends ApplicationAdapter {
@@ -61,48 +63,48 @@ public class Tower extends ApplicationAdapter {
     public void create() {
         camera = new OrthographicCamera();
         contactManager = new ContactManager();
+
+        //instantiate renderers.
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+
+        //instantiate systems.
         physicsSystem = new PhysicsSystem();
         spawner = new EntitySpawnSystem();
 
-        //foot contact counter.
         physicsSystem.addListener(new ContactAdapter() {
             @Override
             public void begin(Contact contact) {
                 logger.info("NEW CONTACT {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
-                Object body1UD = contact.getBody1().getUserData();
-                Object body2UD = contact.getBody2().getUserData();
 
-                //handle player combo cases.
-                if(body1UD == player || body2UD == player) {
-                    if(body1UD == solid || body2UD == solid) {
-                        //Have no way of linking the ids to this object.
-                        logger.info("SOLID AND PLAYER COLLIDED");
-                    }
-                }
-
+                //Get fixture user data.
                 Object fixture1UD = contact.getFixture1().getUserData();
                 Object fixture2UD = contact.getFixture2().getUserData();
 
+                //Skip if they're both null
                 if(fixture1UD == null && fixture2UD == null) return;
 
+                //If either is a foot sensor...
                 if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
-                    footCount++;
+                    contact.getFixture1().addContact(contact.getFixture2());
+                    contact.getFixture2().addContact(contact.getFixture1());
+
+                    footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
                 }
             }
 
             @Override
             public void end(Contact contact) {
-                logger.info("CONTACT ENDED {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
-
                 Object fixture1UD = contact.getFixture1().getUserData();
                 Object fixture2UD = contact.getFixture2().getUserData();
 
                 if(fixture1UD == null && fixture2UD == null) return;
 
                 if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
-                    footCount--;
+                    contact.getFixture1().removeContact(contact.getFixture2());
+                    contact.getFixture2().removeContact(contact.getFixture1());
+
+                    footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
                 }
             }
         });
@@ -127,16 +129,11 @@ public class Tower extends ApplicationAdapter {
 
         //region Create game objects.
         playerID = spawner.player(2, 1.3112774f);
-        logger.info("Created player: {}", playerID);
 
-
-        int ground = spawner.assemblePlatform(0,0,10,1);
+        int ground = spawner.assemblePlatform(0,0,10,0.0001f);
         mTransformComponent.create(ground).transform.translate(5f,0);
-         logger.info("Created a solid {}", ground);
 
         int wall = spawner.assemblePlatform(0,0, 1, 100);
-        logger.info("Created a solid {}", wall);
-
         int wall2 = spawner.assemblePlatform(10, 0, 1, 100);
 
         spawner.assembleSmallPlatform(10,0);
@@ -150,11 +147,7 @@ public class Tower extends ApplicationAdapter {
         mPhysicsComponent.create(s).body.setUserData(platform);
 
         int bullet = spawner.assembleBullet(10, 1);
-        logger.info("Created a bullet {}!", bullet);
-
         //endregion
-
-        //TODO: Fix a bug where a moving platform automatically increments the footCount when it shouldn't be.
     }
 
     @Override
@@ -180,7 +173,7 @@ public class Tower extends ApplicationAdapter {
             player.getVelocity().x = 0;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && footCount > 0) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && footCount > 0) {
             player.getVelocity().y = velocity;
         }
 
@@ -192,11 +185,6 @@ public class Tower extends ApplicationAdapter {
             velocity -= 5f;
         }
         //endregion
-
-        //TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore, it should continue passing along the component version.
-        //TODO: Write a rendering system.
-        //TODO: Handle player input via a system or something.
-
 
         gameWorld.setDelta(delta);
         gameWorld.process();

@@ -1,4 +1,4 @@
-package com.sad.function.entities;
+package com.sad.function.systems;
 
 import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
@@ -9,11 +9,16 @@ import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
+import com.sad.function.entities.ArchetypeDefinitions;
+import com.sad.function.entities.EntityType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static com.sad.function.entities.EntityType.*;
 
+/**
+ * Helper system for adding entities to the game.
+ */
 public class EntitySpawnSystem extends BaseSystem {
     private static final Logger logger = LogManager.getLogger(EntitySpawnSystem.class);
 

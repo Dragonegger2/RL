@@ -3,6 +3,8 @@ package com.sad.function.collision;
 import com.sad.function.collision.filter.Filter;
 import com.sad.function.collision.shape.Convex;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,13 +19,14 @@ public class Fixture {
     private String tag;
 
     protected Filter filter;
+    protected Map<UUID, Fixture> contact;
 
     public Fixture(Convex shape) {
         this.shape = shape;
         this.id = UUID.randomUUID();
         this.sensor = false;
 
-        this.tag = tag;
+        contact = new HashMap<>();
     }
 
     public Convex getShape() {
@@ -64,4 +67,27 @@ public class Fixture {
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
+
+    /**
+     * Add a {@link Fixture} that this {@link Fixture} is currently in contact with.
+     * @param f to add to the contact list.
+     */
+    public void addContact(Fixture f) {
+        contact.put(f.id, f);
+    }
+
+    /**
+     * Remove the {@link Fixture} that is passed in from this contact list.
+     * @param f that this is {@link Fixture} is in contact with.
+     * @return the {@link Fixture} that was removed. Returns null if there is no contact to remove.
+     */
+    public Fixture removeContact(Fixture f) {
+        return contact.remove(f.id);
+    }
+
+    /**
+     * Returns the number of {@link Fixture}s that this object is in contact with.
+     * @return int, number of {@link Fixture} that this object is in contact with.
+     */
+    public int contactCount() { return contact.size(); }
 }

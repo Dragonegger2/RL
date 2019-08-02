@@ -12,10 +12,11 @@ public class Contact {
     private final Body body1, body2;
     private final Fixture fixture1, fixture2;
     private final Penetration penetration;
+    private final int entity1ID, entity2ID;
 
     private final boolean isSensor;
 
-    public Contact(Body body1, Fixture fixture1, Body body2, Fixture fixture2, Penetration penetration) {
+    public Contact(Body body1, Fixture fixture1, Body body2, Fixture fixture2, Penetration penetration, int entity1ID, int entity2ID) {
         this.id = UUID.randomUUID();
         this.body1 = body1;
         this.body2 = body2;
@@ -23,6 +24,8 @@ public class Contact {
         this.fixture2 = fixture2;
         this.penetration = penetration;
 
+        this.entity1ID = entity1ID;
+        this.entity2ID = entity2ID;
         isSensor = fixture1.isSensor() || fixture2.isSensor();
     }
 
@@ -48,4 +51,10 @@ public class Contact {
     public Penetration getPenetration() {
         return penetration;
     }
+
+    public int getEntity1ID() {
+        return entity1ID;
+    }
+
+    public int getEntity2ID() { return entity2ID; }
 }
