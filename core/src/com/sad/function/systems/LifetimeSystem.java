@@ -1,9 +1,11 @@
 package com.sad.function.systems;
 
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 import com.sad.function.components.Lifetime;
 
+@All(Lifetime.class)
 public class LifetimeSystem extends IteratingSystem {
     protected ComponentMapper<Lifetime> mLifetime;
 

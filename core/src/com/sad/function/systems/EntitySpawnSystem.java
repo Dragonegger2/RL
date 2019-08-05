@@ -28,6 +28,27 @@ public class EntitySpawnSystem extends BaseSystem {
     protected ComponentMapper<PhysicsBody> mPhysicsBody;
     protected ComponentMapper<TransformComponent> mTransformComponent;
 
+    public EntitySpawnSystem() {
+        aPlayer = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .add(GravityAffected .class)
+                .build(world);
+
+        aSolid = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(world);
+
+        aBullet = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(world);
+
+        aLimitedLifetimeSolid = new ArchetypeBuilder(aSolid)
+                .add(Lifetime .class)
+                .build(world);
+    }
     @Override
     protected void processSystem() {}
 
@@ -106,23 +127,11 @@ public class EntitySpawnSystem extends BaseSystem {
         return e;
     }
 
-    Archetype aPlayer = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .add(GravityAffected .class)
-                .build(world);
+    private Archetype aPlayer;
 
-    Archetype aSolid = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(world);
+    private Archetype aSolid;
 
-    Archetype aBullet = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(world);
+    private Archetype aBullet;
 
-    Archetype aLimitedLifetimeSolid = new ArchetypeBuilder(aSolid)
-                .add(Lifetime .class)
-                .build(world);
+    private Archetype aLimitedLifetimeSolid;
 }
