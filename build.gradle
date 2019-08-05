@@ -43,7 +43,6 @@ allprojects {
 
     dependencies {
         compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
-//        compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
         compile group: 'org.dyn4j', name: 'dyn4j', version: '3.3.0'
     }
 }

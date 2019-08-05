@@ -42,6 +42,10 @@ public class ContactManager {
             } else {
                 for(int l = 0; l < listenerSize; l++) {
                     ContactListener listener = listeners.get(l);
+
+                    //TODO: Try to ensure we have an updated list of contacts on each entity.
+                    newContact.getFixture1().addContact(newContact.getFixture2());
+                    newContact.getFixture2().addContact(newContact.getFixture1());
                     listener.begin(newContact);
                 }
             }
@@ -57,6 +61,10 @@ public class ContactManager {
 
                 for(int l = 0; l < listenerSize; l++) {
                     ContactListener listener = listeners.get(l);
+
+                    //TODO: Not sure this works. Try to ensure we have an updated list of contacts on each entity.
+                    contact.getFixture1().removeContact(contact.getFixture2());
+                    contact.getFixture2().removeContact(contact.getFixture1());
                     listener.end(contact);
                 }
 

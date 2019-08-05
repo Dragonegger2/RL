@@ -9,8 +9,6 @@ import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
 import com.sad.function.components.*;
 import com.sad.function.entities.EntityType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static com.sad.function.entities.EntityType.*;
 
@@ -18,7 +16,6 @@ import static com.sad.function.entities.EntityType.*;
  * Helper system for adding entities to the game.
  */
 public class EntitySpawnSystem extends BaseSystem {
-    private static final Logger logger = LogManager.getLogger(EntitySpawnSystem.class);
 
     private ComponentMapper<Bullet> mBullet;
     private ComponentMapper<Player> mPlayer;
@@ -69,7 +66,6 @@ public class EntitySpawnSystem extends BaseSystem {
         transformComponent.transform = new Transform();
         transformComponent.transform.translate(x, y);
 
-        logger.info("Created platform with world id {} and a unique body id of {}", solid, body.getId());
         return solid;
     }
 

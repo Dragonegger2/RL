@@ -16,6 +16,7 @@ import com.sad.function.collision.ContactAdapter;
 import com.sad.function.collision.ContactManager;
 import com.sad.function.components.Lifetime;
 import com.sad.function.components.PhysicsBody;
+import com.sad.function.components.Player;
 import com.sad.function.components.TransformComponent;
 import com.sad.function.global.GameInfo;
 import com.sad.function.systems.*;
@@ -33,8 +34,9 @@ import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 @SuppressWarnings("ALL")
 public class Tower extends ApplicationAdapter {
-    protected ComponentMapper<TransformComponent> mTransformComponent;
-    protected ComponentMapper<PhysicsBody> mPhysicsComponent;
+    private ComponentMapper<TransformComponent> mTransformComponent;
+    private ComponentMapper<PhysicsBody> mPhysicsComponent;
+    private ComponentMapper<Player> mPlayer;
 
     protected PhysicsSystem physicsSystem;
     protected EntitySpawnSystem spawnerSystem;
@@ -69,7 +71,6 @@ public class Tower extends ApplicationAdapter {
 
         //instantiate systems.
         physicsSystem = new PhysicsSystem();
-        spawnerSystem = new EntitySpawnSystem();
 
         //TODO: If I implement a begin I can use that to check for platforms.
         physicsSystem.addListener(new ContactAdapter() {
@@ -85,19 +86,19 @@ public class Tower extends ApplicationAdapter {
                 //If either is a foot sensor...
                 if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
                     //Add them as contacts.
-                    contact.getFixture1().addContact(contact.getFixture2());
-                    contact.getFixture2().addContact(contact.getFixture1());
+//                    contact.getFixture1().addContact(contact.getFixture2());
+//                    contact.getFixture2().addContact(contact.getFixture1());
 
                     footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
                 }
+
+//                Player player = mPlayer.has(contact.getEntity1ID()) ? mPlayer.create(contact.getEntity1ID()) : mPlayer.create(contact.getEntity2ID());
+//                player.footCount
+
             }
 
             @Override
-            public void persist(Contact contacts) {
-                Gdx.app.log("", "PERSISTED CONTACT");
-
-                //Check and see if one is a moving platform and the other is player.
-            }
+            public void persist(Contact contacts) {}
 
             @Override
             public void end(Contact contact) {
@@ -107,8 +108,8 @@ public class Tower extends ApplicationAdapter {
                 if (fixture1UD == null && fixture2UD == null) return;
 
                 if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
-                    contact.getFixture1().removeContact(contact.getFixture2());
-                    contact.getFixture2().removeContact(contact.getFixture1());
+//                    contact.getFixture1().removeContact(contact.getFixture2());
+//                    contact.getFixture2().removeContact(contact.getFixture1());
 
                     footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
                 }
@@ -117,7 +118,7 @@ public class Tower extends ApplicationAdapter {
 
         towerGameWorldConfig = new WorldConfigurationBuilder()
                 .with(
-                        spawnerSystem,
+                        new EntitySpawnSystem(),
                         new LifetimeSystem(),
                         physicsSystem,
                         new SpriteRenderingSystem(camera, spriteBatch),
@@ -128,9 +129,12 @@ public class Tower extends ApplicationAdapter {
 
         gameWorld = new World(towerGameWorldConfig);
 
+        spawnerSystem = gameWorld.getSystem(EntitySpawnSystem.class);
+
         //region Instantiate Component Mappers from Game World to facilitate entity creation.
         mTransformComponent = gameWorld.getMapper(TransformComponent.class);
         mPhysicsComponent = gameWorld.getMapper(PhysicsBody.class);
+        mPlayer = gameWorld.getMapper(Player.class);
 
         //endregion
 
