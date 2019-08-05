@@ -1,7 +1,10 @@
 package com.sad.function.entities;
 
+import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
+import com.artemis.World;
 import com.sad.function.components.GravityAffected;
+import com.sad.function.components.Lifetime;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 
@@ -9,16 +12,20 @@ import com.sad.function.components.TransformComponent;
  * Contains all ArchetypeDefinitions.
  */
 public class ArchetypeDefinitions {
-    public static ArchetypeBuilder aPlayer = new ArchetypeBuilder()
-            .add(TransformComponent.class)
-            .add(PhysicsBody.class)
-            .add(GravityAffected.class);
+    private Archetype aPlayer;
 
-    public static ArchetypeBuilder aSolid = new ArchetypeBuilder()
-            .add(TransformComponent.class)
-            .add(PhysicsBody.class);
+    private Archetype aSolid;
 
-    public static ArchetypeBuilder aBullet = new ArchetypeBuilder()
-            .add(TransformComponent.class)
-            .add(PhysicsBody.class);
+    private Archetype aBullet;
+
+    private Archetype aLimitedLifetimeSolid;
+
+    public ArchetypeDefinitions(World world) {
+
+    }
+
+    public Archetype aPlayer() { return aPlayer; }
+    public Archetype aSolid() { return aSolid; }
+    public Archetype aBullet() { return aBullet; }
+    public Archetype aLimitedLifetimeSolid() { return aLimitedLifetimeSolid; }
 }

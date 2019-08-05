@@ -5,8 +5,7 @@ import com.artemis.Component;
 import com.sad.function.collision.data.Transform;
 
 /**
- * Used for transforming an object. Not sure how I'm going to be binding these to
- * something like a {@link PhysicsBody}.
+ * Used for transforming an object. If you translate
  */
 public class TransformComponent extends Component {
     public Transform transform;

@@ -1,24 +1,29 @@
 package com.sad.function.game;
 
-import com.artemis.*;
+import com.artemis.ComponentMapper;
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.sad.function.systems.EntitySpawnSystem;
-import com.sad.function.collision.*;
+import com.sad.function.collision.Body;
+import com.sad.function.collision.Contact;
+import com.sad.function.collision.ContactAdapter;
+import com.sad.function.collision.ContactManager;
+import com.sad.function.components.Lifetime;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 import com.sad.function.global.GameInfo;
-import com.sad.function.systems.CollisionBodyRenderingSystem;
-import com.sad.function.systems.PhysicsSystem;
-import com.sad.function.systems.SpriteRenderingSystem;
+import com.sad.function.systems.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static com.sad.function.entities.EntityType.*;
+import static com.sad.function.entities.EntityType.foot_sensor;
+import static com.sad.function.entities.EntityType.platform;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 //TODO: Add a PERSIST case to my ContactAdapter.
@@ -31,29 +36,21 @@ import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 @SuppressWarnings("ALL")
 public class Tower extends ApplicationAdapter {
     private static final Logger logger = LogManager.getLogger(Tower.class);
-
+    protected ComponentMapper<TransformComponent> mTransformComponent;
+    protected ComponentMapper<PhysicsBody> mPhysicsComponent;
+    protected PhysicsSystem physicsSystem;
+    protected EntitySpawnSystem spawner;
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
     private ContactManager contactManager;
-
     private int footCount = 0;
     private int playerHealth = 100;
-
     private int jump = Input.Keys.SPACE;
     private int left = Input.Keys.LEFT;
     private int right = Input.Keys.RIGHT;
-
     private World gameWorld;
-
     private WorldConfiguration towerGameWorldConfig;
-
-    protected ComponentMapper<TransformComponent> mTransformComponent;
-    protected ComponentMapper<PhysicsBody> mPhysicsComponent;
-
-    protected PhysicsSystem physicsSystem;
-    protected EntitySpawnSystem spawner;
-
     private int playerID;
     private float velocity = 28f;
 
@@ -82,10 +79,10 @@ public class Tower extends ApplicationAdapter {
                 Object fixture2UD = contact.getFixture2().getUserData();
 
                 //Skip if they're both null
-                if(fixture1UD == null && fixture2UD == null) return;
+                if (fixture1UD == null && fixture2UD == null) return;
 
                 //If either is a foot sensor...
-                if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
+                if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
                     contact.getFixture1().addContact(contact.getFixture2());
                     contact.getFixture2().addContact(contact.getFixture1());
 
@@ -98,9 +95,9 @@ public class Tower extends ApplicationAdapter {
                 Object fixture1UD = contact.getFixture1().getUserData();
                 Object fixture2UD = contact.getFixture2().getUserData();
 
-                if(fixture1UD == null && fixture2UD == null) return;
+                if (fixture1UD == null && fixture2UD == null) return;
 
-                if(fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
+                if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
                     contact.getFixture1().removeContact(contact.getFixture2());
                     contact.getFixture2().removeContact(contact.getFixture1());
 
@@ -112,9 +109,10 @@ public class Tower extends ApplicationAdapter {
         towerGameWorldConfig = new WorldConfigurationBuilder()
                 .with(
                         spawner,
+                        new LifetimeSystem(),
+                        physicsSystem,
                         new SpriteRenderingSystem(camera, spriteBatch),
-                        new CollisionBodyRenderingSystem(camera, shapeRenderer),
-                        physicsSystem
+                        new CollisionBodyRenderingSystem(camera, shapeRenderer)
                 )
                 .build();
 
@@ -130,14 +128,14 @@ public class Tower extends ApplicationAdapter {
         //region Create game objects.
         playerID = spawner.player(2, 1.3112774f);
 
-        int ground = spawner.assemblePlatform(0,0,10,0.0001f);
-        mTransformComponent.create(ground).transform.translate(5f,0);
+        int ground = spawner.assemblePlatform(0, 0, 10, 0.0001f);
+        mTransformComponent.create(ground).transform.translate(5f, 0);
 
-        int wall = spawner.assemblePlatform(0,0, 1, 100);
+        int wall = spawner.assemblePlatform(0, 0, 1, 100);
         int wall2 = spawner.assemblePlatform(10, 0, 1, 100);
 
-        spawner.assembleSmallPlatform(10,0);
-        spawner.assembleSmallPlatform(11,0);
+        spawner.assembleSmallPlatform(10, 0);
+        spawner.assembleSmallPlatform(11, 0);
         spawner.assembleSmallPlatform(12, 0);
 
         //TODO: Remove velocity component from the {@link Body}
@@ -145,6 +143,7 @@ public class Tower extends ApplicationAdapter {
         mPhysicsComponent.create(s).body.getVelocity().set(0, 0.25f);
         mPhysicsComponent.create(s).body.setStatic(false);
         mPhysicsComponent.create(s).body.setUserData(platform);
+        gameWorld.getMapper(Lifetime.class).create(s).lifetime = 2000;
 
         int bullet = spawner.assembleBullet(10, 1);
         //endregion
@@ -177,11 +176,11 @@ public class Tower extends ApplicationAdapter {
             player.getVelocity().y = velocity;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PERIOD)) {
             velocity += 5f;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.COMMA)) {
             velocity -= 5f;
         }
         //endregion

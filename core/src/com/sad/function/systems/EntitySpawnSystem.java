@@ -1,5 +1,7 @@
 package com.sad.function.systems;
 
+import com.artemis.Archetype;
+import com.artemis.ArchetypeBuilder;
 import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Color;
@@ -7,9 +9,10 @@ import com.sad.function.collision.Body;
 import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
+import com.sad.function.components.GravityAffected;
+import com.sad.function.components.Lifetime;
 import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
-import com.sad.function.entities.ArchetypeDefinitions;
 import com.sad.function.entities.EntityType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +32,7 @@ public class EntitySpawnSystem extends BaseSystem {
     protected void processSystem() {}
 
     public int assembleBullet(float x, float y) {
-        int e = world.create(ArchetypeDefinitions.aBullet.build(world));
+        int e = world.create(aBullet);
 
         mPhysicsBody.create(e).body.setStatic(false);
         mPhysicsBody.create(e).body.setGravityScale(0.0f);
@@ -53,7 +56,7 @@ public class EntitySpawnSystem extends BaseSystem {
     }
 
     public int assemblePlatform(float x, float y, float width, float height) {
-        int solid = world.create(ArchetypeDefinitions.aSolid.build(world));
+        int solid = world.create(aSolid);
         PhysicsBody cPhysicsBody = mPhysicsBody.create(solid);
         Body body = cPhysicsBody.body;
 
@@ -75,7 +78,7 @@ public class EntitySpawnSystem extends BaseSystem {
      * @return the id for a new player.
      */
     public int player(float x, float y) {
-        int e = world.create(ArchetypeDefinitions.aPlayer.build(world));
+        int e = world.create(aPlayer);
 
         //region Body Creation
         PhysicsBody cPhysics = mPhysicsBody.create(e);
@@ -102,4 +105,24 @@ public class EntitySpawnSystem extends BaseSystem {
 
         return e;
     }
+
+    Archetype aPlayer = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .add(GravityAffected .class)
+                .build(world);
+
+    Archetype aSolid = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(world);
+
+    Archetype aBullet = new ArchetypeBuilder()
+                .add(TransformComponent.class)
+                .add(PhysicsBody.class)
+                .build(world);
+
+    Archetype aLimitedLifetimeSolid = new ArchetypeBuilder(aSolid)
+                .add(Lifetime .class)
+                .build(world);
 }

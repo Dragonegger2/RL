@@ -6,12 +6,15 @@ public class Transform {
     public static final Transform IDENTITY = null; //TODO fill this out.
     public float x = 0;
     public float y = 0;
+
     public float cost = 1.0f;
     public float sint = 0.0f;
+
     private float m00 = 1.0f;
     private float m01 = 0.0f;
     private float m10 = 0.0f;
     private float m11 = 1.0f;
+
     public Transform() {
     }
     public Transform(float x, float y) {
@@ -24,10 +27,12 @@ public class Transform {
         this.y = xy.y;
     }
 
+    public void setX(float x) { this.x = x; }
     public float getX() {
         return x;
     }
 
+    public void setY(float y) { this.y = y; }
     public float getY() {
         return y;
     }
