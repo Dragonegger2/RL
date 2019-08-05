@@ -1,7 +1,5 @@
 package com.sad.function.systems;
 
-import com.artemis.Archetype;
-import com.artemis.ArchetypeBuilder;
 import com.artemis.BaseSystem;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Color;
@@ -9,10 +7,7 @@ import com.sad.function.collision.Body;
 import com.sad.function.collision.Fixture;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Rectangle;
-import com.sad.function.components.GravityAffected;
-import com.sad.function.components.Lifetime;
-import com.sad.function.components.PhysicsBody;
-import com.sad.function.components.TransformComponent;
+import com.sad.function.components.*;
 import com.sad.function.entities.EntityType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,39 +20,23 @@ import static com.sad.function.entities.EntityType.*;
 public class EntitySpawnSystem extends BaseSystem {
     private static final Logger logger = LogManager.getLogger(EntitySpawnSystem.class);
 
-    protected ComponentMapper<PhysicsBody> mPhysicsBody;
-    protected ComponentMapper<TransformComponent> mTransformComponent;
+    private ComponentMapper<Bullet> mBullet;
+    private ComponentMapper<Player> mPlayer;
+    private ComponentMapper<PhysicsBody> mPhysicsBody;
+    private ComponentMapper<GravityAffected> mGravityAffected;
+    private ComponentMapper<TransformComponent> mTransformComponent;
 
-    public EntitySpawnSystem() {
-        aPlayer = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .add(GravityAffected .class)
-                .build(world);
-
-        aSolid = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(world);
-
-        aBullet = new ArchetypeBuilder()
-                .add(TransformComponent.class)
-                .add(PhysicsBody.class)
-                .build(world);
-
-        aLimitedLifetimeSolid = new ArchetypeBuilder(aSolid)
-                .add(Lifetime .class)
-                .build(world);
-    }
     @Override
     protected void processSystem() {}
 
-    public int assembleBullet(float x, float y) {
-        int e = world.create(aBullet);
+    public int assembleBullet(float x, float y, float vX, float vY) {
+        int e = world.create();
 
+        mBullet.create(e);
         mPhysicsBody.create(e).body.setStatic(false);
         mPhysicsBody.create(e).body.setGravityScale(0.0f);
-        mPhysicsBody.create(e).body.getVelocity().set(-1f, 0f);
+        mPhysicsBody.create(e).body.getVelocity().set(vX, vY);
+
         mPhysicsBody.create(e).body.setUserData(bullet);
         mPhysicsBody.create(e).body.addFixture(new Rectangle(0.5f, 0.5f));
         mPhysicsBody.create(e).body.setTag("BULLET");
@@ -77,7 +56,7 @@ public class EntitySpawnSystem extends BaseSystem {
     }
 
     public int assemblePlatform(float x, float y, float width, float height) {
-        int solid = world.create(aSolid);
+        int solid = world.create();
         PhysicsBody cPhysicsBody = mPhysicsBody.create(solid);
         Body body = cPhysicsBody.body;
 
@@ -99,7 +78,10 @@ public class EntitySpawnSystem extends BaseSystem {
      * @return the id for a new player.
      */
     public int player(float x, float y) {
-        int e = world.create(aPlayer);
+        int e = world.create();
+
+        mGravityAffected.create(e);
+        mPlayer.create(e);
 
         //region Body Creation
         PhysicsBody cPhysics = mPhysicsBody.create(e);
@@ -126,12 +108,4 @@ public class EntitySpawnSystem extends BaseSystem {
 
         return e;
     }
-
-    private Archetype aPlayer;
-
-    private Archetype aSolid;
-
-    private Archetype aBullet;
-
-    private Archetype aLimitedLifetimeSolid;
 }

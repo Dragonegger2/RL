@@ -19,42 +19,44 @@ import com.sad.function.components.PhysicsBody;
 import com.sad.function.components.TransformComponent;
 import com.sad.function.global.GameInfo;
 import com.sad.function.systems.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static com.sad.function.entities.EntityType.foot_sensor;
 import static com.sad.function.entities.EntityType.platform;
 import static com.sad.function.global.GameInfo.VIRTUAL_HEIGHT;
 
 //TODO: Add a PERSIST case to my ContactAdapter.
+//TODO: Fix issue with moving platforms.    https://gamedevelopment.tutsplus.com/tutorials/platformer-mechanics-moving-platforms--cms-29344
 //TODO: Figure out a way to do one-way platforms.
 //TODO: FIX SAP Broadphase Collision Detection. It shouldn't be using the Transform from the bodies anymore, it should continue passing along the component version.
 //TODO: Write a rendering system.
 //TODO: Handle player input via a system or something.
 
-
 @SuppressWarnings("ALL")
 public class Tower extends ApplicationAdapter {
-    private static final Logger logger = LogManager.getLogger(Tower.class);
     protected ComponentMapper<TransformComponent> mTransformComponent;
     protected ComponentMapper<PhysicsBody> mPhysicsComponent;
+
     protected PhysicsSystem physicsSystem;
-    protected EntitySpawnSystem spawner;
+    protected EntitySpawnSystem spawnerSystem;
+
     private ShapeRenderer shapeRenderer;
     private SpriteBatch spriteBatch;
     private OrthographicCamera camera;
+
     private ContactManager contactManager;
+
     private int footCount = 0;
     private int playerHealth = 100;
+
     private int jump = Input.Keys.SPACE;
     private int left = Input.Keys.LEFT;
     private int right = Input.Keys.RIGHT;
+
     private World gameWorld;
     private WorldConfiguration towerGameWorldConfig;
+
     private int playerID;
     private float velocity = 28f;
-
-    //endregion
 
     @Override
     public void create() {
@@ -67,13 +69,12 @@ public class Tower extends ApplicationAdapter {
 
         //instantiate systems.
         physicsSystem = new PhysicsSystem();
-        spawner = new EntitySpawnSystem();
+        spawnerSystem = new EntitySpawnSystem();
 
+        //TODO: If I implement a begin I can use that to check for platforms.
         physicsSystem.addListener(new ContactAdapter() {
             @Override
             public void begin(Contact contact) {
-                logger.info("NEW CONTACT {}:{} {} {}", contact.getId(), contact.hashCode(), contact.getFixture1().getTag(), contact.getFixture2().getTag());
-
                 //Get fixture user data.
                 Object fixture1UD = contact.getFixture1().getUserData();
                 Object fixture2UD = contact.getFixture2().getUserData();
@@ -83,11 +84,19 @@ public class Tower extends ApplicationAdapter {
 
                 //If either is a foot sensor...
                 if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
+                    //Add them as contacts.
                     contact.getFixture1().addContact(contact.getFixture2());
                     contact.getFixture2().addContact(contact.getFixture1());
 
                     footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
                 }
+            }
+
+            @Override
+            public void persist(Contact contacts) {
+                Gdx.app.log("", "PERSISTED CONTACT");
+
+                //Check and see if one is a moving platform and the other is player.
             }
 
             @Override
@@ -108,7 +117,7 @@ public class Tower extends ApplicationAdapter {
 
         towerGameWorldConfig = new WorldConfigurationBuilder()
                 .with(
-                        spawner,
+                        spawnerSystem,
                         new LifetimeSystem(),
                         physicsSystem,
                         new SpriteRenderingSystem(camera, spriteBatch),
@@ -126,26 +135,27 @@ public class Tower extends ApplicationAdapter {
         //endregion
 
         //region Create game objects.
-        playerID = spawner.player(2, 1.3112774f);
+        playerID = spawnerSystem.player(2, 1.3112774f);
 
-        int ground = spawner.assemblePlatform(0, 0, 10, 0.0001f);
+        int ground = spawnerSystem.assemblePlatform(0, 0, 10, 0.0001f);
         mTransformComponent.create(ground).transform.translate(5f, 0);
 
-        int wall = spawner.assemblePlatform(0, 0, 1, 100);
-        int wall2 = spawner.assemblePlatform(10, 0, 1, 100);
+        int wall = spawnerSystem.assemblePlatform(0, 0, 1, 100);
+        int wall2 = spawnerSystem.assemblePlatform(50, 0, 1, 100);
 
-        spawner.assembleSmallPlatform(10, 0);
-        spawner.assembleSmallPlatform(11, 0);
-        spawner.assembleSmallPlatform(12, 0);
+        spawnerSystem.assembleSmallPlatform(10, 0);
+        spawnerSystem.assembleSmallPlatform(11, 0);
+        spawnerSystem.assembleSmallPlatform(12, 0);
 
         //TODO: Remove velocity component from the {@link Body}
-        int s = spawner.assemblePlatform(3, 1, 1, 0.5f);
+        int s = spawnerSystem.assemblePlatform(3, 1, 1, 0.5f);
         mPhysicsComponent.create(s).body.getVelocity().set(0, 0.25f);
         mPhysicsComponent.create(s).body.setStatic(false);
         mPhysicsComponent.create(s).body.setUserData(platform);
         gameWorld.getMapper(Lifetime.class).create(s).lifetime = 2000;
 
-        int bullet = spawner.assembleBullet(10, 1);
+        int bullet = spawnerSystem.assembleBullet(10, 1, -1, 0);
+
         //endregion
     }
 
