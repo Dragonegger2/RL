@@ -3,6 +3,7 @@ package com.sad.function.systems;
 import com.artemis.ComponentMapper;
 import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -20,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 @All({PhysicsBody.class, TransformComponent.class})
 public class CollisionBodyRenderingSystem extends IteratingSystem {
-    private static final Logger logger = LogManager.getLogger(CollisionBodyRenderingSystem.class);
 
     private ComponentMapper<PhysicsBody> mPhysicsBody;
     private ComponentMapper<TransformComponent> mTransformComponent;
@@ -58,7 +58,7 @@ public class CollisionBodyRenderingSystem extends IteratingSystem {
                     if (f.isSensor()) shapeRenderer.setColor(Color.LIME);
                     shapeRenderer.rect(position.x - r.getWidth() / 2, position.y - r.getHeight() / 2, r.getWidth(), r.getHeight());
                 } else {
-                    logger.warn("No matching renderer for {}", f.getShape().getClass());
+                    Gdx.app.log("COLLISION-BODY-RENDERING-SYSTEM", "No matching renderer for " + f.getShape().getClass());
                 }
 
                 shapeRenderer.setColor(Color.FIREBRICK);

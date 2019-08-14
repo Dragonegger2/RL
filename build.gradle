@@ -10,7 +10,10 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "net.onedaybeard.artemis:artemis-fluid-gradle-plugin:$artemisVersion"
+//        classpath "net.onedaybeard.artemis:artemis-fluid-gradle-plugin:$artemisVersion"
+        classpath "net.onedaybeard.artemis:artemis-odb-gradle-plugin:2.2.0"
+
+        classpath 'org.wisepersist:gwt-gradle-plugin:1.0.9'
     }
 }
 
@@ -26,7 +29,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = "MySuperAwesomeGame"
-        gdxVersion = '1.9.8'
+        gdxVersion = '1.9.10'
         roboVMVersion = '2.3.5'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
@@ -89,6 +92,32 @@ project(":core") {
     }
 }
 
+project(":html") {
+    apply plugin: "java-library"
+    apply plugin: "gwt"
+    apply plugin: "war"
+
+
+    dependencies {
+        implementation project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+        api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
+        api "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
+
+        // artemis-odb core
+        compile "net.onedaybeard.artemis:artemis-odb-gwt:$artemisVersion"
+        compile "net.onedaybeard.artemis:artemis-odb-gwt:$artemisVersion:sources"
+        compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion:sources"
+
+        // artemis-odb  + serialization
+        compile "net.onedaybeard.artemis:artemis-odb-serializer:$artemisVersion:sources"
+        compile "net.onedaybeard.artemis:artemis-odb-serializer-json-libgdx:$artemisVersion:sources"
+    }
+}
+
 tasks.eclipse.doLast {
     delete ".project"
 }
+

@@ -73,48 +73,7 @@ public class Tower extends ApplicationAdapter {
         physicsSystem = new PhysicsSystem();
 
         //TODO: If I implement a begin I can use that to check for platforms.
-        physicsSystem.addListener(new ContactAdapter() {
-            @Override
-            public void begin(Contact contact) {
-                //Get fixture user data.
-                Object fixture1UD = contact.getFixture1().getUserData();
-                Object fixture2UD = contact.getFixture2().getUserData();
-
-                //Skip if they're both null
-                if (fixture1UD == null && fixture2UD == null) return;
-
-                //If either is a foot sensor...
-                if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
-                    //Add them as contacts.
-//                    contact.getFixture1().addContact(contact.getFixture2());
-//                    contact.getFixture2().addContact(contact.getFixture1());
-
-                    footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
-                }
-
-//                Player player = mPlayer.has(contact.getEntity1ID()) ? mPlayer.create(contact.getEntity1ID()) : mPlayer.create(contact.getEntity2ID());
-//                player.footCount
-
-            }
-
-            @Override
-            public void persist(Contact contacts) {}
-
-            @Override
-            public void end(Contact contact) {
-                Object fixture1UD = contact.getFixture1().getUserData();
-                Object fixture2UD = contact.getFixture2().getUserData();
-
-                if (fixture1UD == null && fixture2UD == null) return;
-
-                if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
-//                    contact.getFixture1().removeContact(contact.getFixture2());
-//                    contact.getFixture2().removeContact(contact.getFixture1());
-
-                    footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
-                }
-            }
-        });
+        physicsSystem.addListener(new PlayerContactAdapter());
 
         towerGameWorldConfig = new WorldConfigurationBuilder()
                 .with(
@@ -202,7 +161,7 @@ public class Tower extends ApplicationAdapter {
         gameWorld.setDelta(delta);
         gameWorld.process();
 
-        Gdx.graphics.setTitle(String.format("|  FootCount: %s  |  FPS: %s |  Jump Speed: %s  |  Velocity: %s  |", footCount, Gdx.graphics.getFramesPerSecond(), velocity, mPhysicsComponent.create(playerID).body.getVelocity()));
+//        Gdx.graphics.setTitle(String.format("|  FootCount: %s  |  FPS: %s |  Jump Speed: %s  |  Velocity: %s  |", footCount, Gdx.graphics.getFramesPerSecond(), velocity, mPhysicsComponent.create(playerID).body.getVelocity()));
     }
 
     @Override
@@ -214,5 +173,48 @@ public class Tower extends ApplicationAdapter {
     public void dispose() {
         spriteBatch.dispose();
         shapeRenderer.dispose();
+    }
+
+    private class PlayerContactAdapter extends ContactAdapter {
+        @Override
+        public void begin(Contact contact) {
+            //Get fixture user data.
+            Object fixture1UD = contact.getFixture1().getUserData();
+            Object fixture2UD = contact.getFixture2().getUserData();
+
+            //Skip if they're both null
+            if (fixture1UD == null && fixture2UD == null) return;
+
+            //If either is a foot sensor...
+            if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
+                //Add them as contacts.
+//                    contact.getFixture1().addContact(contact.getFixture2());
+//                    contact.getFixture2().addContact(contact.getFixture1());
+
+                footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
+            }
+
+//                Player player = mPlayer.has(contact.getEntity1ID()) ? mPlayer.create(contact.getEntity1ID()) : mPlayer.create(contact.getEntity2ID());
+//                player.footCount
+
+        }
+
+        @Override
+        public void persist(Contact contacts) {}
+
+        @Override
+        public void end(Contact contact) {
+            Object fixture1UD = contact.getFixture1().getUserData();
+            Object fixture2UD = contact.getFixture2().getUserData();
+
+            if (fixture1UD == null && fixture2UD == null) return;
+
+            if (fixture1UD == foot_sensor || fixture2UD == foot_sensor) {
+//                    contact.getFixture1().removeContact(contact.getFixture2());
+//                    contact.getFixture2().removeContact(contact.getFixture1());
+
+                footCount = fixture1UD == foot_sensor ? contact.getFixture1().contactCount() : contact.getFixture2().contactCount();
+            }
+        }
     }
 }

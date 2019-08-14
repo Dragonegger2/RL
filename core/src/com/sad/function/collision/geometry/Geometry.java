@@ -1,7 +1,7 @@
 package com.sad.function.collision.geometry;
 
 import com.badlogic.gdx.math.Vector2;
-import org.dyn4j.Epsilon;
+import com.sad.function.collision.Epsilon;
 
 public class Geometry {
     public static final float getRotationRadius(Vector2... vertices) {

@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.annotations.All;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.GWTUtil;
 import com.sad.function.collision.*;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.detection.narrowphase.GJK;
@@ -26,7 +27,7 @@ public class PhysicsSystem extends BaseEntitySystem {
     private ComponentMapper<PhysicsBody> mPhysics;
     private ComponentMapper<TransformComponent> mTransform;
     private GJK gjk;
-    private List<Listener> listeners = new ArrayList<>();
+    private List<ContactListener> listeners = new ArrayList<>();
 
     public PhysicsSystem() {
         gjk = new GJK();
@@ -55,7 +56,7 @@ public class PhysicsSystem extends BaseEntitySystem {
             handleBodies();
         }
 
-        contactManager.updateAndNotify(getListeners(ContactListener.class));
+        contactManager.updateAndNotify(getListeners());
     }
 
     private void applyGravity() {
@@ -136,32 +137,38 @@ public class PhysicsSystem extends BaseEntitySystem {
      *
      * @param listener to register.
      */
-    public void addListener(Listener listener) {
+    public void addListener(ContactListener listener) {
         this.listeners.add(listener);
     }
 
-    /**
-     * Fetch all registered listeners to this world object that match the class type.
-     *
-     * @param clazz listener type to fetch.
-     * @param <T>   Type parameter
-     * @return list of listeners OR null if clazz is null.
-     */
-    public <T extends Listener> List<T> getListeners(Class<T> clazz) {
-        if (clazz == null) return null;
-        List<T> listeners = new ArrayList<T>();
+//    /**
+//     * Fetch all registered listeners to this world object that match the class type.
+//     *
+//     * @param clazz listener type to fetch.
+//     * @param <T>   Type parameter
+//     * @return list of listeners OR null if clazz is null.
+//     */
+//    public <T extends Listener> List<T> getListeners(Class<T> clazz) {
+//        if (clazz == null) return null;
+//        List<T> listeners = new ArrayList<T>();
+//
+//        int lSize = this.listeners.size();
+//        for (int i = 0; i < lSize; i++) {
+//            Listener listener = this.listeners.get(i);
+////            if (clazz.isInstance(listener)) {
+////                listeners.add(clazz.cast(listener));
+////            }
+//            if(GWTUtil.isInstanceOf(clazz, listener)) {
+//                listeners.add(clazz.cast(listener));
+//            }
+//        }
+//
+//        return listeners;
+//    }
 
-        int lSize = this.listeners.size();
-        for (int i = 0; i < lSize; i++) {
-            Listener listener = this.listeners.get(i);
-            if (clazz.isInstance(listener)) {
-                listeners.add(clazz.cast(listener));
-            }
-        }
-
+    public List<ContactListener> getListeners() {
         return listeners;
     }
-
     public Vector2 getGravity() {
         return gravity;
     }

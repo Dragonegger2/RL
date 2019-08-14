@@ -1,8 +1,8 @@
 package com.sad.function.collision.geometry;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.Epsilon;
 import com.sad.function.collision.data.VUtils;
-import org.dyn4j.Epsilon;
 
 import java.util.List;
 

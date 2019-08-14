@@ -1,10 +1,10 @@
 package com.sad.function.collision.detection.narrowphase;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.Epsilon;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Convex;
-import org.dyn4j.Epsilon;
 
 import java.util.List;
 import java.util.PriorityQueue;

@@ -1,12 +1,12 @@
 package com.sad.function.collision.detection.continuous;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.Epsilon;
 import com.sad.function.collision.detection.narrowphase.GJK;
 import com.sad.function.collision.data.Separation;
 import com.sad.function.collision.data.TimeOfImpact;
 import com.sad.function.collision.data.Transform;
 import com.sad.function.collision.shape.Convex;
-import org.dyn4j.Epsilon;
 
 /**
  * Conservative Advancement

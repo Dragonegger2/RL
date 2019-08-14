@@ -1,6 +1,7 @@
 package com.sad.function.collision.detection.narrowphase;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sad.function.collision.Epsilon;
 import com.sad.function.collision.detection.DistanceDetector;
 import com.sad.function.collision.data.Penetration;
 import com.sad.function.collision.data.Separation;
@@ -11,14 +12,14 @@ import com.sad.function.collision.geometry.Raycast;
 import com.sad.function.collision.geometry.Raycaster;
 import com.sad.function.collision.shape.Circle;
 import com.sad.function.collision.shape.Convex;
-import org.dyn4j.Epsilon;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GJK implements NarrowPhaseDetector, DistanceDetector, Raycaster {
     public static final int DEFAULT_MAX_ITERATIONS = 30;
-    public static final float DEFAULT_DETECT_EPSILON = (float)Epsilon.E;
+    public static final float DEFAULT_DETECT_EPSILON = (float) Epsilon.E;
     public static final float DEFAULT_DISTANCE_EPSILON = (float) Math.sqrt(Epsilon.E);
 
     private static final Vector2 ORIGIN = new Vector2(0, 0);

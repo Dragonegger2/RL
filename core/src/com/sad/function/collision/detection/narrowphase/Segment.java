@@ -2,7 +2,7 @@ package com.sad.function.collision.detection.narrowphase;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import org.dyn4j.Epsilon;
+import com.sad.function.collision.Epsilon;
 
 @SuppressWarnings("ALL")
 public class Segment {
